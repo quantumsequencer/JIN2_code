@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.stub_gateway/
+gateway_source/.build/
+gateway_source/Output/
+/reports/
+/data/
+/logs/
+*.log
+/*.png
