@@ -11,8 +11,8 @@ if __name__ == '__main__':
 
 import numpy as np
 import pyqtgraph as pg
-from PySide6.QtCore import QTimer, Qt
-from PySide6.QtGui import QPixmap
+from PySide6.QtCore import QSize, QTimer, Qt
+from PySide6.QtGui import QIcon, QImageReader, QPixmap
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QPushButton, QGroupBox, QScrollArea, QSplitter, QComboBox, QPlainTextEdit,
@@ -69,6 +69,17 @@ class MainWindow(QMainWindow):
         title.setObjectName("title")
         header.addWidget(title)
         header.addStretch()
+        character_reader = QImageReader(str(ROOT / "assets/jin_samurai_character.png"))
+        character_reader.setScaledSize(QSize(80, 96))
+        character = QPixmap.fromImage(character_reader.read()).copy(0, 0, 62, 62)
+        self.samurai_button = QPushButton()
+        self.samurai_button.setIcon(QIcon(character))
+        self.samurai_button.setIconSize(QSize(54, 54))
+        self.samurai_button.setFixedSize(62, 62)
+        self.samurai_button.setToolTip('JIN / SAMURAIについて・操作ガイド')
+        self.samurai_button.setAccessibleName('JIN / SAMURAI 操作ガイド')
+        self.samurai_button.clicked.connect(self.show_samurai_guide)
+        header.addWidget(self.samurai_button)
         demo = self.connection_badge = QLabel("DEMO  •  装置への接続なし")
         demo.setObjectName("badge")
         header.addWidget(demo)
@@ -404,6 +415,44 @@ class MainWindow(QMainWindow):
         from settings_preview import SettingsPreview
         dialog = SettingsPreview(self.setting_text,
                                  self.setting_path.name if self.setting_path else '', self)
+        dialog.exec()
+
+    def show_samurai_guide(self):
+        dialog = QDialog(self)
+        dialog.setWindowTitle('JIN / SAMURAIについて・操作ガイド')
+        dialog.resize(820, 620)
+        outer = QHBoxLayout(dialog)
+        artwork = QLabel()
+        artwork.setPixmap(QPixmap(str(ROOT / 'assets/jin_samurai_character.png')).scaled(
+            390, 560, Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.SmoothTransformation))
+        artwork.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        outer.addWidget(artwork, 1)
+        guide = QVBoxLayout()
+        heading = QLabel('JIN / SAMURAI\nInstrument Controller')
+        heading.setStyleSheet('font-size: 24px; font-weight: 700; color: #FF6378;')
+        guide.addWidget(heading)
+        description = QLabel(
+            'JIN / SAMURAIは、ナノギャップ生成から電流計測までを安全に進めるための装置操作画面です。\n\n'
+            '基本の流れ\n'
+            '1. Gatewayへ接続\n'
+            '2. 設定ファイルを選択・適用\n'
+            '3. SETUP工程を順に実行\n'
+            '4. Expand Gap完了後、レシピを作成・読み込み\n'
+            '5. レシピを実行し、Hold Gap判定を確認\n\n'
+            '赤い「異常停止・中断」が表示された場合は、再実行する前に対象工程のレポートと装置ログを確認してください。'
+        )
+        description.setWordWrap(True)
+        description.setStyleSheet('font-size: 15px; line-height: 1.5;')
+        guide.addWidget(description)
+        guide.addStretch()
+        slogan = QLabel('正確に、静かに、世界を動かす。')
+        slogan.setStyleSheet('font-size: 18px; font-weight: 700; color: #FFE08A;')
+        guide.addWidget(slogan)
+        close = QPushButton('閉じる')
+        close.clicked.connect(dialog.accept)
+        guide.addWidget(close)
+        outer.addLayout(guide, 1)
         dialog.exec()
 
     def show_step_report(self, index):
