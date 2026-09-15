@@ -6,6 +6,9 @@ from protocol import Command, STOP
 
 
 class CommandEngine:
+    SAMPLE_STOP_RETRY_LIMIT = 20
+    SAMPLE_STOP_RETRY_DELAY = .5
+
     def __init__(self, send, result, accepted=lambda command: None, clock=time.monotonic):
         self.send, self.result, self.accepted, self.clock = send, result, accepted, clock
         self.current = None
@@ -81,9 +84,9 @@ class CommandEngine:
             # Manufacturer FWResultCode: -3 = API_RUNNING, not "already stopped".
             # Retry only after the Debug prompt, without advancing the queue.
             if c.text == 'sv_info_sender stop' and [line for line in self.response if line] == ['Stop error : -3']:
-                if self.sample_stop_retries < 3:
+                if self.sample_stop_retries < self.SAMPLE_STOP_RETRY_LIMIT:
                     self.sample_stop_retries += 1
-                    self.retry_at = self.clock() + .5
+                    self.retry_at = self.clock() + self.SAMPLE_STOP_RETRY_DELAY
                     return
             failed = any(re.search(r'error|failed|invalid|unknown', line, re.I) for line in self.response)
             # mcbj stop reports an error when already idle; the official Wizard ignores it.

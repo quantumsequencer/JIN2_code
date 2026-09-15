@@ -172,7 +172,7 @@ class GatewayWindow(MainWindow):
         self.hold_plot.setYRange(-30, 30, padding=0)
         self.hold_curve = self.hold_plot.plot(pen='#FF9F43')
         hold_layout.addWidget(self.hold_plot, 1)
-        self.setWindowTitle('JIN SAMURAI Control 0.2')
+        self.setWindowTitle('JIN SAMURAI Control v 0.2')
         self.console.clear()
         self.file_label.setText('設定ファイルを選択してください')
         self.apply_button.setText('設定を装置へ適用')
@@ -270,7 +270,13 @@ class GatewayWindow(MainWindow):
             b = r.baseline_current if r else None
             if self.state.completed >= 11 and b and b.get('mean_pa') is not None:
                 self.hold_values.setText(f'Expand Mean：{b["mean_pa"]:.3f} pA')
-        self.distance_meter.setText(f'{self.gap_choice.value():.3f} nm')
+        recipe_gap_active = (
+            self.recipe_started_at is not None and self.recipe_number > 0 and
+            (self.operation in ('gap_target', 'measure') or self.state.measurement or
+             (self.auto_measure and self.gap_matches_selection()))
+        )
+        self.distance_meter.setText(
+            f'{self.gap_choice.value():.3f} nm' if recipe_gap_active else '-- nm')
         can_restart = available and not busy and self.state.configured and self.state.completed >= 10
         self.resume_button.setEnabled(can_restart)
         self.recipe_edit.setEnabled(not busy and not self.auto_measure)
@@ -288,7 +294,7 @@ class GatewayWindow(MainWindow):
         self.launch_button.setEnabled(not busy and not launching and not self.touched and
                                       not (self.transport and self.transport.connected))
         self.connect_button.setEnabled(self.connect_button.isEnabled() and not launching)
-        self.connect_button.setText(('終了処理して切断' if self.touched else '切断') if self.transport else 'Gatewayに接続')
+        self.connect_button.setText(('終了処理して終了' if self.touched else '切断') if self.transport else 'Gatewayに接続')
         self.sub_port.setEnabled(self.transport is None)
         self.push_port.setEnabled(self.transport is None)
         connected = bool(self.transport and self.transport.connected)
@@ -345,9 +351,9 @@ class GatewayWindow(MainWindow):
     def toggle_connection(self):
         if self.transport:
             if self.touched:
-                self.disconnecting = True
+                self.closing = True
                 if self.operation in ('stop', 'finalize', 'piezo_cleanup', 'quality_cleanup', 'timed_cleanup'):
-                    self.log('現在の停止処理の応答確認後に終了処理して切断します。')
+                    self.log('現在の停止処理の応答確認後に終了処理して画面を閉じます。')
                 elif self.operation and self.available:
                     self.stop()
                 else:
@@ -877,14 +883,17 @@ class GatewayWindow(MainWindow):
         self.recipe_number += 1
         self.log(f'レシピ {self.recipe_number}/{self.recipe_total}：距離 {d:g} nm・時間 {minutes:g} min / 残り{len(self.recipe_pending)}条件')
         self.gap_choice.setValue(d); self.measure_minutes.setValue(minutes)
-        if self.recipe_number == 1 and self.selected_target() is not None:
+        if self.selected_target() is not None:
             self.auto_measure = True
             self.problem = ''
             self.gap_applied_raw = None
             self.measure_progress.setValue(0)
             self.measure_progress.setFormat('計測準備：待機中のExpand Gap基準値を使用')
-            self.log('レシピ先頭条件：待機中のExpand Gap基準電流を再利用します。')
-            self.auto_apply_target()
+            self.log('レシピ条件：取得済みのExpand Gap基準電流を再利用します。')
+            if self.host_paused:
+                self.start_job('resume_target_sampling', [high((10, 50, 100)[self.rate.currentIndex()])])
+            else:
+                self.auto_apply_target()
         else:
             self.resume_measurement()
 
@@ -963,7 +972,7 @@ class GatewayWindow(MainWindow):
             self.host_start_deadline = None
         if command.text.startswith('sv_info_sender start '):
             self.host_paused = False
-            if self.operation == 'resume_sampling':
+            if self.operation in ('resume_sampling', 'resume_target_sampling'):
                 self.last_host = 0
                 self.host_start_deadline = time.monotonic() + 3
         raw = raw_from_command(command.text)
@@ -1155,6 +1164,10 @@ class GatewayWindow(MainWindow):
             if self.auto_measure:
                 self.operation = 'await_piezo_host'
                 QTimer.singleShot(0, self.expand_after_host)
+        elif operation == 'resume_target_sampling':
+            if self.auto_measure:
+                self.operation = 'await_recipe_target_host'
+                QTimer.singleShot(0, self.expand_after_host)
         elif operation == 'finalize':
             self.alarm_status.setText('正常')
             self.alarm_status.setStyleSheet('background: #123D32; color: #6EF0B1; font-size: 18px; font-weight: bold; padding: 10px;')
@@ -1177,7 +1190,10 @@ class GatewayWindow(MainWindow):
                 QTimer.singleShot(0, self.finalize)
                 self.refresh()
                 return
-            self.state.completed = 10
+            # A following recipe condition uses the same successful Expand Gap
+            # baseline. Keep the workflow ready instead of forcing Expand Gap
+            # to run again from the post-Hold-Gap actuator position.
+            self.state.completed = 11 if self.recipe_pending else 10
             self.host_paused = True
             self.timed_finish = False
             self.auto_measure = False
@@ -1237,6 +1253,10 @@ class GatewayWindow(MainWindow):
             self.operation = None
             if self.auto_measure:
                 self.run_step(10)
+        elif self.operation == 'await_recipe_target_host' and self.available and self.host_recent:
+            self.operation = None
+            if self.auto_measure:
+                self.auto_apply_target()
 
     def update_plots(self):
         if not self.live:

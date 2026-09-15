@@ -142,11 +142,11 @@ class EngineTests(unittest.TestCase):
     def test_sampling_busy_is_not_success_and_retry_is_bounded(self):
         from protocol import SAMPLE_STOP
         self.e.start([SAMPLE_STOP, BIAS1])
-        for _ in range(4):
+        for _ in range(self.e.SAMPLE_STOP_RETRY_LIMIT + 1):
             self.ack('Stop error : -3')
-            self.now += .5
+            self.now += self.e.SAMPLE_STOP_RETRY_DELAY
             self.e.tick()
-        self.assertEqual(self.sent, [SAMPLE_STOP.text] * 4)
+        self.assertEqual(self.sent, [SAMPLE_STOP.text] * (self.e.SAMPLE_STOP_RETRY_LIMIT + 1))
         self.assertEqual(self.results[-1][0], 'failure')
         self.assertFalse(self.accepted)
 

@@ -49,7 +49,7 @@ class MainWindow(QMainWindow):
         self.started = time.monotonic()
         self.history = deque(maxlen=120)
         self.rng = np.random.default_rng(7)
-        self.setWindowTitle("JIN SAMURAI Control 0.2")
+        self.setWindowTitle("JIN SAMURAI Control v 0.2")
         self.resize(1360, 900)
         self.setMinimumSize(1000, 720)
 
@@ -65,7 +65,7 @@ class MainWindow(QMainWindow):
             42, 42, Qt.AspectRatioMode.KeepAspectRatio,
             Qt.TransformationMode.SmoothTransformation))
         header.addWidget(logo)
-        title = QLabel("JIN SAMURAI Control 0.2")
+        title = QLabel("JIN SAMURAI Control v 0.2")
         title.setObjectName("title")
         header.addWidget(title)
         header.addStretch()

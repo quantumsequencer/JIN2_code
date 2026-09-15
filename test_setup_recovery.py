@@ -79,7 +79,7 @@ class RecoveryTests(ConnectionTests):
             w.transport.send.assert_called_with('mw_ac go0')
             self.ack('Actuator Control for set 0point complete.')
 
-    def test_shutdown_busy_retry_then_disconnect_without_sampling_restart(self):
+    def test_shutdown_busy_retry_then_close_without_sampling_restart(self):
         w = self.w
         w.touched = True
         transport = w.transport
@@ -95,6 +95,8 @@ class RecoveryTests(ConnectionTests):
         with patch('gateway_window.QTimer.singleShot', side_effect=lambda delay, fn: fn()):
             self.ack('Stop complete. result:0')
         transport.close.assert_called_once()
+        self.assertTrue(w.allow_close)
+        self.assertFalse(w.isVisible())
         self.assertNotIn('sv_info_sender start 0', [c.args[0] for c in transport.send.call_args_list])
 
     def test_shutdown_persistent_busy_keeps_connection_and_reports_partial_completion(self):
@@ -104,7 +106,7 @@ class RecoveryTests(ConnectionTests):
         self.ack('')
         self.ack('BIAS set complete.')
         self.ack('EP set complete.')
-        for _ in range(4):
+        for _ in range(w.engine.SAMPLE_STOP_RETRY_LIMIT + 1):
             self.ack('Stop error : -3')
             if w.engine.retry_at is not None:
                 with patch.object(w.engine, 'clock', return_value=w.engine.retry_at):

@@ -24,15 +24,23 @@ class RecipeTests(ConnectionTests):
             w.start_recipe()
             self.ack('Stop complete. result:0')
             for i in range(3):
-                self.ack('Start complete. result:0'); drain()
-                w.transport.send.assert_called_with('asz eg start')
-                self.ack('')
-                w.engine.feed('Log', 'ExpandGap finished.')
-                self.assertEqual(w.operation, 'baseline')
-                for serial in range(1, 101): w.baseline_current.feed(frame(serial))
-                w.state.reports[10].baseline_current = dict(w.baseline_current.result)
-                w.operation = None
-                w.finish_live_step(); drain()
+                self.ack('Start complete. result:0')
+                if i > 0:
+                    w.last_host = __import__('time').monotonic()
+                drain()
+                if i == 0:
+                    w.transport.send.assert_called_with('asz eg start')
+                    self.ack('')
+                    w.engine.feed('Log', 'ExpandGap finished.')
+                    self.assertEqual(w.operation, 'baseline')
+                    for serial in range(1, 101): w.baseline_current.feed(frame(serial))
+                    w.state.reports[10].baseline_current = dict(w.baseline_current.result)
+                    w.operation = None
+                    w.finish_live_step(); drain()
+                else:
+                    self.assertEqual(
+                        [call.args[0] for call in w.transport.send.call_args_list].count('asz eg start'),
+                        1)
                 self.assertEqual(w.operation, 'gap_target')
                 self.ack('Setting change : 0'); drain()
                 w.transport.send.assert_called_with('asz hg start')
@@ -57,6 +65,48 @@ class RecipeTests(ConnectionTests):
         self.assertEqual(w.operation, 'gap_target')
         self.assertNotIn('asz eg start', [call.args[0] for call in w.transport.send.call_args_list])
         self.assertIn('Expand Mean：1.235 pA', w.hold_values.text())
+
+    def test_next_condition_reuses_expand_gap_after_sampling_restart(self):
+        from step_report import StepReport
+        w = self.w
+        w.state.configured = True
+        w.state.completed = 11
+        w.state.reports[10] = StepReport()
+        w.state.reports[10].baseline_current = {'status': '正常', 'mean_pa': 1.23456, 'samples': 10000}
+        w.recipe_pending = [(0.62, 3)]
+        w.recipe_number = 1
+        w.recipe_total = 2
+        w.host_paused = True
+
+        w.next_recipe()
+
+        self.assertEqual(w.operation, 'resume_target_sampling')
+        w.transport.send.assert_called_with('sv_info_sender start 10')
+        self.assertNotIn('asz eg start', [call.args[0] for call in w.transport.send.call_args_list])
+
+    def test_gap_distance_is_shown_only_for_active_recipe_hold_gap(self):
+        w = self.w
+        w.refresh()
+        self.assertEqual(w.distance_meter.text(), '-- nm')
+
+        w.recipe_started_at = 1
+        w.recipe_number = 1
+        w.gap_choice.setValue(0.61)
+        w.operation = 'resume_sampling'
+        w.refresh()
+        self.assertEqual(w.distance_meter.text(), '-- nm')
+
+        w.operation = 'gap_target'
+        w.refresh()
+        self.assertEqual(w.distance_meter.text(), '0.610 nm')
+
+        w.gap_choice.setValue(0.62)
+        w.refresh()
+        self.assertEqual(w.distance_meter.text(), '0.620 nm')
+
+        w.operation = None
+        w.refresh()
+        self.assertEqual(w.distance_meter.text(), '-- nm')
 
     def test_batch_enters_registered_recipe_after_calibration(self):
         w = self.w
