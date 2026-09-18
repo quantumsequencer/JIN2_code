@@ -19,6 +19,17 @@ class RangeTests(unittest.TestCase):
 
 
 class PiezoStopTests(ConnectionTests):
+    def test_default_limits_are_confirmed_range(self):
+        from gateway_window import GatewayWindow
+        w = GatewayWindow()
+        w.io_timer.stop(); w.plot_timer.stop()
+        try:
+            self.assertEqual(w.piezo_lower.text(), '-89300')
+            self.assertEqual(w.piezo_upper.text(), '89300')
+        finally:
+            w.allow_close = True
+            w.close()
+
     def test_no_start_without_limits_or_position(self):
         self.w.piezo_lower.clear()
         self.assertFalse(self.w.start_job('measure', [WORKERS['hg']]))

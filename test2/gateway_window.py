@@ -80,11 +80,11 @@ class GatewayWindow(MainWindow):
         gap_layout = self.measurement_box.layout()
         piezo_row = QHBoxLayout()
         piezo_row.addWidget(QLabel('Piezo正常範囲（nm）'))
-        self.piezo_lower = QLineEdit('-100000')
-        self.piezo_upper = QLineEdit('100000')
+        self.piezo_lower = QLineEdit('-89300')
+        self.piezo_upper = QLineEdit('89300')
         for edit, label in ((self.piezo_lower, '下限：未設定'), (self.piezo_upper, '上限：未設定')):
             edit.setPlaceholderText(label)
-            edit.setToolTip('初期値は暫定範囲 −100000 ～ +100000 nm。メーカー仕様または実機で確認した範囲に変更できます。端点は範囲内として扱います。')
+            edit.setToolTip('初期値は正常範囲 −89300 ～ +89300 nm。端点は範囲内として扱います。')
             piezo_row.addWidget(edit)
         gap_layout.addLayout(piezo_row)
         gap_row = QHBoxLayout()
@@ -160,6 +160,11 @@ class GatewayWindow(MainWindow):
         self.hold_lamp.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
         self.hold_lamp.setStyleSheet('font-size: 22px; color: #8291A5;')
         hold_layout.addWidget(self.hold_lamp)
+        self.hold_tight_lamp = QLabel('● ±10 pA：判定なし')
+        self.hold_tight_lamp.setFixedHeight(28)
+        self.hold_tight_lamp.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
+        self.hold_tight_lamp.setStyleSheet('font-size: 22px; color: #8291A5;')
+        hold_layout.addWidget(self.hold_tight_lamp)
         self.hold_plot = pg.PlotWidget()
         self.hold_plot.setMinimumHeight(190)
         self.hold_plot.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Ignored)
@@ -171,6 +176,7 @@ class GatewayWindow(MainWindow):
             self.hold_plot.addItem(pg.InfiniteLine(pos=bound, angle=0, pen=pg.mkPen('#39D98A', width=1.2, style=Qt.PenStyle.DashLine)))
         self.hold_plot.addItem(pg.InfiniteLine(pos=0, angle=0, pen=pg.mkPen('#8291A5', width=1)))
         self.hold_plot.setYRange(-30, 30, padding=0)
+        self.hold_plot.setXRange(0, 60, padding=0)
         self.hold_curve = self.hold_plot.plot(pen='#FF9F43')
         hold_layout.addWidget(self.hold_plot, 1)
         self.setWindowTitle('JIN SAMURAI Control v 0.2')
@@ -813,22 +819,31 @@ class GatewayWindow(MainWindow):
         self.hold_check_at = now
         if not self.host_recent or not self.hold_frames or self.hold_target is None:
             self.hold_monitor = HoldMonitor()
-            self.hold_lamp.setText('● 判定なし：電流データ未確認')
+            self.hold_lamp.setText('● ±20 pA：判定なし（電流データ未確認）')
             self.hold_lamp.setStyleSheet('font-size: 22px; color: #8291A5;')
+            self.hold_tight_lamp.setText('● ±10 pA：判定なし（電流データ未確認）')
+            self.hold_tight_lamp.setStyleSheet('font-size: 22px; color: #8291A5;')
             return
         median = float(np.median(np.concatenate(self.hold_frames)))
         delta, inside, stop = self.hold_monitor.update(now, median, self.hold_target)
         if inside is None:
-            self.hold_lamp.setText('● 判定なし：電流データ不正')
+            self.hold_lamp.setText('● ±20 pA：判定なし（電流データ不正）')
             self.hold_lamp.setStyleSheet('font-size: 22px; color: #8291A5;')
+            self.hold_tight_lamp.setText('● ±10 pA：判定なし（電流データ不正）')
+            self.hold_tight_lamp.setStyleSheet('font-size: 22px; color: #8291A5;')
             return
         bg = self.state.reports[10].baseline_current['mean_pa']
         self.hold_values.setText(f'Expand Mean：{bg:.3f} pA\nMean＋適用値：{self.hold_target:.3f} pA\nMedian：{median:.3f} pA / 差：{delta:+.3f} pA')
         outside = now - self.hold_monitor.out_since if self.hold_monitor.out_since is not None else 0
-        self.hold_lamp.setText('● TRUE：±20 pA以内' if inside else f'● FALSE：範囲外 {outside:.1f} / 30秒')
+        inside_tight = abs(delta) <= 10
+        self.hold_lamp.setText('● ±20 pA：IN' if inside else f'● ±20 pA：OUT（{outside:.1f} / 30秒）')
         self.hold_lamp.setStyleSheet('font-size: 22px; color: ' + ('#39D98A;' if inside else '#FF6378;'))
-        self.hold_points.append((now - self.hold_started, delta))
+        self.hold_tight_lamp.setText('● ±10 pA：' + ('IN' if inside_tight else 'OUT'))
+        self.hold_tight_lamp.setStyleSheet('font-size: 22px; color: ' + ('#39D98A;' if inside_tight else '#F5D547;'))
+        elapsed = now - self.hold_started
+        self.hold_points.append((elapsed, delta))
         self.hold_curve.setData([p[0] for p in self.hold_points], [p[1] for p in self.hold_points])
+        self.hold_plot.setXRange(max(0, elapsed - 60), max(60, elapsed), padding=0)
         if stop:
             self.quality_stop_reason = 'Hold Gap判定が±20 pAの範囲外で30秒継続したため停止'
             self.show_stop_alarm(self.quality_stop_reason + '。停止確認待ち。')
@@ -1001,6 +1016,11 @@ class GatewayWindow(MainWindow):
         if command.text == 'asz hg start' and self.operation == 'measure':
             self.hold_monitor = HoldMonitor()
             self.hold_frames.clear(); self.hold_points.clear(); self.hold_curve.setData([], [])
+            self.hold_plot.setXRange(0, 60, padding=0)
+            self.hold_lamp.setText('● ±20 pA：判定待ち')
+            self.hold_lamp.setStyleSheet('font-size: 22px; color: #8291A5;')
+            self.hold_tight_lamp.setText('● ±10 pA：判定待ち')
+            self.hold_tight_lamp.setStyleSheet('font-size: 22px; color: #8291A5;')
             self.hold_started = time.monotonic()
             self.quality_stop_reason = ''
             self.hold_target = self.state.reports[10].baseline_current['mean_pa'] + float(self.gap_applied_raw / NEW_RAW_PER_PA)
@@ -1061,8 +1081,11 @@ class GatewayWindow(MainWindow):
         self.hold_target = None
         self.hold_monitor = HoldMonitor()
         self.hold_frames.clear(); self.hold_points.clear(); self.hold_curve.setData([], [])
+        self.hold_plot.setXRange(0, 60, padding=0)
         self.hold_lamp.setText('● 判定なし')
         self.hold_lamp.setStyleSheet('font-size: 22px; color: #8291A5;')
+        self.hold_tight_lamp.setText('● ±10 pA：判定なし')
+        self.hold_tight_lamp.setStyleSheet('font-size: 22px; color: #8291A5;')
         self.hold_values.setText('Expand Mean：未取得 / Hold Gap判定：待機')
         for bar, text in ((self.measure_progress, '計測待機'), (self.recipe_progress, 'レシピ全体：待機')):
             bar.setValue(0); bar.setFormat(text)
@@ -1130,6 +1153,8 @@ class GatewayWindow(MainWindow):
             self.reset_pending = False
             self.hold_lamp.setText('● 判定なし：操作失敗・状態未確認')
             self.hold_lamp.setStyleSheet('font-size: 22px; color: #8291A5;')
+            self.hold_tight_lamp.setText('● ±10 pA：判定なし（操作失敗・状態未確認）')
+            self.hold_tight_lamp.setStyleSheet('font-size: 22px; color: #8291A5;')
             if self.recipe_started_at is not None:
                 self.recipe_progress.setFormat('レシピ停止：エラー')
                 self.recipe_started_at = None

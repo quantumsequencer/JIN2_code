@@ -25,6 +25,26 @@ class ResetTests(ConnectionTests):
         lines = sorted(item.value() for item in w.hold_plot.items() if hasattr(item, 'value'))
         self.assertEqual(lines, [-20, -10, 0, 10, 20])
 
+    def test_hold_quality_shows_both_ranges_and_plot_follows_latest_time(self):
+        import numpy as np
+        w = self.w
+        w.state.measurement = True
+        w.operation = 'measure'
+        w.hold_started = 10
+        w.hold_target = 100
+        w.hold_frames.append(np.array([108.0]))
+        w.state.reports[10] = type('Report', (), {
+            'baseline_current': {'mean_pa': 100.0}
+        })()
+        with patch('gateway_window.time.monotonic', return_value=80):
+            w.last_host = 80
+            w.check_hold_quality()
+        self.assertIn('±20 pA：IN', w.hold_lamp.text())
+        self.assertIn('±10 pA：IN', w.hold_tight_lamp.text())
+        x_range = w.hold_plot.viewRange()[0]
+        self.assertAlmostEqual(x_range[0], 10, places=6)
+        self.assertAlmostEqual(x_range[1], 70, places=6)
+
     def test_quality_stop_cancels_recipe_and_stops_sampling(self):
         import numpy as np
         from step_report import StepReport
