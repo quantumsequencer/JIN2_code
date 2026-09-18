@@ -1,0 +1,49 @@
+[2026-09-12 10:16:08.4717] [3420.165][dd_ep.cpp:364] set bias : 0.0 [V] (DEC:0)
+[2026-09-12 10:16:08.5032] [3420.202][dd_ep.cpp:364] set ep+ : 0.0 [V] (DEC:32767)
+[2026-09-12 10:16:08.5032] [3420.203][dd_ep.cpp:364] set ep- : -0.0 [V] (DEC:32767)
+[2026-09-12 10:16:12.8602] [3424.577][sv_info_sender.cpp:514] ADC start:0
+[2026-09-12 10:16:40.4803] [3452.174][FirstCut.cpp:200] FC change up_limit_:14000 -> 14000
+[2026-09-12 10:16:40.4803] [3452.181][FirstCut.cpp:209] FC change down_distance_:380 -> 380
+[2026-09-12 10:16:40.4803] [3452.188][FirstCut.cpp:218] FC change threshold:0x0037C53A -> 0x0037C53A
+[2026-09-12 10:16:40.4987] [3452.194][FirstCut.cpp:228] FC change speed_table_[0]:{100 3800} -> {100 3800}
+[2026-09-12 10:16:40.4987] [3452.202][FirstCut.cpp:228] FC change speed_table_[1]:{400 3800} -> {400 3800}
+[2026-09-12 10:16:40.4987] [3452.209][FirstCut.cpp:228] FC change speed_table_[2]:{1000 3800} -> {1000 3800}
+[2026-09-12 10:16:40.5211] [3452.216][ActuatorTraining.cpp:203] AT table[mt]:{0x004147AE 0x14666666 20} -> {0x004147AE 0x14666666 20}
+[2026-09-12 10:16:40.5211] [3452.224][ActuatorTraining.cpp:213] AT table[pt]:{0x004147AE 0x14666666 1500} -> {0x004147AE 0x14666666 1500}
+[2026-09-12 10:16:40.5211] [3452.232][Targeting.cpp:275] TG change threshold:0x14664CD2 -> 0x14664CD2
+[2026-09-12 10:16:40.5433] [3452.248][Targeting.cpp:285] TG change up_table[0]:{0x15641390 13 250} -> {0x15641390 13 250}
+[2026-09-12 10:16:40.5433] [3452.256][Targeting.cpp:285] TG change up_table[1]:{0x15B7F511 25 500} -> {0x15B7F511 25 500}
+[2026-09-12 10:16:40.5433] [3452.265][Targeting.cpp:285] TG change up_table[2]:{0x15BE51FA 35 700} -> {0x15BE51FA 35 700}
+[2026-09-12 10:16:40.5656] [3452.273][Targeting.cpp:285] TG change up_table[3]:{0x7FFFFFFF 50 1000} -> {0x7FFFFFFF 50 1000}
+[2026-09-12 10:16:40.5656] [3452.281][Targeting.cpp:295] TG change down_table[0]:{0x0982B581 9 180} -> {0x0982B581 9 180}
+[2026-09-12 10:16:40.5886] [3452.290][Targeting.cpp:295] TG change down_table[1]:{0x7FFFFFFF 1 20} -> {0x7FFFFFFF 1 20}
+[2026-09-12 10:16:40.5886] [3452.297][Targeting.cpp:257] TG change up_limit_:10000 -> 10000
+[2026-09-12 10:16:40.5886] [3452.303][Targeting.cpp:266] TG change timeout:30000 -> 30000
+[2026-09-12 10:16:40.5886] [3452.312][AutoCut.cpp:223] AC change threshold:0x001C7163 -> 0x001C7163
+[2026-09-12 10:16:40.6101] [3452.320][AutoCut.cpp:233] AC change up_table[0]:{0x0856196D 50 1000} -> {0x0856196D 50 1000}
+[2026-09-12 10:16:40.6101] [3452.329][AutoCut.cpp:233] AC change up_table[1]:{0x0F3B72A5 50 1000} -> {0x0F3B72A5 50 1000}
+[2026-09-12 10:16:40.6101] [3452.337][AutoCut.cpp:233] AC change up_table[2]:{0x11EDC168 45 900} -> {0x11EDC168 45 900}
+[2026-09-12 10:16:40.6327] [3452.344][AutoCut.cpp:233] AC change up_table[3]:{0x12C24A0B 35 700} -> {0x12C24A0B 35 700}
+[2026-09-12 10:16:40.6327] [3452.352][AutoCut.cpp:233] AC change up_table[4]:{0x134B8705 10 200} -> {0x134B8705 10 200}
+[2026-09-12 10:16:40.6609] [3452.360][AutoCut.cpp:233] AC change up_table[5]:{0x1476F645 75 1500} -> {0x1476F645 75 1500}
+[2026-09-12 10:16:40.6609] [3452.367][AutoCut.cpp:233] AC change up_table[6]:{0x153CB4C5 125 2500} -> {0x153CB4C5 125 2500}
+[2026-09-12 10:16:40.6609] [3452.375][AutoCut.cpp:233] AC change up_table[7]:{0x7FFFFFFF 250 5000} -> {0x7FFFFFFF 250 5000}
+[2026-09-12 10:16:40.6769] [3452.382][AutoCut.cpp:214] AC change timeout:30000 -> 30000
+[2026-09-12 10:16:40.6774] [3452.389][Calibration.cpp:222] CAL change limit:{0x115C432C 0x45710CB2} -> {0x115C432C 0x45710CB2}
+[2026-09-12 10:16:40.6774] [3452.396][Calibration.cpp:232] CAL change speed:400 -> 400
+[2026-09-12 10:16:40.6774] [3452.403][ExpandGap.cpp:265] ExpandGap change delta(pm):800 -> 800
+[2026-09-12 10:16:40.6990] [3452.411][ExpandGap.cpp:276] ExpandGap change stable_current_ranged:0x00A9F955 -> 0x00A9F955
+[2026-09-12 10:16:40.6990] [3452.427][ExpandGap.cpp:287] ExpandGap change stable_current_count:50 -> 50
+[2026-09-12 10:16:40.7000] [3452.435][HoldGap.cpp:261] HoldGap change tunnel current:0x00C35F36 -> 0x00C35F36
+[2026-09-12 10:16:40.7218] [3452.442][HoldGap.cpp:278] HoldGap change fb_table[0]:{0x0010FF55 0 0} -> {0x0010FF55 0 0}
+[2026-09-12 10:16:40.7218] [3452.450][HoldGap.cpp:278] HoldGap change fb_table[1]:{0x0038A871 2 1500} -> {0x0038A871 2 1500}
+[2026-09-12 10:16:40.7410] [3452.457][HoldGap.cpp:278] HoldGap change fb_table[2]:{0x00A9F955 100 750} -> {0x00A9F955 100 750}
+[2026-09-12 10:16:40.7410] [3452.465][HoldGap.cpp:278] HoldGap change fb_table[3]:{0x046D28E4 200 450} -> {0x046D28E4 200 450}
+[2026-09-12 10:16:40.7410] [3452.473][HoldGap.cpp:278] HoldGap change fb_table[4]:{0xFFFFFFFF 500 450} -> {0xFFFFFFFF 500 450}
+[2026-09-12 10:16:44.2684] [3455.960][dd_ep.cpp:364] set bias : 0.0 [V] (DEC:0)
+[2026-09-12 10:16:44.2689] [3455.967][dd_ep.cpp:364] set ep+ : 0.0 [V] (DEC:32767)
+[2026-09-12 10:16:44.2689] [3455.967][dd_ep.cpp:364] set ep- : -0.0 [V] (DEC:32767)
+[2026-09-12 10:17:00.9579] [3472.657][dd_ep.cpp:364] set bias : 0.1 [V] (DEC:1980)
+[2026-09-12 10:17:02.8660] [3474.607][dd_ep.cpp:364] set bias : 0.0 [V] (DEC:0)
+[2026-09-12 10:17:02.8660] [3474.617][dd_ep.cpp:364] set ep+ : 0.0 [V] (DEC:32767)
+[2026-09-12 10:17:02.8670] [3474.618][dd_ep.cpp:364] set ep- : -0.0 [V] (DEC:32767)

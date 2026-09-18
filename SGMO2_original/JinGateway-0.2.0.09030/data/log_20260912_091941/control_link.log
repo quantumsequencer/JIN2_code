@@ -1,0 +1,66 @@
+[2026-09-12 09:20:10.9308][Debug            ] dd_ep bias 0
+[2026-09-12 09:20:11.0002][Debug            ] dd_ep ep 0
+[2026-09-12 09:20:12.0943][Debug            ] mw_ac go0
+[2026-09-12 09:20:29.3856][Debug            ] sv_info_sender start 0
+[2026-09-12 09:21:40.9543][Debug            ] mcbj set fc up_limit 14000
+[2026-09-12 09:21:40.9613][Debug            ] mcbj set fc last_down_distance 380
+[2026-09-12 09:21:40.9693][Debug            ] mcbj set fc threshold 0x0037C53A
+[2026-09-12 09:21:40.9761][Debug            ] mcbj set fc speed_table 0 100 3800
+[2026-09-12 09:21:40.9831][Debug            ] mcbj set fc speed_table 1 400 3800
+[2026-09-12 09:21:40.9901][Debug            ] mcbj set fc speed_table 2 1000 3800
+[2026-09-12 09:21:40.9981][Debug            ] mcbj set mt ROUGH 0x004147AE 0x14666666 20
+[2026-09-12 09:21:41.0064][Debug            ] mcbj set pt SMOOTH 0x004147AE 0x14666666 1500
+[2026-09-12 09:21:41.0144][Debug            ] mcbj set targeting threshold 0x14664CD2
+[2026-09-12 09:21:41.0316][Debug            ] mcbj set targeting up_table 0 0x15641390 13 250
+[2026-09-12 09:21:41.0394][Debug            ] mcbj set targeting up_table 1 0x15B7F511 25 500
+[2026-09-12 09:21:41.0486][Debug            ] mcbj set targeting up_table 2 0x15BE51FA 35 700
+[2026-09-12 09:21:41.0576][Debug            ] mcbj set targeting up_table 3 0x7FFFFFFF 50 1000
+[2026-09-12 09:21:41.0681][Debug            ] mcbj set targeting down_table 0 0x0982B581 9 180
+[2026-09-12 09:21:41.0762][Debug            ] mcbj set targeting down_table 1 0x7FFFFFFF 1 20
+[2026-09-12 09:21:41.0859][Debug            ] mcbj set targeting up_limit 10000
+[2026-09-12 09:21:41.0928][Debug            ] mcbj set targeting timeout 30000
+[2026-09-12 09:21:41.1019][Debug            ] mcbj set ac threshold 0x001C7163
+[2026-09-12 09:21:41.1086][Debug            ] mcbj set ac up_table 0 0x0856196D 50 1000
+[2026-09-12 09:21:41.1156][Debug            ] mcbj set ac up_table 1 0x0F3B72A5 50 1000
+[2026-09-12 09:21:41.1235][Debug            ] mcbj set ac up_table 2 0x11EDC168 45 900
+[2026-09-12 09:21:41.1307][Debug            ] mcbj set ac up_table 3 0x12C24A0B 35 700
+[2026-09-12 09:21:41.1392][Debug            ] mcbj set ac up_table 4 0x134B8705 10 200
+[2026-09-12 09:21:41.1462][Debug            ] mcbj set ac up_table 5 0x1476F645 75 1500
+[2026-09-12 09:21:41.1532][Debug            ] mcbj set ac up_table 6 0x153CB4C5 125 2500
+[2026-09-12 09:21:41.1614][Debug            ] mcbj set ac up_table 7 0x7FFFFFFF 250 5000
+[2026-09-12 09:21:41.1681][Debug            ] mcbj set ac timeout 30000
+[2026-09-12 09:21:41.1747][Debug            ] mcbj set cal limit 0x115C432C 0x45710CB2
+[2026-09-12 09:21:41.1819][Debug            ] mcbj set cal speed 400
+[2026-09-12 09:21:41.1873][Debug            ] asz set eg delta 800
+[2026-09-12 09:21:41.1936][Debug            ] asz set eg stable_current_range 0x00A9F955
+[2026-09-12 09:21:41.2016][Debug            ] asz set eg stable_current_count 50
+[2026-09-12 09:21:41.2150][Debug            ] asz set hg tunnel_current 0x00C35F36
+[2026-09-12 09:21:41.2240][Debug            ] asz set hg fb_table 0 0x0010FF55 0 0
+[2026-09-12 09:21:41.2397][Debug            ] asz set hg fb_table 1 0x0038A871 2 1500
+[2026-09-12 09:21:41.2483][Debug            ] asz set hg fb_table 2 0x00A9F955 100 750
+[2026-09-12 09:21:41.2578][Debug            ] asz set hg fb_table 3 0x046D28E4 200 450
+[2026-09-12 09:21:41.2668][Debug            ] asz set hg fb_table 4 0xFFFFFFFF 500 450
+[2026-09-12 09:21:46.7057][Debug            ] dd_ep bias 1
+[2026-09-12 09:21:49.2603][Debug            ] mcbj fc start
+[2026-09-12 09:24:16.4484][Debug            ] mcbj targeting start
+[2026-09-12 09:24:18.5224][Debug            ] mcbj mt start
+[2026-09-12 09:26:26.9796][Debug            ] mcbj targeting start
+[2026-09-12 09:26:28.1276][Debug            ] mcbj pt start
+[2026-09-12 09:27:06.4791][Debug            ] mcbj pt start
+[2026-09-12 09:29:22.7120][Debug            ] mcbj targeting start
+[2026-09-12 09:29:26.1497][Debug            ] mcbj ac start
+[2026-09-12 09:29:41.3005][Debug            ] sv_info_sender stop
+[2026-09-12 09:29:43.1690][Debug            ] dd_ep bias 0
+[2026-09-12 09:29:43.1780][Debug            ] dd_ep ep 0
+[2026-09-12 09:29:46.7521][Debug            ] sv_info_sender start 10
+[2026-09-12 09:29:48.4223][Debug            ] dd_ep bias 1
+[2026-09-12 09:29:50.9973][Debug            ] mcbj cal start
+[2026-09-12 09:31:23.0974][Debug            ] asz eg start
+[2026-09-12 09:32:35.5131][Debug            ] asz hg start
+[2026-09-12 10:14:56.3117][Debug            ] dd_ep bias 0
+[2026-09-12 10:14:56.3356][Debug            ] dd_ep ep 0
+[2026-09-12 10:14:58.6126][Debug            ] sv_info_sender start 0
+[2026-09-12 10:15:09.4848][Debug            ] sv_info_sender stop
+[2026-09-12 10:15:13.6739][Debug            ] mcbj stop
+[2026-09-12 10:15:15.0066][Debug            ] dd_ep bias 0
+[2026-09-12 10:15:15.0131][Debug            ] dd_ep ep 0

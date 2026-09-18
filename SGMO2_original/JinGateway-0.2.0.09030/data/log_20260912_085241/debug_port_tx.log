@@ -1,0 +1,123 @@
+[2026-09-12 08:53:02.2097] mw_ac go0
+[2026-09-12 08:56:42.5785] dd_ep bias 0
+[2026-09-12 08:56:42.5849] dd_ep ep 0
+[2026-09-12 08:56:58.9382] sv_info_sender start 0
+[2026-09-12 08:57:36.2472] dd_ep bias 1
+[2026-09-12 08:57:44.0920] mcbj fc start
+[2026-09-12 09:00:38.5504] mcbj targeting start
+[2026-09-12 09:00:50.0750] mcbj mt start
+[2026-09-12 09:02:35.0344] mcbj targeting start
+[2026-09-12 09:02:37.4905] mcbj pt start
+[2026-09-12 09:11:39.0647] mcbj targeting start
+[2026-09-12 09:11:45.8204] mcbj ac start
+[2026-09-12 09:12:24.1019] sv_info_sender stop
+[2026-09-12 09:12:27.5795] dd_ep bias 0
+[2026-09-12 09:12:27.6042] dd_ep ep 0
+[2026-09-12 09:12:31.4840] sv_info_sender start 10
+[2026-09-12 09:12:35.7760] dd_ep bias 1
+[2026-09-12 09:12:38.6316] mcbj cal start
+[2026-09-12 09:13:01.6697] mcbj cal start
+[2026-09-12 09:13:29.0941] sv_info_sender stop
+[2026-09-12 09:13:32.4561] dd_ep bias 0
+[2026-09-12 09:13:32.4621] dd_ep ep 0
+[2026-09-12 09:13:37.4519] sv_info_sender start 0
+[2026-09-12 09:13:41.9385] sv_info_sender stop
+[2026-09-12 09:13:43.3010] dd_ep bias 0
+[2026-09-12 09:13:43.3113] dd_ep ep 0
+[2026-09-12 09:13:44.2043] sv_info_sender start 10
+[2026-09-12 09:13:45.5449] dd_ep bias 1
+[2026-09-12 09:13:50.3088] mcbj cal start
+[2026-09-12 09:14:44.7717] dd_ep bias 0
+[2026-09-12 09:14:44.7929] dd_ep ep 0
+[2026-09-12 09:14:45.5673] sv_info_sender stop
+[2026-09-12 09:15:07.5654] ; テラタームマクロファイル
+[2026-09-12 09:15:07.6174] ; 生成されたコマンドを送信し、完了を待つ
+[2026-09-12 09:15:07.6870] sendln "mcbj set fc up_limit 10000"
+[2026-09-12 09:15:07.6957] wait ">"
+[2026-09-12 09:15:07.7028] sendln "mcbj set fc last_down_distance 380"
+[2026-09-12 09:15:07.7098] wait ">"
+[2026-09-12 09:15:07.7154] sendln "mcbj set fc threshold 0x004147AE"
+[2026-09-12 09:15:07.7298] wait ">"
+[2026-09-12 09:15:07.7375] sendln "mcbj set fc speed_table 0 100 3800"
+[2026-09-12 09:15:07.7457] wait ">"
+[2026-09-12 09:15:07.7504] sendln "mcbj set fc speed_table 1 400 3800"
+[2026-09-12 09:15:07.7561] wait ">"
+[2026-09-12 09:15:07.7603] sendln "mcbj set fc speed_table 2 1000 3800"
+[2026-09-12 09:15:07.7655] wait ">"
+[2026-09-12 09:15:07.7722] sendln "mcbj set mt ROUGH 0x004147AE 0x14666666 20"
+[2026-09-12 09:15:07.7780] wait ">"
+[2026-09-12 09:15:07.7820] sendln "mcbj set pt SMOOTH 0x004147AE 0x14666666 2000"
+[2026-09-12 09:15:07.7890] wait ">"
+[2026-09-12 09:15:07.7980] sendln "mcbj set targeting threshold 0x17E0C4E5"
+[2026-09-12 09:15:07.8040] wait ">"
+[2026-09-12 09:15:07.8123] sendln "mcbj set targeting up_table 0 0x1909D14C 13 250"
+[2026-09-12 09:15:07.8196] wait ">"
+[2026-09-12 09:15:07.8293] sendln "mcbj set targeting up_table 1 0x196C004F 25 500"
+[2026-09-12 09:15:07.8364] wait ">"
+[2026-09-12 09:15:07.8415] sendln "mcbj set targeting up_table 2 0x197372F8 35 700"
+[2026-09-12 09:15:07.8495] wait ">"
+[2026-09-12 09:15:07.8545] sendln "mcbj set targeting up_table 3 0x7FFFFFFF 50 1000"
+[2026-09-12 09:15:07.8621] wait ">"
+[2026-09-12 09:15:07.8741] sendln "mcbj set targeting down_table 0 0x0B21DBAA 9 180"
+[2026-09-12 09:15:07.8821] wait ">"
+[2026-09-12 09:15:07.8891] sendln "mcbj set targeting down_table 1 0x7FFFFFFF 1 20"
+[2026-09-12 09:15:07.8974] wait ">"
+[2026-09-12 09:15:07.9054] sendln "mcbj set targeting up_limit 10000"
+[2026-09-12 09:15:07.9154] wait ">"
+[2026-09-12 09:15:07.9230] sendln "mcbj set targeting timeout 30000"
+[2026-09-12 09:15:07.9297] wait ">"
+[2026-09-12 09:15:07.9344] sendln "mcbj set ac threshold 0x00072E48"
+[2026-09-12 09:15:07.9410] wait ">"
+[2026-09-12 09:15:07.9489] sendln "mcbj set ac up_table 0 0x09C1FD97 50 1000"
+[2026-09-12 09:15:07.9580] wait ">"
+[2026-09-12 09:15:07.9635] sendln "mcbj set ac up_table 1 0x11D45A88 50 1000"
+[2026-09-12 09:15:07.9704] wait ">"
+[2026-09-12 09:15:07.9814] sendln "mcbj set ac up_table 2 0x14FC5E19 45 900"
+[2026-09-12 09:15:07.9888] wait ">"
+[2026-09-12 09:15:07.9938] sendln "mcbj set ac up_table 3 0x15F5241B 35 700"
+[2026-09-12 09:15:08.0006] wait ">"
+[2026-09-12 09:15:08.0091] sendln "mcbj set ac up_table 4 0x1695C7B5 10 200"
+[2026-09-12 09:15:08.0162] wait ">"
+[2026-09-12 09:15:08.0228] sendln "mcbj set ac up_table 5 0x17F445A8 75 1500"
+[2026-09-12 09:15:08.0302] wait ">"
+[2026-09-12 09:15:08.0353] sendln "mcbj set ac up_table 6 0x18DBBBF1 125 2500"
+[2026-09-12 09:15:08.0430] wait ">"
+[2026-09-12 09:15:08.0496] sendln "mcbj set ac up_table 7 0x7FFFFFFF 250 5000"
+[2026-09-12 09:15:08.0565] wait ">"
+[2026-09-12 09:15:08.0650] sendln "mcbj set ac timeout 30000"
+[2026-09-12 09:15:08.0762] wait ">"
+[2026-09-12 09:15:08.0824] sendln "mcbj set cal limit 0x0A6A8EB4 0xAA21C582"
+[2026-09-12 09:15:08.0893] wait ">"
+[2026-09-12 09:15:08.0944] sendln "mcbj set cal speed 400"
+[2026-09-12 09:15:08.1014] wait ">"
+[2026-09-12 09:15:08.1087] sendln "asz set eg delta 800"
+[2026-09-12 09:15:08.1137] wait ">"
+[2026-09-12 09:15:08.1211] sendln "asz set eg stable_current_range 0x010AA7DE"
+[2026-09-12 09:15:08.1278] wait ">"
+[2026-09-12 09:15:08.1328] sendln "asz set eg stable_current_count 50"
+[2026-09-12 09:15:08.1400] wait ">"
+[2026-09-12 09:15:08.1486] sendln "asz set hg tunnel_current 0x0132800A"
+[2026-09-12 09:15:08.1549] wait ">"
+[2026-09-12 09:15:08.1675] sendln "asz set hg fb_table 0 0x001AAA63 0 0"
+[2026-09-12 09:15:08.1749] wait ">"
+[2026-09-12 09:15:08.1835] sendln "asz set hg fb_table 1 0x0058E29F 2 1500"
+[2026-09-12 09:15:08.1921] wait ">"
+[2026-09-12 09:15:08.2042] sendln "asz set hg fb_table 2 0x010AA7DE 100 750"
+[2026-09-12 09:15:08.2134] wait ">"
+[2026-09-12 09:15:08.2234] sendln "asz set hg fb_table 3 0x06F1B478 200 450"
+[2026-09-12 09:15:08.2351] wait ">"
+[2026-09-12 09:15:08.2431] sendln "asz set hg fb_table 4 0xFFFFFFFF 500 450"
+[2026-09-12 09:15:08.2518] wait ">"
+[2026-09-12 09:15:08.2630] ; マクロ終了
+[2026-09-12 09:15:11.6039] dd_ep bias 0
+[2026-09-12 09:15:11.6134] dd_ep ep 0
+[2026-09-12 09:15:12.5107] sv_info_sender start 0
+[2026-09-12 09:15:14.9315] dd_ep bias 1
+[2026-09-12 09:15:21.3652] dd_ep bias 1
+[2026-09-12 09:15:22.3271] dd_ep bias 0
+[2026-09-12 09:15:22.3365] dd_ep ep 0
+[2026-09-12 09:15:25.0302] dd_ep bias 0
+[2026-09-12 09:15:25.0402] dd_ep ep 0
+[2026-09-12 09:15:30.6765] dd_ep bias 1
+[2026-09-12 09:15:31.4975] mcbj targeting start
+[2026-09-12 09:18:23.2119] mcbj stop

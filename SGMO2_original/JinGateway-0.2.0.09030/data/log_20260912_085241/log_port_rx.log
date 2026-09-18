@@ -1,0 +1,236 @@
+[2026-09-12 08:53:02.3160] [474.835][mw_actuator_control.cpp:398] set 0point start.
+[2026-09-12 08:53:02.3350] [474.835][dd_piezo.cpp:443] now:524288, target:524288, 1step:2935
+[2026-09-12 08:53:02.3350] [474.885][mw_actuator_control.cpp:508] sub state : 0 -> 1
+[2026-09-12 08:53:08.9986] [481.578][mw_actuator_control.cpp:515] sub state : 1 -> 2 sensor data : 1 -> 1 match cnt : 10
+[2026-09-12 08:53:11.8972] [484.480][mw_actuator_control.cpp:529] sub state : 2 -> 3 sensor data : 1 -> 3
+[2026-09-12 08:53:13.4130] [485.931][mw_actuator_control.cpp:539] sub state : 3 -> 4 sensor data : 3 -> 1
+[2026-09-12 08:53:13.4130] [485.932][mw_actuator_control.cpp:561] Lift count results. - sub state 1 : 134, sub state 2 : 58, sub state 3 : 29
+[2026-09-12 08:53:13.4180] [485.932][mw_actuator_control.cpp:564] Warning - sub state 2 Less than 61 !
+[2026-09-12 08:53:13.4180] [485.932][mw_actuator_control.cpp:568] set 0point comp.
+[2026-09-12 08:56:42.6904] [695.220][dd_ep.cpp:364] set bias : 0.0 [V] (DEC:0)
+[2026-09-12 08:56:42.6914] [695.226][dd_ep.cpp:364] set ep+ : 0.0 [V] (DEC:32767)
+[2026-09-12 08:56:42.6914] [695.227][dd_ep.cpp:364] set ep- : -0.0 [V] (DEC:32767)
+[2026-09-12 08:56:58.9791] [711.581][sv_info_sender.cpp:514] ADC start:0
+[2026-09-12 08:57:36.2777] [748.892][dd_ep.cpp:364] set bias : 0.1 [V] (DEC:1980)
+[2026-09-12 08:57:44.1762] [756.737][FirstCut.cpp:239] First Cut start!
+[2026-09-12 08:59:00.7748] [833.380][FirstCut.cpp:272] FC find[1]: cur = 589634, th = 3654970, move = 765.0[um]
+[2026-09-12 08:59:20.4736] [853.069][FirstCut.cpp:272] FC find[2]: cur = 606266, th = 3654970, move = 706.0[um]
+[2026-09-12 08:59:29.4729] [862.069][FirstCut.cpp:272] FC find[3]: cur = 500527, th = 3654970, move = 715.0[um]
+[2026-09-12 08:59:29.5693] [862.169][FirstCut.cpp:294] First Cut finish!
+[2026-09-12 09:00:38.5644] [931.208][Targeting.cpp:302] Start.
+[2026-09-12 09:00:39.1656] [931.810][Targeting.cpp:371] Targeting finished.
+[2026-09-12 09:00:50.1661] [942.733][ActuatorTraining.cpp:224] Actuator Training(Motor) start!
+[2026-09-12 09:00:52.6682] [945.287][ActuatorTraining.cpp:249] Up   OK[0]. th:0x0037C53A >= cur:0x0008F02E
+[2026-09-12 09:01:00.2675] [952.852][ActuatorTraining.cpp:278] Down OK[0]. th:0x116DA25C <= cur:0x13A6C68B
+[2026-09-12 09:01:05.5658] [958.212][ActuatorTraining.cpp:249] Up   OK[1]. th:0x0037C53A >= cur:0x00097148
+[2026-09-12 09:01:12.1655] [964.775][ActuatorTraining.cpp:278] Down OK[1]. th:0x116DA25C <= cur:0x13CAA85B
+[2026-09-12 09:01:17.8667] [970.435][ActuatorTraining.cpp:249] Up   OK[2]. th:0x0037C53A >= cur:0x000F9347
+[2026-09-12 09:01:22.4653] [975.044][ActuatorTraining.cpp:278] Down OK[2]. th:0x116DA25C <= cur:0x1240709B
+[2026-09-12 09:01:25.4654] [978.100][ActuatorTraining.cpp:249] Up   OK[3]. th:0x0037C53A >= cur:0x00276A61
+[2026-09-12 09:01:30.2652] [982.909][ActuatorTraining.cpp:278] Down OK[3]. th:0x116DA25C <= cur:0x14E81640
+[2026-09-12 09:01:36.4646] [989.021][ActuatorTraining.cpp:249] Up   OK[4]. th:0x0037C53A >= cur:0x000893C3
+[2026-09-12 09:01:41.2643] [993.830][ActuatorTraining.cpp:278] Down OK[4]. th:0x116DA25C <= cur:0x12844572
+[2026-09-12 09:01:44.5642] [997.137][ActuatorTraining.cpp:249] Up   OK[5]. th:0x0037C53A >= cur:0x000B0D27
+[2026-09-12 09:01:48.3637] [1000.994][ActuatorTraining.cpp:278] Down OK[5]. th:0x116DA25C <= cur:0x1333B6A7
+[2026-09-12 09:01:52.9635] [1005.553][ActuatorTraining.cpp:249] Up   OK[6]. th:0x0037C53A >= cur:0x0009B354
+[2026-09-12 09:01:58.2635] [1010.863][ActuatorTraining.cpp:278] Down OK[6]. th:0x116DA25C <= cur:0x12E71AF3
+[2026-09-12 09:02:03.5628] [1016.123][ActuatorTraining.cpp:249] Up   OK[7]. th:0x0037C53A >= cur:0x00095357
+[2026-09-12 09:02:08.0625] [1020.682][ActuatorTraining.cpp:278] Down OK[7]. th:0x116DA25C <= cur:0x11E1F6C5
+[2026-09-12 09:02:11.1634] [1023.787][ActuatorTraining.cpp:249] Up   OK[8]. th:0x0037C53A >= cur:0x0032BF30
+[2026-09-12 09:02:14.5622] [1027.144][ActuatorTraining.cpp:278] Down OK[8]. th:0x116DA25C <= cur:0x117AED4F
+[2026-09-12 09:02:17.6625] [1030.300][ActuatorTraining.cpp:249] Up   OK[9]. th:0x0037C53A >= cur:0x000C4E3B
+[2026-09-12 09:02:21.4677] [1034.057][ActuatorTraining.cpp:278] Down OK[9]. th:0x116DA25C <= cur:0x141584BA
+[2026-09-12 09:02:21.4677] [1034.057][ActuatorTraining.cpp:286] Actuator Training(Motor) end!
+[2026-09-12 09:02:35.0566] [1047.699][Targeting.cpp:302] Start.
+[2026-09-12 09:02:36.9581] [1049.602][Targeting.cpp:371] Targeting finished.
+[2026-09-12 09:02:37.5598] [1050.155][ActuatorTraining.cpp:224] Actuator Training(Piezo) start!
+[2026-09-12 09:02:54.7599] [1067.356][ActuatorTraining.cpp:249] Up   OK[0]. th:0x0037C53A >= cur:0x000B7265
+[2026-09-12 09:03:25.4568] [1098.056][ActuatorTraining.cpp:278] Down OK[0]. th:0x116DA25C <= cur:0x12B2FAF3
+[2026-09-12 09:03:52.0554] [1124.706][ActuatorTraining.cpp:249] Up   OK[1]. th:0x0037C53A >= cur:0x001A0752
+[2026-09-12 09:04:24.9538] [1157.606][ActuatorTraining.cpp:278] Down OK[1]. th:0x116DA25C <= cur:0x163BC98D
+[2026-09-12 09:04:54.1516] [1186.806][ActuatorTraining.cpp:249] Up   OK[2]. th:0x0037C53A >= cur:0x002E1572
+[2026-09-12 09:05:34.2499] [1226.856][ActuatorTraining.cpp:278] Down OK[2]. th:0x116DA25C <= cur:0x168CA306
+[2026-09-12 09:06:08.2472] [1260.906][ActuatorTraining.cpp:249] Up   OK[3]. th:0x0037C53A >= cur:0x002C047D
+[2026-09-12 09:06:39.6453] [1292.256][ActuatorTraining.cpp:278] Down OK[3]. th:0x116DA25C <= cur:0x11F2B9F5
+[2026-09-12 09:07:01.7436] [1314.356][ActuatorTraining.cpp:249] Up   OK[4]. th:0x0037C53A >= cur:0x002F2DF9
+[2026-09-12 09:07:28.9423] [1341.556][ActuatorTraining.cpp:278] Down OK[4]. th:0x116DA25C <= cur:0x1171F5C3
+[2026-09-12 09:08:04.6394] [1377.306][ActuatorTraining.cpp:249] Up   OK[5]. th:0x0037C53A >= cur:0x000B72C9
+[2026-09-12 09:08:35.7382] [1408.406][ActuatorTraining.cpp:278] Down OK[5]. th:0x116DA25C <= cur:0x126D258D
+[2026-09-12 09:08:55.0367] [1427.706][ActuatorTraining.cpp:249] Up   OK[6]. th:0x0037C53A >= cur:0x001ADE54
+[2026-09-12 09:09:11.8353] [1444.506][ActuatorTraining.cpp:278] Down OK[6]. th:0x116DA25C <= cur:0x119AE69C
+[2026-09-12 09:09:23.5359] [1456.156][ActuatorTraining.cpp:249] Up   OK[7]. th:0x0037C53A >= cur:0x002396AF
+[2026-09-12 09:09:45.4328] [1478.106][ActuatorTraining.cpp:278] Down OK[7]. th:0x116DA25C <= cur:0x151A8D4C
+[2026-09-12 09:10:14.2312] [1506.906][ActuatorTraining.cpp:249] Up   OK[8]. th:0x0037C53A >= cur:0x0028DCC7
+[2026-09-12 09:10:42.4291] [1535.056][ActuatorTraining.cpp:278] Down OK[8]. th:0x116DA25C <= cur:0x11781F22
+[2026-09-12 09:11:00.0279] [1552.656][ActuatorTraining.cpp:249] Up   OK[9]. th:0x0037C53A >= cur:0x00106D50
+[2026-09-12 09:11:17.4326] [1570.106][ActuatorTraining.cpp:278] Down OK[9]. th:0x116DA25C <= cur:0x11823D00
+[2026-09-12 09:11:17.4326] [1570.106][ActuatorTraining.cpp:286] Actuator Training(Piezo) end!
+[2026-09-12 09:11:39.1210] [1591.765][Targeting.cpp:302] Start.
+[2026-09-12 09:11:40.0227] [1592.616][Targeting.cpp:371] Targeting finished.
+[2026-09-12 09:11:45.9208] [1598.520][AutoCut.cpp:240] Start.
+[2026-09-12 09:12:15.9200] [1628.520][AutoCut.cpp:188] End. Canceled.
+[2026-09-12 09:12:24.1183] [1636.805][sv_info_sender.cpp:566] ADC stop
+[2026-09-12 09:12:27.6457] [1640.282][dd_ep.cpp:364] set bias : 0.0 [V] (DEC:0)
+[2026-09-12 09:12:27.6467] [1640.307][dd_ep.cpp:364] set ep+ : 0.0 [V] (DEC:32767)
+[2026-09-12 09:12:27.6467] [1640.307][dd_ep.cpp:364] set ep- : -0.0 [V] (DEC:32767)
+[2026-09-12 09:12:31.5182] [1644.188][sv_info_sender.cpp:514] ADC start:10
+[2026-09-12 09:12:35.8196] [1648.480][dd_ep.cpp:364] set bias : 0.1 [V] (DEC:1980)
+[2026-09-12 09:12:38.7186] [1651.335][Calibration.cpp:244] Calibration start!
+[2026-09-12 09:12:38.8366] [1651.435][Calibration.cpp:266] Down OK[0]. th:0x6EA8FE50 <= cur:0xFF68EC41
+[2026-09-12 09:12:38.8366] [1651.435][Calibration.cpp:275] Cal Result[0], Down pos=9185
+[2026-09-12 09:12:38.8366] [1651.485][Calibration.cpp:303] Up   OK[0]. th:0x02369472 >= cur:0x00CB63D9
+[2026-09-12 09:12:38.8496] [1651.485][Calibration.cpp:313] Cal Result[0], Up pos=9190
+[2026-09-12 09:12:38.8496] [1651.535][Calibration.cpp:266] Down OK[1]. th:0x6EA8FE50 <= cur:0xFFB5C91F
+[2026-09-12 09:12:38.8496] [1651.535][Calibration.cpp:275] Cal Result[1], Down pos=9185
+[2026-09-12 09:12:39.0260] [1651.635][Calibration.cpp:303] Up   OK[1]. th:0x02369472 >= cur:0x00A56E8A
+[2026-09-12 09:12:39.0260] [1651.635][Calibration.cpp:313] Cal Result[1], Up pos=9195
+[2026-09-12 09:12:39.1257] [1651.735][Calibration.cpp:266] Down OK[2]. th:0x6EA8FE50 <= cur:0xFFF65FAF
+[2026-09-12 09:12:39.1257] [1651.735][Calibration.cpp:275] Cal Result[2], Down pos=9185
+[2026-09-12 09:12:39.2258] [1651.885][Calibration.cpp:303] Up   OK[2]. th:0x02369472 >= cur:0x00C81D8A
+[2026-09-12 09:12:39.2258] [1651.885][Calibration.cpp:313] Cal Result[2], Up pos=9200
+[2026-09-12 09:12:39.4257] [1652.085][Calibration.cpp:266] Down OK[3]. th:0x6EA8FE50 <= cur:0xFF07EFD1
+[2026-09-12 09:12:39.4257] [1652.085][Calibration.cpp:275] Cal Result[3], Down pos=9180
+[2026-09-12 09:12:39.6253] [1652.285][Calibration.cpp:303] Up   OK[3]. th:0x02369472 >= cur:0x00D140D9
+[2026-09-12 09:12:39.6262] [1652.285][Calibration.cpp:313] Cal Result[3], Up pos=9200
+[2026-09-12 09:12:39.7372] [1652.335][Calibration.cpp:266] Down OK[4]. th:0x6EA8FE50 <= cur:0xFFB1BAC6
+[2026-09-12 09:12:39.7372] [1652.335][Calibration.cpp:275] Cal Result[4], Down pos=9195
+[2026-09-12 09:12:39.7372] [1652.385][Calibration.cpp:303] Up   OK[4]. th:0x02369472 >= cur:0x00BDDA22
+[2026-09-12 09:12:39.7372] [1652.385][Calibration.cpp:313] Cal Result[4], Up pos=9200
+[2026-09-12 09:12:40.0360] [1652.635][Calibration.cpp:266] Down OK[5]. th:0x6EA8FE50 <= cur:0xFF7AE001
+[2026-09-12 09:12:40.0360] [1652.635][Calibration.cpp:275] Cal Result[5], Down pos=9175
+[2026-09-12 09:12:40.0360] [1652.685][Calibration.cpp:303] Up   OK[5]. th:0x02369472 >= cur:0x01CA4F6B
+[2026-09-12 09:12:40.0370] [1652.685][Calibration.cpp:313] Cal Result[5], Up pos=9180
+[2026-09-12 09:12:40.1259] [1652.785][Calibration.cpp:266] Down OK[6]. th:0x6EA8FE50 <= cur:0xFFC81286
+[2026-09-12 09:12:40.1259] [1652.785][Calibration.cpp:275] Cal Result[6], Down pos=9170
+[2026-09-12 09:12:40.2253] [1652.835][Calibration.cpp:303] Up   OK[6]. th:0x02369472 >= cur:0x00523EDE
+[2026-09-12 09:12:40.2253] [1652.835][Calibration.cpp:313] Cal Result[6], Up pos=9175
+[2026-09-12 09:12:40.4253] [1653.035][Calibration.cpp:266] Down OK[7]. th:0x6EA8FE50 <= cur:0xFF3F48B9
+[2026-09-12 09:12:40.4262] [1653.035][Calibration.cpp:275] Cal Result[7], Down pos=9155
+[2026-09-12 09:12:40.5257] [1653.185][Calibration.cpp:303] Up   OK[7]. th:0x02369472 >= cur:0x00AB534B
+[2026-09-12 09:12:40.5257] [1653.185][Calibration.cpp:313] Cal Result[7], Up pos=9170
+[2026-09-12 09:12:40.6259] [1653.235][Calibration.cpp:266] Down OK[8]. th:0x6EA8FE50 <= cur:0xFFA47E26
+[2026-09-12 09:12:40.6259] [1653.235][Calibration.cpp:275] Cal Result[8], Down pos=9165
+[2026-09-12 09:12:40.9258] [1653.585][Calibration.cpp:303] Up   OK[8]. th:0x02369472 >= cur:0x00848EF0
+[2026-09-12 09:12:40.9258] [1653.585][Calibration.cpp:313] Cal Result[8], Up pos=9200
+[2026-09-12 09:12:41.0365] [1653.635][Calibration.cpp:266] Down OK[9]. th:0x6EA8FE50 <= cur:0xFF273999
+[2026-09-12 09:12:41.0365] [1653.635][Calibration.cpp:275] Cal Result[9], Down pos=9195
+[2026-09-12 09:12:41.0365] [1653.685][Calibration.cpp:303] Up   OK[9]. th:0x02369472 >= cur:0x0093FD85
+[2026-09-12 09:12:41.0498] [1653.685][Calibration.cpp:313] Cal Result[9], Up pos=9200
+[2026-09-12 09:12:41.0498] [1653.685][Calibration.cpp:320] Cal amplitude=-2.007903, Last Slope(pm/nm)=41.756228801177585
+[2026-09-12 09:12:41.0498] [1653.685][Calibration.cpp:326] Calibration end!
+[2026-09-12 09:13:01.7169] [1674.375][Calibration.cpp:244] Calibration start!
+[2026-09-12 09:13:01.8354] [1674.426][Calibration.cpp:266] Down OK[0]. th:0x6EA8FE50 <= cur:0xFED093D8
+[2026-09-12 09:13:01.8354] [1674.426][Calibration.cpp:275] Cal Result[0], Down pos=9195
+[2026-09-12 09:13:01.8354] [1674.476][Calibration.cpp:303] Up   OK[0]. th:0x02369472 >= cur:0x000AA874
+[2026-09-12 09:13:01.8479] [1674.476][Calibration.cpp:313] Cal Result[0], Up pos=9200
+[2026-09-12 09:13:01.8479] [1674.526][Calibration.cpp:266] Down OK[1]. th:0x6EA8FE50 <= cur:0xFFBDD26C
+[2026-09-12 09:13:01.8479] [1674.526][Calibration.cpp:275] Cal Result[1], Down pos=9195
+[2026-09-12 09:13:02.1352] [1674.776][Calibration.cpp:303] Up   OK[1]. th:0x02369472 >= cur:0x0038DAA6
+[2026-09-12 09:13:02.1352] [1674.776][Calibration.cpp:313] Cal Result[1], Up pos=9220
+[2026-09-12 09:13:02.1362] [1674.826][Calibration.cpp:266] Down OK[2]. th:0x6EA8FE50 <= cur:0xFE437604
+[2026-09-12 09:13:02.1362] [1674.826][Calibration.cpp:275] Cal Result[2], Down pos=9215
+[2026-09-12 09:13:02.3247] [1674.976][Calibration.cpp:303] Up   OK[2]. th:0x02369472 >= cur:0x0069E093
+[2026-09-12 09:13:02.3247] [1674.976][Calibration.cpp:313] Cal Result[2], Up pos=9230
+[2026-09-12 09:13:02.4241] [1675.076][Calibration.cpp:266] Down OK[3]. th:0x6EA8FE50 <= cur:0xFDDBD11D
+[2026-09-12 09:13:02.4241] [1675.076][Calibration.cpp:275] Cal Result[3], Down pos=9220
+[2026-09-12 09:13:02.7361] [1675.326][Calibration.cpp:303] Up   OK[3]. th:0x02369472 >= cur:0x000D3A27
+[2026-09-12 09:13:02.7361] [1675.326][Calibration.cpp:313] Cal Result[3], Up pos=9245
+[2026-09-12 09:13:02.7361] [1675.376][Calibration.cpp:266] Down OK[4]. th:0x6EA8FE50 <= cur:0xFE0D18A2
+[2026-09-12 09:13:02.7483] [1675.376][Calibration.cpp:275] Cal Result[4], Down pos=9240
+[2026-09-12 09:13:02.7483] [1675.426][Calibration.cpp:303] Up   OK[4]. th:0x02369472 >= cur:0x00456CB5
+[2026-09-12 09:13:02.7483] [1675.426][Calibration.cpp:313] Cal Result[4], Up pos=9245
+[2026-09-12 09:13:03.0347] [1675.626][Calibration.cpp:266] Down OK[5]. th:0x6EA8FE50 <= cur:0xFFBC4C68
+[2026-09-12 09:13:03.0357] [1675.626][Calibration.cpp:275] Cal Result[5], Down pos=9225
+[2026-09-12 09:13:03.0357] [1675.726][Calibration.cpp:303] Up   OK[5]. th:0x02369472 >= cur:0x006320C8
+[2026-09-12 09:13:03.0398] [1675.726][Calibration.cpp:313] Cal Result[5], Up pos=9235
+[2026-09-12 09:13:03.1242] [1675.776][Calibration.cpp:266] Down OK[6]. th:0x6EA8FE50 <= cur:0xFFD14C4E
+[2026-09-12 09:13:03.1242] [1675.776][Calibration.cpp:275] Cal Result[6], Down pos=9230
+[2026-09-12 09:13:03.2236] [1675.876][Calibration.cpp:303] Up   OK[6]. th:0x02369472 >= cur:0x003D1E50
+[2026-09-12 09:13:03.2246] [1675.876][Calibration.cpp:313] Cal Result[6], Up pos=9240
+[2026-09-12 09:13:03.4353] [1676.026][Calibration.cpp:266] Down OK[7]. th:0x6EA8FE50 <= cur:0xFE6B7B85
+[2026-09-12 09:13:03.4353] [1676.026][Calibration.cpp:275] Cal Result[7], Down pos=9225
+[2026-09-12 09:13:03.4353] [1676.076][Calibration.cpp:303] Up   OK[7]. th:0x02369472 >= cur:0x0232D881
+[2026-09-12 09:13:03.4475] [1676.076][Calibration.cpp:313] Cal Result[7], Up pos=9230
+[2026-09-12 09:13:03.4475] [1676.126][Calibration.cpp:266] Down OK[8]. th:0x6EA8FE50 <= cur:0xFF153630
+[2026-09-12 09:13:03.4475] [1676.126][Calibration.cpp:275] Cal Result[8], Down pos=9225
+[2026-09-12 09:13:03.5353] [1676.176][Calibration.cpp:303] Up   OK[8]. th:0x02369472 >= cur:0x0002473A
+[2026-09-12 09:13:03.5353] [1676.176][Calibration.cpp:313] Cal Result[8], Up pos=9230
+[2026-09-12 09:13:03.5353] [1676.226][Calibration.cpp:266] Down OK[9]. th:0x6EA8FE50 <= cur:0xFFAAA09F
+[2026-09-12 09:13:03.5353] [1676.226][Calibration.cpp:275] Cal Result[9], Down pos=9225
+[2026-09-12 09:13:03.7339] [1676.326][Calibration.cpp:303] Up   OK[9]. th:0x02369472 >= cur:0x0024EC2C
+[2026-09-12 09:13:03.7339] [1676.326][Calibration.cpp:313] Cal Result[9], Up pos=9235
+[2026-09-12 09:13:03.7349] [1676.326][Calibration.cpp:320] Cal amplitude=-1.331407, Last Slope(pm/nm)=62.972805001473972
+[2026-09-12 09:13:03.7359] [1676.326][Calibration.cpp:326] Calibration end!
+[2026-09-12 09:13:29.1141] [1701.802][sv_info_sender.cpp:566] ADC stop
+[2026-09-12 09:13:32.5246] [1705.163][dd_ep.cpp:364] set bias : 0.0 [V] (DEC:0)
+[2026-09-12 09:13:32.5246] [1705.169][dd_ep.cpp:364] set ep+ : 0.0 [V] (DEC:32767)
+[2026-09-12 09:13:32.5246] [1705.169][dd_ep.cpp:364] set ep- : -0.0 [V] (DEC:32767)
+[2026-09-12 09:13:37.5136] [1710.161][sv_info_sender.cpp:514] ADC start:0
+[2026-09-12 09:13:42.0139] [1714.647][sv_info_sender.cpp:566] ADC stop
+[2026-09-12 09:13:43.3239] [1716.009][dd_ep.cpp:364] set bias : 0.0 [V] (DEC:0)
+[2026-09-12 09:13:43.3239] [1716.019][dd_ep.cpp:364] set ep+ : 0.0 [V] (DEC:32767)
+[2026-09-12 09:13:43.3239] [1716.020][dd_ep.cpp:364] set ep- : -0.0 [V] (DEC:32767)
+[2026-09-12 09:13:44.2186] [1716.913][sv_info_sender.cpp:514] ADC start:10
+[2026-09-12 09:13:45.6141] [1718.253][dd_ep.cpp:364] set bias : 0.1 [V] (DEC:1980)
+[2026-09-12 09:13:50.4317] [1723.017][Calibration.cpp:244] Calibration start!
+[2026-09-12 09:13:50.4327] [1723.068][Calibration.cpp:266] Down OK[0]. th:0x6EA8FE50 <= cur:0xFF6095B4
+[2026-09-12 09:13:50.4327] [1723.068][Calibration.cpp:275] Cal Result[0], Down pos=9230
+[2026-09-12 09:13:50.4372] [1723.118][Calibration.cpp:303] Up   OK[0]. th:0x02369472 >= cur:0x01696DC4
+[2026-09-12 09:13:50.4372] [1723.118][Calibration.cpp:313] Cal Result[0], Up pos=9235
+[2026-09-12 09:13:50.7321] [1723.318][Calibration.cpp:266] Down OK[1]. th:0x6EA8FE50 <= cur:0xFFBBF49B
+[2026-09-12 09:13:50.7330] [1723.318][Calibration.cpp:275] Cal Result[1], Down pos=9215
+[2026-09-12 09:13:50.7330] [1723.368][Calibration.cpp:303] Up   OK[1]. th:0x02369472 >= cur:0x00C8BC9F
+[2026-09-12 09:13:50.7440] [1723.368][Calibration.cpp:313] Cal Result[1], Up pos=9220
+[2026-09-12 09:13:50.7450] [1723.418][Calibration.cpp:266] Down OK[2]. th:0x6EA8FE50 <= cur:0xFF27A133
+[2026-09-12 09:13:50.7450] [1723.418][Calibration.cpp:275] Cal Result[2], Down pos=9215
+[2026-09-12 09:13:50.9321] [1723.518][Calibration.cpp:303] Up   OK[2]. th:0x02369472 >= cur:0x019A89D1
+[2026-09-12 09:13:50.9321] [1723.518][Calibration.cpp:313] Cal Result[2], Up pos=9225
+[2026-09-12 09:13:50.9321] [1723.568][Calibration.cpp:266] Down OK[3]. th:0x6EA8FE50 <= cur:0xFFDBFE80
+[2026-09-12 09:13:50.9321] [1723.568][Calibration.cpp:275] Cal Result[3], Down pos=9220
+[2026-09-12 09:13:51.1324] [1723.768][Calibration.cpp:303] Up   OK[3]. th:0x02369472 >= cur:0x001634D8
+[2026-09-12 09:13:51.1324] [1723.768][Calibration.cpp:313] Cal Result[3], Up pos=9240
+[2026-09-12 09:13:51.1324] [1723.818][Calibration.cpp:266] Down OK[4]. th:0x6EA8FE50 <= cur:0xFFFB07AC
+[2026-09-12 09:13:51.1324] [1723.818][Calibration.cpp:275] Cal Result[4], Down pos=9235
+[2026-09-12 09:13:51.2217] [1723.868][Calibration.cpp:303] Up   OK[4]. th:0x02369472 >= cur:0x001E23E1
+[2026-09-12 09:13:51.2217] [1723.868][Calibration.cpp:313] Cal Result[4], Up pos=9240
+[2026-09-12 09:13:51.3213] [1723.968][Calibration.cpp:266] Down OK[5]. th:0x6EA8FE50 <= cur:0xFFA3CCDE
+[2026-09-12 09:13:51.3213] [1723.968][Calibration.cpp:275] Cal Result[5], Down pos=9230
+[2026-09-12 09:13:51.4321] [1724.068][Calibration.cpp:303] Up   OK[5]. th:0x02369472 >= cur:0x005A5428
+[2026-09-12 09:13:51.4331] [1724.068][Calibration.cpp:313] Cal Result[5], Up pos=9240
+[2026-09-12 09:13:51.4331] [1724.118][Calibration.cpp:266] Down OK[6]. th:0x6EA8FE50 <= cur:0xFEBA2314
+[2026-09-12 09:13:51.4331] [1724.118][Calibration.cpp:275] Cal Result[6], Down pos=9235
+[2026-09-12 09:13:51.5321] [1724.168][Calibration.cpp:303] Up   OK[6]. th:0x02369472 >= cur:0x00956855
+[2026-09-12 09:13:51.5321] [1724.168][Calibration.cpp:313] Cal Result[6], Up pos=9240
+[2026-09-12 09:13:51.5321] [1724.218][Calibration.cpp:266] Down OK[7]. th:0x6EA8FE50 <= cur:0xFF70F9BE
+[2026-09-12 09:13:51.5321] [1724.218][Calibration.cpp:275] Cal Result[7], Down pos=9235
+[2026-09-12 09:13:51.6321] [1724.268][Calibration.cpp:303] Up   OK[7]. th:0x02369472 >= cur:0x00848BCE
+[2026-09-12 09:13:51.6321] [1724.268][Calibration.cpp:313] Cal Result[7], Up pos=9240
+[2026-09-12 09:13:51.6331] [1724.318][Calibration.cpp:266] Down OK[8]. th:0x6EA8FE50 <= cur:0xFEEFD004
+[2026-09-12 09:13:51.6331] [1724.318][Calibration.cpp:275] Cal Result[8], Down pos=9235
+[2026-09-12 09:13:51.8321] [1724.468][Calibration.cpp:303] Up   OK[8]. th:0x02369472 >= cur:0x00EAFBB2
+[2026-09-12 09:13:51.8321] [1724.468][Calibration.cpp:313] Cal Result[8], Up pos=9250
+[2026-09-12 09:13:51.8321] [1724.518][Calibration.cpp:266] Down OK[9]. th:0x6EA8FE50 <= cur:0xFF2ED95C
+[2026-09-12 09:13:51.8331] [1724.518][Calibration.cpp:275] Cal Result[9], Down pos=9245
+[2026-09-12 09:13:52.0312] [1724.618][Calibration.cpp:303] Up   OK[9]. th:0x02369472 >= cur:0x008E7A3D
+[2026-09-12 09:13:52.0312] [1724.618][Calibration.cpp:313] Cal Result[9], Up pos=9255
+[2026-09-12 09:13:52.0312] [1724.618][Calibration.cpp:320] Cal amplitude=-1.502702, Last Slope(pm/nm)=55.794471705378463
+[2026-09-12 09:13:52.0332] [1724.618][Calibration.cpp:326] Calibration end!
+[2026-09-12 09:14:44.8196] [1777.484][dd_ep.cpp:364] set bias : 0.0 [V] (DEC:0)
+[2026-09-12 09:14:44.8196] [1777.505][dd_ep.cpp:364] set ep+ : 0.0 [V] (DEC:32767)
+[2026-09-12 09:14:44.8196] [1777.505][dd_ep.cpp:364] set ep- : -0.0 [V] (DEC:32767)
+[2026-09-12 09:14:45.6094] [1778.280][sv_info_sender.cpp:566] ADC stop
+[2026-09-12 09:15:11.7178] [1804.318][dd_ep.cpp:364] set bias : 0.0 [V] (DEC:0)
+[2026-09-12 09:15:11.7188] [1804.327][dd_ep.cpp:364] set ep+ : 0.0 [V] (DEC:32767)
+[2026-09-12 09:15:11.7188] [1804.328][dd_ep.cpp:364] set ep- : -0.0 [V] (DEC:32767)
+[2026-09-12 09:15:12.6075] [1805.226][sv_info_sender.cpp:514] ADC start:0
+[2026-09-12 09:15:15.0088] [1807.646][dd_ep.cpp:364] set bias : 0.1 [V] (DEC:1980)
+[2026-09-12 09:15:21.4077] [1814.080][dd_ep.cpp:364] set bias : 0.1 [V] (DEC:1980)
+[2026-09-12 09:15:22.4167] [1815.042][dd_ep.cpp:364] set bias : 0.0 [V] (DEC:0)
+[2026-09-12 09:15:22.4177] [1815.051][dd_ep.cpp:364] set ep+ : 0.0 [V] (DEC:32767)
+[2026-09-12 09:15:22.4177] [1815.051][dd_ep.cpp:364] set ep- : -0.0 [V] (DEC:32767)
+[2026-09-12 09:15:25.1172] [1817.746][dd_ep.cpp:364] set bias : 0.0 [V] (DEC:0)
+[2026-09-12 09:15:25.1172] [1817.755][dd_ep.cpp:364] set ep+ : 0.0 [V] (DEC:32767)
+[2026-09-12 09:15:25.1172] [1817.755][dd_ep.cpp:364] set ep- : -0.0 [V] (DEC:32767)
+[2026-09-12 09:15:30.7068] [1823.392][dd_ep.cpp:364] set bias : 0.1 [V] (DEC:1980)
+[2026-09-12 09:15:31.5052] [1824.213][Targeting.cpp:302] Start.
+[2026-09-12 09:15:33.4062] [1826.017][Targeting.cpp:371] Targeting finished.

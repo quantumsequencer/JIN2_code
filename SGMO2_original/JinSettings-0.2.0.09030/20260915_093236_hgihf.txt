@@ -1,0 +1,38 @@
+mcbj set fc up_limit 14000
+mcbj set fc last_down_distance 380
+mcbj set fc threshold 0x0037C53A
+mcbj set fc speed_table 0 200 3800
+mcbj set fc speed_table 1 500 3800
+mcbj set fc speed_table 2 1000 3800
+mcbj set mt ROUGH 0x004147AE 0x14666666 80
+mcbj set pt SMOOTH 0x004147AE 0x14666666 8000
+mcbj set targeting threshold 0x14664CD2
+mcbj set targeting up_table 0 0x15641390 13 250
+mcbj set targeting up_table 1 0x15B7F511 25 500
+mcbj set targeting up_table 2 0x15BE51FA 35 700
+mcbj set targeting up_table 3 0x7FFFFFFF 50 1000
+mcbj set targeting down_table 0 0x0982B581 9 180
+mcbj set targeting down_table 1 0x7FFFFFFF 1 20
+mcbj set targeting up_limit 10000
+mcbj set targeting timeout 30000
+mcbj set ac threshold 0x001C7163
+mcbj set ac up_table 0 0x0856196D 50 8000
+mcbj set ac up_table 1 0x0F3B72A5 50 8000
+mcbj set ac up_table 2 0x11EDC168 45 8000
+mcbj set ac up_table 3 0x12C24A0B 35 5000
+mcbj set ac up_table 4 0x134B8705 10 3000
+mcbj set ac up_table 5 0x1476F645 75 6000
+mcbj set ac up_table 6 0x153CB4C5 125 10000
+mcbj set ac up_table 7 0x7FFFFFFF 250 10000
+mcbj set ac timeout 30000
+mcbj set cal limit 0x115C432C 0x45710CB2
+mcbj set cal speed 3000
+asz set eg delta 800
+asz set eg stable_current_range 0x00A9F955
+asz set eg stable_current_count 50
+asz set hg tunnel_current 0x00C35F36
+asz set hg fb_table 0 0x0010FF55 0 0
+asz set hg fb_table 1 0x0038A871 2 800
+asz set hg fb_table 2 0x00A9F955 100 1500
+asz set hg fb_table 3 0x046D28E4 200 900
+asz set hg fb_table 4 0xFFFFFFFF 500 4000

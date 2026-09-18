@@ -1,0 +1,123 @@
+[2026-09-14 09:24:24.5999][INFO ] App.xaml.cs:50: Application started.
+[2026-09-14 09:24:31.9259][INFO ] RecordModel.cs:138: Record directory created: C:\Users\user\Desktop\JIN2_code\test2\data\log_20260914_092431
+[2026-09-14 09:24:31.9776][INFO ] LinkModel.cs:49: PUB socket is available.
+[2026-09-14 09:24:31.9836][INFO ] LinkModel.cs:50: PULL socket is available.
+[2026-09-14 09:24:31.9931][INFO ] LoopbackModel.cs:99: PUSH socket is available.
+[2026-09-14 09:26:22.4175][ERROR] PortModel.cs:221: Unable to transmit data: No Operation
+[2026-09-14 09:29:02.1318][ERROR] PortModel.cs:221: Unable to transmit data: No Operation
+[2026-09-14 09:30:14.3746][INFO ] App.xaml.cs:139: Application terminated.
+[2026-09-14 09:30:34.3847][INFO ] App.xaml.cs:50: Application started.
+[2026-09-14 09:30:36.0570][INFO ] RecordModel.cs:138: Record directory created: C:\Users\user\Desktop\JIN2_code\test2\data\log_20260914_093036
+[2026-09-14 09:30:36.0872][INFO ] LinkModel.cs:49: PUB socket is available.
+[2026-09-14 09:30:36.0942][INFO ] LinkModel.cs:50: PULL socket is available.
+[2026-09-14 09:30:36.1002][INFO ] LoopbackModel.cs:99: PUSH socket is available.
+[2026-09-14 09:30:40.9140][ERROR] PortModel.cs:221: Unable to transmit data: No Operation
+[2026-09-14 09:31:43.8712][ERROR] PortModel.cs:221: Unable to transmit data: No Operation
+[2026-09-14 09:32:14.6754][INFO ] App.xaml.cs:139: Application terminated.
+[2026-09-14 09:32:34.9096][INFO ] App.xaml.cs:50: Application started.
+[2026-09-14 09:32:36.4490][INFO ] RecordModel.cs:138: Record directory created: C:\Users\user\Desktop\JIN2_code\test2\data\log_20260914_093236
+[2026-09-14 09:32:36.4784][INFO ] LinkModel.cs:49: PUB socket is available.
+[2026-09-14 09:32:36.4846][INFO ] LinkModel.cs:50: PULL socket is available.
+[2026-09-14 09:32:36.4920][INFO ] LoopbackModel.cs:99: PUSH socket is available.
+[2026-09-14 09:32:47.4295][ERROR] PortModel.cs:221: Unable to transmit data: No Operation
+[2026-09-14 09:34:41.1130][INFO ] PhysicalPortUnitBase.cs:64: COM7 port is available.
+[2026-09-14 09:34:48.1902][EXC  ] PortModel.cs:258: UnauthorizedAccessException:
+method     = PortUnits.Open
+args       = (none)
+source     = System
+message    = ポート 'COM7' へのアクセスが拒否されました。
+stacktrace =
+   場所 System.IO.Ports.InternalResources.WinIOError(Int32 errorCode, String str)
+   場所 System.IO.Ports.SerialStream..ctor(String portName, Int32 baudRate, Parity parity, Int32 dataBits, StopBits stopBits, Int32 readTimeout, Int32 writeTimeout, Handshake handshake, Boolean dtrEnable, Boolean rtsEnable, Boolean discardNull, Byte parityReplace)
+   場所 System.IO.Ports.SerialPort.Open()
+   場所 Sony.Jin.Shared.PhysicalPortUnitBase`1.Open()
+   場所 Sony.Jin.Gateway.Models.PortModel.PortManager`1.SetSelectedPortUnitCore(IPortUnit`1 unit)
+[2026-09-14 09:34:48.1902][ERROR] PortModel.cs:259: Unable to open serial port: COM7
+[2026-09-14 09:34:57.8056][INFO ] PhysicalPortUnitBase.cs:64: COM6 port is available.
+[2026-09-14 09:35:01.3625][INFO ] PhysicalPortUnitBase.cs:64: COM8 port is available.
+[2026-09-14 09:36:16.1461][INFO ] PhysicalPortUnitBase.cs:81: COM7 port is unavailable.
+[2026-09-14 09:36:16.1471][EXC  ] PortModel.cs:258: UnauthorizedAccessException:
+method     = PortUnits.Open
+args       = (none)
+source     = System
+message    = ポート 'COM8' へのアクセスが拒否されました。
+stacktrace =
+   場所 System.IO.Ports.InternalResources.WinIOError(Int32 errorCode, String str)
+   場所 System.IO.Ports.SerialStream..ctor(String portName, Int32 baudRate, Parity parity, Int32 dataBits, StopBits stopBits, Int32 readTimeout, Int32 writeTimeout, Handshake handshake, Boolean dtrEnable, Boolean rtsEnable, Boolean discardNull, Byte parityReplace)
+   場所 System.IO.Ports.SerialPort.Open()
+   場所 Sony.Jin.Shared.PhysicalPortUnitBase`1.Open()
+   場所 Sony.Jin.Gateway.Models.PortModel.PortManager`1.SetSelectedPortUnitCore(IPortUnit`1 unit)
+[2026-09-14 09:36:16.1471][ERROR] PortModel.cs:259: Unable to open serial port: COM8
+[2026-09-14 09:36:24.0505][INFO ] PhysicalPortUnitBase.cs:64: COM7 port is available.
+[2026-09-14 09:36:32.0352][INFO ] PhysicalPortUnitBase.cs:81: COM7 port is unavailable.
+[2026-09-14 09:36:32.0387][INFO ] PhysicalPortUnitBase.cs:81: COM6 port is unavailable.
+[2026-09-14 09:36:32.0411][INFO ] PhysicalPortUnitBase.cs:81: COM8 port is unavailable.
+[2026-09-14 09:36:32.1106][INFO ] App.xaml.cs:139: Application terminated.
+[2026-09-14 09:36:46.4682][INFO ] App.xaml.cs:50: Application started.
+[2026-09-14 09:36:47.9719][INFO ] RecordModel.cs:138: Record directory created: C:\Users\user\Desktop\JIN2_code\test2\data\log_20260914_093647
+[2026-09-14 09:36:48.0500][INFO ] PhysicalPortUnitBase.cs:64: COM7 port is available.
+[2026-09-14 09:36:48.0556][INFO ] PhysicalPortUnitBase.cs:64: COM6 port is available.
+[2026-09-14 09:36:48.0621][INFO ] PhysicalPortUnitBase.cs:64: COM8 port is available.
+[2026-09-14 09:36:48.0899][INFO ] LinkModel.cs:49: PUB socket is available.
+[2026-09-14 09:36:48.0979][INFO ] LinkModel.cs:50: PULL socket is available.
+[2026-09-14 09:36:48.1039][INFO ] LoopbackModel.cs:99: PUSH socket is available.
+[2026-09-14 09:40:13.1908][INFO ] PhysicalPortUnitBase.cs:81: COM7 port is unavailable.
+[2026-09-14 09:40:16.0459][EXC  ] PortModel.cs:258: UnauthorizedAccessException:
+method     = PortUnits.Open
+args       = (none)
+source     = System
+message    = ポート 'COM6' へのアクセスが拒否されました。
+stacktrace =
+   場所 System.IO.Ports.InternalResources.WinIOError(Int32 errorCode, String str)
+   場所 System.IO.Ports.SerialStream..ctor(String portName, Int32 baudRate, Parity parity, Int32 dataBits, StopBits stopBits, Int32 readTimeout, Int32 writeTimeout, Handshake handshake, Boolean dtrEnable, Boolean rtsEnable, Boolean discardNull, Byte parityReplace)
+   場所 System.IO.Ports.SerialPort.Open()
+   場所 Sony.Jin.Shared.PhysicalPortUnitBase`1.Open()
+   場所 Sony.Jin.Gateway.Models.PortModel.PortManager`1.SetSelectedPortUnitCore(IPortUnit`1 unit)
+[2026-09-14 09:40:16.0469][ERROR] PortModel.cs:259: Unable to open serial port: COM6
+[2026-09-14 09:40:24.9072][INFO ] PhysicalPortUnitBase.cs:81: COM6 port is unavailable.
+[2026-09-14 09:40:24.9136][INFO ] PhysicalPortUnitBase.cs:64: COM7 port is available.
+[2026-09-14 09:40:38.0194][INFO ] PhysicalPortUnitBase.cs:81: COM7 port is unavailable.
+[2026-09-14 09:40:38.0204][INFO ] PhysicalPortUnitBase.cs:81: COM8 port is unavailable.
+[2026-09-14 09:40:38.1396][INFO ] App.xaml.cs:139: Application terminated.
+[2026-09-14 09:41:50.3384][INFO ] App.xaml.cs:50: Application started.
+[2026-09-14 09:41:54.5533][INFO ] RecordModel.cs:138: Record directory created: C:\Users\user\Desktop\JIN2_code\test2\data\log_20260914_094154
+[2026-09-14 09:41:54.5700][INFO ] PhysicalPortUnitBase.cs:64: COM6 port is available.
+[2026-09-14 09:41:54.6392][INFO ] PhysicalPortUnitBase.cs:64: COM7 port is available.
+[2026-09-14 09:41:54.6454][INFO ] PhysicalPortUnitBase.cs:64: COM8 port is available.
+[2026-09-14 09:41:54.6932][INFO ] LinkModel.cs:49: PUB socket is available.
+[2026-09-14 09:41:54.7018][INFO ] LinkModel.cs:50: PULL socket is available.
+[2026-09-14 09:41:54.7109][INFO ] LoopbackModel.cs:99: PUSH socket is available.
+[2026-09-14 09:42:24.4302][INFO ] PhysicalPortUnitBase.cs:81: COM7 port is unavailable.
+[2026-09-14 09:42:24.4485][EXC  ] PortModel.cs:258: UnauthorizedAccessException:
+method     = PortUnits.Open
+args       = (none)
+source     = System
+message    = ポート 'COM8' へのアクセスが拒否されました。
+stacktrace =
+   場所 System.IO.Ports.InternalResources.WinIOError(Int32 errorCode, String str)
+   場所 System.IO.Ports.SerialStream..ctor(String portName, Int32 baudRate, Parity parity, Int32 dataBits, StopBits stopBits, Int32 readTimeout, Int32 writeTimeout, Handshake handshake, Boolean dtrEnable, Boolean rtsEnable, Boolean discardNull, Byte parityReplace)
+   場所 System.IO.Ports.SerialPort.Open()
+   場所 Sony.Jin.Shared.PhysicalPortUnitBase`1.Open()
+   場所 Sony.Jin.Gateway.Models.PortModel.PortManager`1.SetSelectedPortUnitCore(IPortUnit`1 unit)
+[2026-09-14 09:42:24.4494][ERROR] PortModel.cs:259: Unable to open serial port: COM8
+[2026-09-14 09:42:31.9643][INFO ] PhysicalPortUnitBase.cs:81: COM8 port is unavailable.
+[2026-09-14 09:42:31.9694][INFO ] PhysicalPortUnitBase.cs:64: COM7 port is available.
+[2026-09-14 09:42:34.9202][INFO ] PhysicalPortUnitBase.cs:81: COM6 port is unavailable.
+[2026-09-14 09:42:34.9231][INFO ] PhysicalPortUnitBase.cs:81: COM7 port is unavailable.
+[2026-09-14 09:42:34.9999][INFO ] App.xaml.cs:139: Application terminated.
+[2026-09-14 09:42:52.0325][INFO ] App.xaml.cs:50: Application started.
+[2026-09-14 09:42:53.5558][INFO ] RecordModel.cs:138: Record directory created: C:\Users\user\Desktop\JIN2_code\test2\data\log_20260914_094253
+[2026-09-14 09:42:53.5693][INFO ] PhysicalPortUnitBase.cs:64: COM6 port is available.
+[2026-09-14 09:42:53.6385][INFO ] PhysicalPortUnitBase.cs:64: COM8 port is available.
+[2026-09-14 09:42:53.6438][INFO ] PhysicalPortUnitBase.cs:64: COM7 port is available.
+[2026-09-14 09:42:53.6727][INFO ] LinkModel.cs:49: PUB socket is available.
+[2026-09-14 09:42:53.6797][INFO ] LinkModel.cs:50: PULL socket is available.
+[2026-09-14 09:42:53.6888][INFO ] LoopbackModel.cs:99: PUSH socket is available.
+[2026-09-15 08:55:58.1286][ERROR] PhysicalTextPortUnit.cs:98: Port not opened: COM8
+[2026-09-15 08:55:58.1306][ERROR] PortModel.cs:221: Unable to transmit data: COM8
+[2026-09-15 08:57:26.0914][ERROR] PhysicalTextPortUnit.cs:98: Port not opened: COM8
+[2026-09-15 08:57:26.0914][ERROR] PortModel.cs:221: Unable to transmit data: COM8
+[2026-09-15 08:58:00.4375][INFO ] PhysicalPortUnitBase.cs:81: COM6 port is unavailable.
+[2026-09-15 08:58:00.4395][INFO ] PhysicalPortUnitBase.cs:81: COM8 port is unavailable.
+[2026-09-15 08:58:00.4405][INFO ] PhysicalPortUnitBase.cs:81: COM7 port is unavailable.
+[2026-09-15 08:58:00.5238][INFO ] App.xaml.cs:139: Application terminated.

@@ -1,0 +1,24 @@
+[2026-09-15 08:58:25.6425][INFO ] App.xaml.cs:50: Application started.
+[2026-09-15 08:58:27.3471][INFO ] RecordModel.cs:138: Record directory created: C:\Users\user\Desktop\JIN2_code\test2\data\log_20260915_085827
+[2026-09-15 08:58:27.3666][INFO ] PhysicalPortUnitBase.cs:64: COM6 port is available.
+[2026-09-15 08:58:27.4360][INFO ] PhysicalPortUnitBase.cs:64: COM8 port is available.
+[2026-09-15 08:58:27.4424][INFO ] PhysicalPortUnitBase.cs:64: COM7 port is available.
+[2026-09-15 08:58:27.4668][INFO ] LinkModel.cs:49: PUB socket is available.
+[2026-09-15 08:58:27.4772][INFO ] LinkModel.cs:50: PULL socket is available.
+[2026-09-15 08:58:27.4866][INFO ] LoopbackModel.cs:99: PUSH socket is available.
+[2026-09-15 09:11:58.9817][INFO ] PhysicalPortUnitBase.cs:81: COM6 port is unavailable.
+[2026-09-15 09:11:58.9902][INFO ] PhysicalPortUnitBase.cs:81: COM8 port is unavailable.
+[2026-09-15 09:11:58.9934][INFO ] PhysicalPortUnitBase.cs:81: COM7 port is unavailable.
+[2026-09-15 09:11:59.0907][INFO ] App.xaml.cs:139: Application terminated.
+[2026-09-15 09:13:29.7151][INFO ] App.xaml.cs:50: Application started.
+[2026-09-15 09:13:34.3186][INFO ] RecordModel.cs:138: Record directory created: C:\Users\user\Desktop\JIN2_code\test2\data\log_20260915_091334
+[2026-09-15 09:13:34.3410][INFO ] PhysicalPortUnitBase.cs:64: COM6 port is available.
+[2026-09-15 09:13:34.4137][INFO ] PhysicalPortUnitBase.cs:64: COM8 port is available.
+[2026-09-15 09:13:34.4200][INFO ] PhysicalPortUnitBase.cs:64: COM7 port is available.
+[2026-09-15 09:13:34.4647][INFO ] LinkModel.cs:49: PUB socket is available.
+[2026-09-15 09:13:34.4767][INFO ] LinkModel.cs:50: PULL socket is available.
+[2026-09-15 09:13:34.4907][INFO ] LoopbackModel.cs:99: PUSH socket is available.
+[2026-09-15 18:08:17.7210][INFO ] PhysicalPortUnitBase.cs:81: COM6 port is unavailable.
+[2026-09-15 18:08:17.7274][INFO ] PhysicalPortUnitBase.cs:81: COM8 port is unavailable.
+[2026-09-15 18:08:17.7304][INFO ] PhysicalPortUnitBase.cs:81: COM7 port is unavailable.
+[2026-09-15 18:08:17.8606][INFO ] App.xaml.cs:139: Application terminated.

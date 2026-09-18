@@ -1,0 +1,37 @@
+[2026-09-12 10:20:50.2711] [044.680][FirstCut.cpp:200] FC change up_limit_:20000 -> 14000
+[2026-09-12 10:20:50.2753] [044.705][FirstCut.cpp:209] FC change down_distance_:380 -> 380
+[2026-09-12 10:20:50.2753] [044.713][FirstCut.cpp:218] FC change threshold:0x0037C53A -> 0x0037C53A
+[2026-09-12 10:20:50.2753] [044.720][FirstCut.cpp:228] FC change speed_table_[0]:{100 3800} -> {100 3800}
+[2026-09-12 10:20:50.2753] [044.727][FirstCut.cpp:228] FC change speed_table_[1]:{400 3800} -> {400 3800}
+[2026-09-12 10:20:50.3617] [044.753][FirstCut.cpp:228] FC change speed_table_[2]:{1000 3800} -> {1000 3800}
+[2026-09-12 10:20:50.3617] [044.760][ActuatorTraining.cpp:203] AT table[mt]:{0x0037C53A 0x116DA25C 20} -> {0x004147AE 0x14666666 20}
+[2026-09-12 10:20:50.3848] [044.768][ActuatorTraining.cpp:213] AT table[pt]:{0x0037C53A 0x116DA25C 500} -> {0x004147AE 0x14666666 1500}
+[2026-09-12 10:20:50.3848] [044.776][Targeting.cpp:275] TG change threshold:0x14664CD2 -> 0x14664CD2
+[2026-09-12 10:20:50.3848] [044.784][Targeting.cpp:285] TG change up_table[0]:{0x15641390 13 250} -> {0x15641390 13 250}
+[2026-09-12 10:20:50.4102] [044.792][Targeting.cpp:285] TG change up_table[1]:{0x15B7F511 25 500} -> {0x15B7F511 25 500}
+[2026-09-12 10:20:50.4102] [044.800][Targeting.cpp:285] TG change up_table[2]:{0x15BE51FA 35 700} -> {0x15BE51FA 35 700}
+[2026-09-12 10:20:50.4102] [044.814][Targeting.cpp:285] TG change up_table[3]:{0x7FFFFFFF 50 1000} -> {0x7FFFFFFF 50 1000}
+[2026-09-12 10:20:50.4287] [044.822][Targeting.cpp:295] TG change down_table[0]:{0x0982B581 9 180} -> {0x0982B581 9 180}
+[2026-09-12 10:20:50.4287] [044.830][Targeting.cpp:295] TG change down_table[1]:{0x7FFFFFFF 1 20} -> {0x7FFFFFFF 1 20}
+[2026-09-12 10:20:50.4287] [044.838][Targeting.cpp:257] TG change up_limit_:20000 -> 10000
+[2026-09-12 10:20:50.4507] [044.847][Targeting.cpp:266] TG change timeout:30000 -> 30000
+[2026-09-12 10:20:50.4507] [044.854][AutoCut.cpp:223] AC change threshold:0x0006227E -> 0x001C7163
+[2026-09-12 10:20:50.4507] [044.862][AutoCut.cpp:233] AC change up_table[0]:{0x0856196D 50 1000} -> {0x0856196D 50 1000}
+[2026-09-12 10:20:50.4735] [044.873][AutoCut.cpp:233] AC change up_table[1]:{0x0F3B72A5 50 1000} -> {0x0F3B72A5 50 1000}
+[2026-09-12 10:20:50.4735] [044.880][AutoCut.cpp:233] AC change up_table[2]:{0x11EDC168 45 900} -> {0x11EDC168 45 900}
+[2026-09-12 10:20:50.4735] [044.892][AutoCut.cpp:233] AC change up_table[3]:{0x12C24A0B 35 700} -> {0x12C24A0B 35 700}
+[2026-09-12 10:20:50.4952] [044.900][AutoCut.cpp:233] AC change up_table[4]:{0x134B8705 10 200} -> {0x134B8705 10 200}
+[2026-09-12 10:20:50.4952] [044.907][AutoCut.cpp:233] AC change up_table[5]:{0x1476F645 25 500} -> {0x1476F645 75 1500}
+[2026-09-12 10:20:50.4952] [044.915][AutoCut.cpp:233] AC change up_table[6]:{0x153CB4C5 45 900} -> {0x153CB4C5 125 2500}
+[2026-09-12 10:20:50.5179] [044.923][AutoCut.cpp:233] AC change up_table[7]:{0x7FFFFFFF 50 1000} -> {0x7FFFFFFF 250 5000}
+[2026-09-12 10:20:50.5179] [044.929][AutoCut.cpp:214] AC change timeout:30000 -> 30000
+[2026-09-12 10:20:50.5179] [044.939][Calibration.cpp:222] CAL change limit:{0x02369472 0x6EA8FE50} -> {0x115C432C 0x45710CB2}
+[2026-09-12 10:20:50.5396] [044.944][Calibration.cpp:232] CAL change speed:100 -> 400
+[2026-09-12 10:20:50.5396] [044.950][ExpandGap.cpp:265] ExpandGap change delta(pm):800 -> 800
+[2026-09-12 10:20:50.5396] [044.959][ExpandGap.cpp:276] ExpandGap change stable_current_ranged:0x00A9F955 -> 0x00A9F955
+[2026-09-12 10:20:50.5629] [044.966][ExpandGap.cpp:287] ExpandGap change stable_current_count:50 -> 50
+[2026-09-12 10:20:50.5629] [044.974][HoldGap.cpp:261] HoldGap change tunnel current:0x004C0C02 -> 0x00C35F36
+[2026-09-12 10:20:50.5629] [044.981][HoldGap.cpp:278] HoldGap change fb_table[0]:{0x0010FF55 0 0} -> {0x0010FF55 0 0}
+[2026-09-12 10:20:50.5848] [044.989][HoldGap.cpp:278] HoldGap change fb_table[1]:{0x0038A871 2 1000} -> {0x0038A871 2 1500}
+[2026-09-12 10:20:50.5848] [044.997][HoldGap.cpp:278] HoldGap change fb_table[2]:{0x00A9F955 18 500} -> {0x00A9F955 100 750}
+[2026-09-12 10:20:50.5848] [04

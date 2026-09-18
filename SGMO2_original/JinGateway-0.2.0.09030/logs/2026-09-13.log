@@ -1,0 +1,60 @@
+[2026-09-13 00:00:20.7564][INFO ] App.xaml.cs:50: Application started.
+[2026-09-13 00:00:23.0855][INFO ] RecordModel.cs:138: Record directory created: C:\Users\user\Desktop\JIN2\JinGateway-0.2.0.09030\data\log_20260913_000023
+[2026-09-13 00:00:23.1039][INFO ] PhysicalPortUnitBase.cs:64: COM6 port is available.
+[2026-09-13 00:00:23.1715][INFO ] PhysicalPortUnitBase.cs:64: COM8 port is available.
+[2026-09-13 00:00:23.1770][INFO ] PhysicalPortUnitBase.cs:64: COM7 port is available.
+[2026-09-13 00:00:23.2213][INFO ] LinkModel.cs:49: PUB socket is available.
+[2026-09-13 00:00:23.2289][INFO ] LinkModel.cs:50: PULL socket is available.
+[2026-09-13 00:00:23.2374][INFO ] LoopbackModel.cs:99: PUSH socket is available.
+[2026-09-13 00:05:43.3480][INFO ] PhysicalPortUnitBase.cs:81: COM6 port is unavailable.
+[2026-09-13 00:05:43.3628][INFO ] PhysicalPortUnitBase.cs:81: COM8 port is unavailable.
+[2026-09-13 00:05:43.3678][INFO ] PhysicalPortUnitBase.cs:81: COM7 port is unavailable.
+[2026-09-13 00:05:43.4857][INFO ] App.xaml.cs:139: Application terminated.
+[2026-09-13 00:15:42.8203][INFO ] App.xaml.cs:50: Application started.
+[2026-09-13 00:15:44.5760][INFO ] RecordModel.cs:138: Record directory created: C:\Users\user\Desktop\JIN2\JinGateway-0.2.0.09030\data\log_20260913_001544
+[2026-09-13 00:15:44.5899][INFO ] PhysicalPortUnitBase.cs:64: COM6 port is available.
+[2026-09-13 00:15:44.6885][INFO ] PhysicalPortUnitBase.cs:64: COM8 port is available.
+[2026-09-13 00:15:44.6945][INFO ] PhysicalPortUnitBase.cs:64: COM7 port is available.
+[2026-09-13 00:15:44.7188][INFO ] LinkModel.cs:49: PUB socket is available.
+[2026-09-13 00:15:44.7291][INFO ] LinkModel.cs:50: PULL socket is available.
+[2026-09-13 00:15:44.7351][INFO ] LoopbackModel.cs:99: PUSH socket is available.
+[2026-09-13 10:18:27.0216][INFO ] PhysicalPortUnitBase.cs:81: COM6 port is unavailable.
+[2026-09-13 10:18:27.0261][INFO ] PhysicalPortUnitBase.cs:81: COM8 port is unavailable.
+[2026-09-13 10:18:27.0281][INFO ] PhysicalPortUnitBase.cs:81: COM7 port is unavailable.
+[2026-09-13 10:18:27.0956][INFO ] App.xaml.cs:139: Application terminated.
+[2026-09-13 10:29:29.5736][INFO ] App.xaml.cs:50: Application started.
+[2026-09-13 10:29:32.5539][INFO ] RecordModel.cs:138: Record directory created: C:\Users\user\Desktop\JIN2\JinGateway-0.2.0.09030\data\log_20260913_102932
+[2026-09-13 10:29:32.5699][INFO ] PhysicalPortUnitBase.cs:64: COM6 port is available.
+[2026-09-13 10:29:32.6386][INFO ] PhysicalPortUnitBase.cs:64: COM8 port is available.
+[2026-09-13 10:29:32.6445][INFO ] PhysicalPortUnitBase.cs:64: COM7 port is available.
+[2026-09-13 10:29:32.6800][INFO ] LinkModel.cs:49: PUB socket is available.
+[2026-09-13 10:29:32.6870][INFO ] LinkModel.cs:50: PULL socket is available.
+[2026-09-13 10:29:32.6944][INFO ] LoopbackModel.cs:99: PUSH socket is available.
+[2026-09-13 10:32:46.9840][INFO ] PhysicalPortUnitBase.cs:81: COM6 port is unavailable.
+[2026-09-13 10:32:46.9868][INFO ] PhysicalPortUnitBase.cs:81: COM8 port is unavailable.
+[2026-09-13 10:32:46.9888][INFO ] PhysicalPortUnitBase.cs:81: COM7 port is unavailable.
+[2026-09-13 10:32:47.1059][INFO ] App.xaml.cs:139: Application terminated.
+[2026-09-13 10:32:48.8175][INFO ] App.xaml.cs:50: Application started.
+[2026-09-13 10:32:50.2759][INFO ] RecordModel.cs:138: Record directory created: C:\Users\user\Desktop\JIN2_code\test2\data\log_20260913_103250
+[2026-09-13 10:32:50.2896][INFO ] PhysicalPortUnitBase.cs:64: COM6 port is available.
+[2026-09-13 10:32:50.2968][INFO ] PhysicalPortUnitBase.cs:64: COM8 port is available.
+[2026-09-13 10:32:50.3014][INFO ] PhysicalPortUnitBase.cs:64: COM7 port is available.
+[2026-09-13 10:32:50.3198][INFO ] LinkModel.cs:49: PUB socket is available.
+[2026-09-13 10:32:50.3268][INFO ] LinkModel.cs:50: PULL socket is available.
+[2026-09-13 10:32:50.3346][INFO ] LoopbackModel.cs:99: PUSH socket is available.
+[2026-09-13 10:32:57.4391][INFO ] PhysicalPortUnitBase.cs:81: COM6 port is unavailable.
+[2026-09-13 10:32:57.4469][INFO ] PhysicalPortUnitBase.cs:81: COM8 port is unavailable.
+[2026-09-13 10:32:57.4493][INFO ] PhysicalPortUnitBase.cs:81: COM7 port is unavailable.
+[2026-09-13 10:32:57.5569][INFO ] App.xaml.cs:139: Application terminated.
+[2026-09-13 11:56:07.6038][INFO ] App.xaml.cs:50: Application started.
+[2026-09-13 11:56:09.7847][INFO ] RecordModel.cs:138: Record directory created: C:\Users\user\Desktop\JIN2_code\test2\data\log_20260913_115609
+[2026-09-13 11:56:09.8117][INFO ] PhysicalPortUnitBase.cs:64: COM6 port is available.
+[2026-09-13 11:56:09.8798][INFO ] PhysicalPortUnitBase.cs:64: COM8 port is available.
+[2026-09-13 11:56:09.8857][INFO ] PhysicalPortUnitBase.cs:64: COM7 port is available.
+[2026-09-13 11:56:09.9138][INFO ] LinkModel.cs:49: PUB socket is available.
+[2026-09-13 11:56:09.9198][INFO ] LinkModel.cs:50: PULL socket is available.
+[2026-09-13 11:56:09.9269][INFO ] LoopbackModel.cs:99: PUSH socket is available.
+[2026-09-14 08:02:01.2225][INFO ] PhysicalPortUnitBase.cs:81: COM6 port is unavailable.
+[2026-09-14 08:02:01.2296][INFO ] PhysicalPortUnitBase.cs:81: COM8 port is unavailable.
+[2026-09-14 08:02:01.2306][INFO ] PhysicalPortUnitBase.cs:81: COM7 port is unavailable.
+[2026-09-14 08:02:01.3684][INFO ] App.xaml.cs:139: Application terminated.

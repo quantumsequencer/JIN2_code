@@ -1,0 +1,50 @@
+{
+  "Sony.Jin.Gateway.Views.MainWindow": {
+    "Flags": 0,
+    "ShowCmd": 1,
+    "MinX": -1,
+    "MinY": -1,
+    "MaxX": -1,
+    "MaxY": -1,
+    "Left": 534,
+    "Top": 131,
+    "Right": 1134,
+    "Bottom": 931
+  },
+  "Sony.Jin.Gateway.Views.LiveCurrentGraphWindow": {
+    "Flags": 0,
+    "ShowCmd": 1,
+    "MinX": -1,
+    "MinY": -1,
+    "MaxX": -1,
+    "MaxY": -1,
+    "Left": 1213,
+    "Top": 42,
+    "Right": 1913,
+    "Bottom": 442
+  },
+  "Sony.Jin.Gateway.Views.LiveHardwareGraphWindow": {
+    "Flags": 0,
+    "ShowCmd": 1,
+    "MinX": -1,
+    "MinY": -1,
+    "MaxX": -1,
+    "MaxY": -1,
+    "Left": 636,
+    "Top": 599,
+    "Right": 1336,
+    "Bottom": 999
+  },
+  "Sony.Jin.Gateway.Views.OptionsWindow": {
+    "Flags": 0,
+    "ShowCmd": 1,
+    "MinX": -1,
+    "MinY": -1,
+    "MaxX": -1,
+    "MaxY": -1,
+    "Left": 208,
+    "Top": 208,
+    "Right": 708,
+    "Bottom": 488
+  }
+}

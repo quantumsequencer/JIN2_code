@@ -1,0 +1,123 @@
+[2026-09-12 08:53:02.1377][Debug            ] mw_ac go0
+[2026-09-12 08:56:42.5785][Debug            ] dd_ep bias 0
+[2026-09-12 08:56:42.5849][Debug            ] dd_ep ep 0
+[2026-09-12 08:56:58.9372][Debug            ] sv_info_sender start 0
+[2026-09-12 08:57:36.2462][Debug            ] dd_ep bias 1
+[2026-09-12 08:57:44.0910][Debug            ] mcbj fc start
+[2026-09-12 09:00:38.5504][Debug            ] mcbj targeting start
+[2026-09-12 09:00:50.0750][Debug            ] mcbj mt start
+[2026-09-12 09:02:35.0344][Debug            ] mcbj targeting start
+[2026-09-12 09:02:37.4905][Debug            ] mcbj pt start
+[2026-09-12 09:11:39.0637][Debug            ] mcbj targeting start
+[2026-09-12 09:11:45.8194][Debug            ] mcbj ac start
+[2026-09-12 09:12:24.1019][Debug            ] sv_info_sender stop
+[2026-09-12 09:12:27.5795][Debug            ] dd_ep bias 0
+[2026-09-12 09:12:27.6042][Debug            ] dd_ep ep 0
+[2026-09-12 09:12:31.4840][Debug            ] sv_info_sender start 10
+[2026-09-12 09:12:35.7760][Debug            ] dd_ep bias 1
+[2026-09-12 09:12:38.6306][Debug            ] mcbj cal start
+[2026-09-12 09:13:01.6697][Debug            ] mcbj cal start
+[2026-09-12 09:13:29.0931][Debug            ] sv_info_sender stop
+[2026-09-12 09:13:32.4552][Debug            ] dd_ep bias 0
+[2026-09-12 09:13:32.4608][Debug            ] dd_ep ep 0
+[2026-09-12 09:13:37.4519][Debug            ] sv_info_sender start 0
+[2026-09-12 09:13:41.9385][Debug            ] sv_info_sender stop
+[2026-09-12 09:13:43.3010][Debug            ] dd_ep bias 0
+[2026-09-12 09:13:43.3113][Debug            ] dd_ep ep 0
+[2026-09-12 09:13:44.2043][Debug            ] sv_info_sender start 10
+[2026-09-12 09:13:45.5449][Debug            ] dd_ep bias 1
+[2026-09-12 09:13:50.3088][Debug            ] mcbj cal start
+[2026-09-12 09:14:44.7717][Debug            ] dd_ep bias 0
+[2026-09-12 09:14:44.7929][Debug            ] dd_ep ep 0
+[2026-09-12 09:14:45.5663][Debug            ] sv_info_sender stop
+[2026-09-12 09:15:07.5633][Debug            ] ; テラタームマクロファイル
+[2026-09-12 09:15:07.6174][Debug            ] ; 生成されたコマンドを送信し、完了を待つ
+[2026-09-12 09:15:07.6870][Debug            ] sendln "mcbj set fc up_limit 10000"
+[2026-09-12 09:15:07.6947][Debug            ] wait ">"
+[2026-09-12 09:15:07.7017][Debug            ] sendln "mcbj set fc last_down_distance 380"
+[2026-09-12 09:15:07.7088][Debug            ] wait ">"
+[2026-09-12 09:15:07.7154][Debug            ] sendln "mcbj set fc threshold 0x004147AE"
+[2026-09-12 09:15:07.7285][Debug            ] wait ">"
+[2026-09-12 09:15:07.7360][Debug            ] sendln "mcbj set fc speed_table 0 100 3800"
+[2026-09-12 09:15:07.7457][Debug            ] wait ">"
+[2026-09-12 09:15:07.7504][Debug            ] sendln "mcbj set fc speed_table 1 400 3800"
+[2026-09-12 09:15:07.7561][Debug            ] wait ">"
+[2026-09-12 09:15:07.7593][Debug            ] sendln "mcbj set fc speed_table 2 1000 3800"
+[2026-09-12 09:15:07.7655][Debug            ] wait ">"
+[2026-09-12 09:15:07.7710][Debug            ] sendln "mcbj set mt ROUGH 0x004147AE 0x14666666 20"
+[2026-09-12 09:15:07.7780][Debug            ] wait ">"
+[2026-09-12 09:15:07.7810][Debug            ] sendln "mcbj set pt SMOOTH 0x004147AE 0x14666666 2000"
+[2026-09-12 09:15:07.7890][Debug            ] wait ">"
+[2026-09-12 09:15:07.7970][Debug            ] sendln "mcbj set targeting threshold 0x17E0C4E5"
+[2026-09-12 09:15:07.8040][Debug            ] wait ">"
+[2026-09-12 09:15:07.8123][Debug            ] sendln "mcbj set targeting up_table 0 0x1909D14C 13 250"
+[2026-09-12 09:15:07.8196][Debug            ] wait ">"
+[2026-09-12 09:15:07.8293][Debug            ] sendln "mcbj set targeting up_table 1 0x196C004F 25 500"
+[2026-09-12 09:15:07.8364][Debug            ] wait ">"
+[2026-09-12 09:15:07.8415][Debug            ] sendln "mcbj set targeting up_table 2 0x197372F8 35 700"
+[2026-09-12 09:15:07.8485][Debug            ] wait ">"
+[2026-09-12 09:15:07.8545][Debug            ] sendln "mcbj set targeting up_table 3 0x7FFFFFFF 50 1000"
+[2026-09-12 09:15:07.8621][Debug            ] wait ">"
+[2026-09-12 09:15:07.8731][Debug            ] sendln "mcbj set targeting down_table 0 0x0B21DBAA 9 180"
+[2026-09-12 09:15:07.8821][Debug            ] wait ">"
+[2026-09-12 09:15:07.8891][Debug            ] sendln "mcbj set targeting down_table 1 0x7FFFFFFF 1 20"
+[2026-09-12 09:15:07.8974][Debug            ] wait ">"
+[2026-09-12 09:15:07.9054][Debug            ] sendln "mcbj set targeting up_limit 10000"
+[2026-09-12 09:15:07.9154][Debug            ] wait ">"
+[2026-09-12 09:15:07.9218][Debug            ] sendln "mcbj set targeting timeout 30000"
+[2026-09-12 09:15:07.9297][Debug            ] wait ">"
+[2026-09-12 09:15:07.9344][Debug            ] sendln "mcbj set ac threshold 0x00072E48"
+[2026-09-12 09:15:07.9410][Debug            ] wait ">"
+[2026-09-12 09:15:07.9489][Debug            ] sendln "mcbj set ac up_table 0 0x09C1FD97 50 1000"
+[2026-09-12 09:15:07.9580][Debug            ] wait ">"
+[2026-09-12 09:15:07.9635][Debug            ] sendln "mcbj set ac up_table 1 0x11D45A88 50 1000"
+[2026-09-12 09:15:07.9704][Debug            ] wait ">"
+[2026-09-12 09:15:07.9804][Debug            ] sendln "mcbj set ac up_table 2 0x14FC5E19 45 900"
+[2026-09-12 09:15:07.9888][Debug            ] wait ">"
+[2026-09-12 09:15:07.9928][Debug            ] sendln "mcbj set ac up_table 3 0x15F5241B 35 700"
+[2026-09-12 09:15:08.0001][Debug            ] wait ">"
+[2026-09-12 09:15:08.0091][Debug            ] sendln "mcbj set ac up_table 4 0x1695C7B5 10 200"
+[2026-09-12 09:15:08.0162][Debug            ] wait ">"
+[2026-09-12 09:15:08.0228][Debug            ] sendln "mcbj set ac up_table 5 0x17F445A8 75 1500"
+[2026-09-12 09:15:08.0302][Debug            ] wait ">"
+[2026-09-12 09:15:08.0343][Debug            ] sendln "mcbj set ac up_table 6 0x18DBBBF1 125 2500"
+[2026-09-12 09:15:08.0414][Debug            ] wait ">"
+[2026-09-12 09:15:08.0496][Debug            ] sendln "mcbj set ac up_table 7 0x7FFFFFFF 250 5000"
+[2026-09-12 09:15:08.0565][Debug            ] wait ">"
+[2026-09-12 09:15:08.0639][Debug            ] sendln "mcbj set ac timeout 30000"
+[2026-09-12 09:15:08.0752][Debug            ] wait ">"
+[2026-09-12 09:15:08.0814][Debug            ] sendln "mcbj set cal limit 0x0A6A8EB4 0xAA21C582"
+[2026-09-12 09:15:08.0893][Debug            ] wait ">"
+[2026-09-12 09:15:08.0944][Debug            ] sendln "mcbj set cal speed 400"
+[2026-09-12 09:15:08.1014][Debug            ] wait ">"
+[2026-09-12 09:15:08.1077][Debug            ] sendln "asz set eg delta 800"
+[2026-09-12 09:15:08.1137][Debug            ] wait ">"
+[2026-09-12 09:15:08.1201][Debug            ] sendln "asz set eg stable_current_range 0x010AA7DE"
+[2026-09-12 09:15:08.1278][Debug            ] wait ">"
+[2026-09-12 09:15:08.1328][Debug            ] sendln "asz set eg stable_current_count 50"
+[2026-09-12 09:15:08.1400][Debug            ] wait ">"
+[2026-09-12 09:15:08.1476][Debug            ] sendln "asz set hg tunnel_current 0x0132800A"
+[2026-09-12 09:15:08.1539][Debug            ] wait ">"
+[2026-09-12 09:15:08.1664][Debug            ] sendln "asz set hg fb_table 0 0x001AAA63 0 0"
+[2026-09-12 09:15:08.1749][Debug            ] wait ">"
+[2026-09-12 09:15:08.1835][Debug            ] sendln "asz set hg fb_table 1 0x0058E29F 2 1500"
+[2026-09-12 09:15:08.1921][Debug            ] wait ">"
+[2026-09-12 09:15:08.2042][Debug            ] sendln "asz set hg fb_table 2 0x010AA7DE 100 750"
+[2026-09-12 09:15:08.2134][Debug            ] wait ">"
+[2026-09-12 09:15:08.2234][Debug            ] sendln "asz set hg fb_table 3 0x06F1B478 200 450"
+[2026-09-12 09:15:08.2341][Debug            ] wait ">"
+[2026-09-12 09:15:08.2421][Debug            ] sendln "asz set hg fb_table 4 0xFFFFFFFF 500 450"
+[2026-09-12 09:15:08.2508][Debug            ] wait ">"
+[2026-09-12 09:15:08.2630][Debug            ] ; マクロ終了
+[2026-09-12 09:15:11.6030][Debug            ] dd_ep bias 0
+[2026-09-12 09:15:11.6134][Debug            ] dd_ep ep 0
+[2026-09-12 09:15:12.5097][Debug            ] sv_info_sender start 0
+[2026-09-12 09:15:14.9315][Debug            ] dd_ep bias 1
+[2026-09-12 09:15:21.3652][Debug            ] dd_ep bias 1
+[2026-09-12 09:15:22.3261][Debug            ] dd_ep bias 0
+[2026-09-12 09:15:22.3355][Debug            ] dd_ep ep 0
+[2026-09-12 09:15:25.0302][Debug            ] dd_ep bias 0
+[2026-09-12 09:15:25.0402][Debug            ] dd_ep ep 0
+[2026-09-12 09:15:30.6765][Debug            ] dd_ep bias 1
+[2026-09-12 09:15:31.4965][Debug            ] mcbj targeting start
+[2026-09-12 09:18:23.2119][Debug            ] mcbj stop

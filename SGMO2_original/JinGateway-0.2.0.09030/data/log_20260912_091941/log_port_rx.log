@@ -1,0 +1,173 @@
+[2026-09-12 09:20:11.0384] [062.443][dd_ep.cpp:364] set bias : 0.0 [V] (DEC:0)
+[2026-09-12 09:20:11.0427] [062.495][dd_ep.cpp:364] set ep+ : 0.0 [V] (DEC:32767)
+[2026-09-12 09:20:11.0427] [062.495][dd_ep.cpp:364] set ep- : -0.0 [V] (DEC:32767)
+[2026-09-12 09:20:12.1347] [063.588][mw_actuator_control.cpp:398] set 0point start.
+[2026-09-12 09:20:12.1347] [063.588][dd_piezo.cpp:443] now:524288, target:524288, 1step:2935
+[2026-09-12 09:20:12.2293] [063.638][mw_actuator_control.cpp:508] sub state : 0 -> 1
+[2026-09-12 09:20:17.9326] [069.382][mw_actuator_control.cpp:515] sub state : 1 -> 2 sensor data : 3 -> 3 match cnt : 10
+[2026-09-12 09:20:21.3310] [072.735][mw_actuator_control.cpp:529] sub state : 2 -> 3 sensor data : 3 -> 1
+[2026-09-12 09:20:21.4451] [072.885][mw_actuator_control.cpp:539] sub state : 3 -> 4 sensor data : 1 -> 3
+[2026-09-12 09:20:21.4451] [072.885][mw_actuator_control.cpp:561] Lift count results. - sub state 1 : 115, sub state 2 : 67, sub state 3 : 3
+[2026-09-12 09:20:21.4451] [072.885][mw_actuator_control.cpp:568] set 0point comp.
+[2026-09-12 09:20:29.4264] [080.881][sv_info_sender.cpp:514] ADC start:0
+[2026-09-12 09:21:41.0406] [152.456][FirstCut.cpp:200] FC change up_limit_:20000 -> 14000
+[2026-09-12 09:21:41.0406] [152.464][FirstCut.cpp:209] FC change down_distance_:380 -> 380
+[2026-09-12 09:21:41.0406] [152.471][FirstCut.cpp:218] FC change threshold:0x0037C53A -> 0x0037C53A
+[2026-09-12 09:21:41.0616] [152.478][FirstCut.cpp:228] FC change speed_table_[0]:{100 3800} -> {100 3800}
+[2026-09-12 09:21:41.0616] [152.486][FirstCut.cpp:228] FC change speed_table_[1]:{400 3800} -> {400 3800}
+[2026-09-12 09:21:41.0616] [152.493][FirstCut.cpp:228] FC change speed_table_[2]:{1000 3800} -> {1000 3800}
+[2026-09-12 09:21:41.0844] [152.501][ActuatorTraining.cpp:203] AT table[mt]:{0x0037C53A 0x116DA25C 20} -> {0x004147AE 0x14666666 20}
+[2026-09-12 09:21:41.0844] [152.509][ActuatorTraining.cpp:213] AT table[pt]:{0x0037C53A 0x116DA25C 500} -> {0x004147AE 0x14666666 1500}
+[2026-09-12 09:21:41.0844] [152.518][Targeting.cpp:275] TG change threshold:0x14664CD2 -> 0x14664CD2
+[2026-09-12 09:21:41.1070] [152.535][Targeting.cpp:285] TG change up_table[0]:{0x15641390 13 250} -> {0x15641390 13 250}
+[2026-09-12 09:21:41.1070] [152.543][Targeting.cpp:285] TG change up_table[1]:{0x15B7F511 25 500} -> {0x15B7F511 25 500}
+[2026-09-12 09:21:41.1070] [152.552][Targeting.cpp:285] TG change up_table[2]:{0x15BE51FA 35 700} -> {0x15BE51FA 35 700}
+[2026-09-12 09:21:41.1285] [152.561][Targeting.cpp:285] TG change up_table[3]:{0x7FFFFFFF 50 1000} -> {0x7FFFFFFF 50 1000}
+[2026-09-12 09:21:41.1296] [152.571][Targeting.cpp:295] TG change down_table[0]:{0x0982B581 9 180} -> {0x0982B581 9 180}
+[2026-09-12 09:21:41.1512] [152.580][Targeting.cpp:295] TG change down_table[1]:{0x7FFFFFFF 1 20} -> {0x7FFFFFFF 1 20}
+[2026-09-12 09:21:41.1512] [152.588][Targeting.cpp:257] TG change up_limit_:20000 -> 10000
+[2026-09-12 09:21:41.1512] [152.595][Targeting.cpp:266] TG change timeout:30000 -> 30000
+[2026-09-12 09:21:41.1512] [152.604][AutoCut.cpp:223] AC change threshold:0x0006227E -> 0x001C7163
+[2026-09-12 09:21:41.1733] [152.611][AutoCut.cpp:233] AC change up_table[0]:{0x0856196D 50 1000} -> {0x0856196D 50 1000}
+[2026-09-12 09:21:41.1733] [152.619][AutoCut.cpp:233] AC change up_table[1]:{0x0F3B72A5 50 1000} -> {0x0F3B72A5 50 1000}
+[2026-09-12 09:21:41.1733] [152.627][AutoCut.cpp:233] AC change up_table[2]:{0x11EDC168 45 900} -> {0x11EDC168 45 900}
+[2026-09-12 09:21:41.1965] [152.634][AutoCut.cpp:233] AC change up_table[3]:{0x12C24A0B 35 700} -> {0x12C24A0B 35 700}
+[2026-09-12 09:21:41.1965] [152.642][AutoCut.cpp:233] AC change up_table[4]:{0x134B8705 10 200} -> {0x134B8705 10 200}
+[2026-09-12 09:21:41.1965] [152.649][AutoCut.cpp:233] AC change up_table[5]:{0x1476F645 25 500} -> {0x1476F645 75 1500}
+[2026-09-12 09:21:41.2190] [152.656][AutoCut.cpp:233] AC change up_table[6]:{0x153CB4C5 45 900} -> {0x153CB4C5 125 2500}
+[2026-09-12 09:21:41.2190] [152.664][AutoCut.cpp:233] AC change up_table[7]:{0x7FFFFFFF 50 1000} -> {0x7FFFFFFF 250 5000}
+[2026-09-12 09:21:41.2190] [152.670][AutoCut.cpp:214] AC change timeout:30000 -> 30000
+[2026-09-12 09:21:41.2397] [152.677][Calibration.cpp:222] CAL change limit:{0x02369472 0x6EA8FE50} -> {0x115C432C 0x45710CB2}
+[2026-09-12 09:21:41.2397] [152.683][Calibration.cpp:232] CAL change speed:100 -> 400
+[2026-09-12 09:21:41.2397] [152.689][ExpandGap.cpp:265] ExpandGap change delta(pm):800 -> 800
+[2026-09-12 09:21:41.2628] [152.696][ExpandGap.cpp:276] ExpandGap change stable_current_ranged:0x00A9F955 -> 0x00A9F955
+[2026-09-12 09:21:41.2628] [152.703][ExpandGap.cpp:287] ExpandGap change stable_current_count:50 -> 50
+[2026-09-12 09:21:41.2628] [152.717][HoldGap.cpp:261] HoldGap change tunnel current:0x004C0C02 -> 0x00C35F36
+[2026-09-12 09:21:41.2854] [152.726][HoldGap.cpp:278] HoldGap change fb_table[0]:{0x0010FF55 0 0} -> {0x0010FF55 0 0}
+[2026-09-12 09:21:41.2854] [152.742][HoldGap.cpp:278] HoldGap change fb_table[1]:{0x0038A871 2 1000} -> {0x0038A871 2 1500}
+[2026-09-12 09:21:41.2854] [152.751][HoldGap.cpp:278] HoldGap change fb_table[2]:{0x00A9F955 18 500} -> {0x00A9F955 100 750}
+[2026-09-12 09:21:41.3006] [152.760][HoldGap.cpp:278] HoldGap change fb_table[3]:{0x046D28E4 34 300} -> {0x046D28E4 200 450}
+[2026-09-12 09:21:41.3006] [152.770][HoldGap.cpp:278] HoldGap change fb_table[4]:{0xFFFFFFFF 88 300} -> {0xFFFFFFFF 500 450}
+[2026-09-12 09:21:46.7217] [158.206][dd_ep.cpp:364] set bias : 0.1 [V] (DEC:1980)
+[2026-09-12 09:21:49.3206] [160.761][FirstCut.cpp:239] First Cut start!
+[2026-09-12 09:23:29.6174] [261.100][FirstCut.cpp:272] FC find[1]: cur = 568505, th = 3654970, move = 1001.5[um]
+[2026-09-12 09:23:55.6157] [287.020][FirstCut.cpp:272] FC find[2]: cur = 608547, th = 3654970, move = 930.0[um]
+[2026-09-12 09:24:08.6149] [300.057][FirstCut.cpp:272] FC find[3]: cur = 539664, th = 3654970, move = 1060.0[um]
+[2026-09-12 09:24:08.7113] [300.157][FirstCut.cpp:294] First Cut finish!
+[2026-09-12 09:24:16.5098] [307.960][Targeting.cpp:302] Start.
+[2026-09-12 09:24:17.9107] [309.413][Targeting.cpp:371] Targeting finished.
+[2026-09-12 09:24:18.6121] [310.034][ActuatorTraining.cpp:224] Actuator Training(Motor) start!
+[2026-09-12 09:24:23.8132] [315.294][ActuatorTraining.cpp:249] Up   OK[0]. th:0x004147AE >= cur:0x0014432B
+[2026-09-12 09:24:31.8122] [323.259][ActuatorTraining.cpp:278] Down OK[0]. th:0x14666666 <= cur:0x151F0AAC
+[2026-09-12 09:24:35.3130] [326.766][ActuatorTraining.cpp:249] Up   OK[1]. th:0x004147AE >= cur:0x00265490
+[2026-09-12 09:24:38.9120] [330.323][ActuatorTraining.cpp:278] Down OK[1]. th:0x14666666 <= cur:0x146B0988
+[2026-09-12 09:24:42.7119] [334.180][ActuatorTraining.cpp:249] Up   OK[2]. th:0x004147AE >= cur:0x0008966A
+[2026-09-12 09:24:47.3116] [338.739][ActuatorTraining.cpp:278] Down OK[2]. th:0x14666666 <= cur:0x146B6FE0
+[2026-09-12 09:24:51.0110] [342.496][ActuatorTraining.cpp:249] Up   OK[3]. th:0x004147AE >= cur:0x0009089B
+[2026-09-12 09:24:55.5111] [346.955][ActuatorTraining.cpp:278] Down OK[3]. th:0x14666666 <= cur:0x149F13F8
+[2026-09-12 09:24:58.8104] [350.262][ActuatorTraining.cpp:249] Up   OK[4]. th:0x004147AE >= cur:0x0021C2CB
+[2026-09-12 09:25:02.5104] [353.919][ActuatorTraining.cpp:278] Down OK[4]. th:0x14666666 <= cur:0x1487D670
+[2026-09-12 09:25:06.2104] [357.676][ActuatorTraining.cpp:249] Up   OK[5]. th:0x004147AE >= cur:0x000AE0B3
+[2026-09-12 09:25:10.5100] [361.984][ActuatorTraining.cpp:278] Down OK[5]. th:0x14666666 <= cur:0x155596CC
+[2026-09-12 09:25:14.3101] [365.792][ActuatorTraining.cpp:249] Up   OK[6]. th:0x004147AE >= cur:0x00084A85
+[2026-09-12 09:25:18.3094] [369.799][ActuatorTraining.cpp:278] Down OK[6]. th:0x14666666 <= cur:0x15EC60C7
+[2026-09-12 09:25:22.1094] [373.557][ActuatorTraining.cpp:249] Up   OK[7]. th:0x004147AE >= cur:0x00091507
+[2026-09-12 09:25:26.6089] [378.115][ActuatorTraining.cpp:278] Down OK[7]. th:0x14666666 <= cur:0x15580386
+[2026-09-12 09:25:30.7085] [382.123][ActuatorTraining.cpp:249] Up   OK[8]. th:0x004147AE >= cur:0x002740F8
+[2026-09-12 09:25:35.3083] [386.782][ActuatorTraining.cpp:278] Down OK[8]. th:0x14666666 <= cur:0x154392D3
+[2026-09-12 09:25:39.2076] [390.690][ActuatorTraining.cpp:249] Up   OK[9]. th:0x004147AE >= cur:0x001135BA
+[2026-09-12 09:25:44.0137] [395.449][ActuatorTraining.cpp:278] Down OK[9]. th:0x14666666 <= cur:0x14BE77F2
+[2026-09-12 09:25:44.0147] [395.449][ActuatorTraining.cpp:286] Actuator Training(Motor) end!
+[2026-09-12 09:26:27.0007] [438.501][Targeting.cpp:302] Start.
+[2026-09-12 09:26:28.7026] [440.158][Targeting.cpp:371] Targeting finished.
+[2026-09-12 09:27:06.4995] [478.003][ActuatorTraining.cpp:224] Actuator Training(Piezo) start!
+[2026-09-12 09:27:10.3014] [481.803][ActuatorTraining.cpp:249] Up   OK[0]. th:0x004147AE >= cur:0x002C00DC
+[2026-09-12 09:27:17.6011] [489.103][ActuatorTraining.cpp:278] Down OK[0]. th:0x14666666 <= cur:0x1487C246
+[2026-09-12 09:27:23.6011] [495.103][ActuatorTraining.cpp:249] Up   OK[1]. th:0x004147AE >= cur:0x001D50D0
+[2026-09-12 09:27:30.2996] [501.803][ActuatorTraining.cpp:278] Down OK[1]. th:0x14666666 <= cur:0x1510389F
+[2026-09-12 09:27:38.2993] [509.803][ActuatorTraining.cpp:249] Up   OK[2]. th:0x004147AE >= cur:0x003C7814
+[2026-09-12 09:27:45.9991] [517.503][ActuatorTraining.cpp:278] Down OK[2]. th:0x14666666 <= cur:0x146C7369
+[2026-09-12 09:27:51.8979] [523.403][ActuatorTraining.cpp:249] Up   OK[3]. th:0x004147AE >= cur:0x001CC825
+[2026-09-12 09:27:58.0978] [529.603][ActuatorTraining.cpp:278] Down OK[3]. th:0x14666666 <= cur:0x14A4242A
+[2026-09-12 09:28:05.0969] [536.603][ActuatorTraining.cpp:249] Up   OK[4]. th:0x004147AE >= cur:0x000EE72A
+[2026-09-12 09:28:12.8966] [544.403][ActuatorTraining.cpp:278] Down OK[4]. th:0x14666666 <= cur:0x14842E4F
+[2026-09-12 09:28:18.9957] [550.503][ActuatorTraining.cpp:249] Up   OK[5]. th:0x004147AE >= cur:0x00165CCF
+[2026-09-12 09:28:25.3955] [556.903][ActuatorTraining.cpp:278] Down OK[5]. th:0x14666666 <= cur:0x14B11EA4
+[2026-09-12 09:28:32.2949] [563.753][ActuatorTraining.cpp:249] Up   OK[6]. th:0x004147AE >= cur:0x0010AB55
+[2026-09-12 09:28:38.8947] [570.353][ActuatorTraining.cpp:278] Down OK[6]. th:0x14666666 <= cur:0x152849BB
+[2026-09-12 09:28:45.2942] [576.803][ActuatorTraining.cpp:249] Up   OK[7]. th:0x004147AE >= cur:0x000ECFD4
+[2026-09-12 09:28:50.8937] [582.353][ActuatorTraining.cpp:278] Down OK[7]. th:0x14666666 <= cur:0x146B3C3F
+[2026-09-12 09:28:56.3934] [587.853][ActuatorTraining.cpp:249] Up   OK[8]. th:0x004147AE >= cur:0x000C81A7
+[2026-09-12 09:29:02.9930] [594.503][ActuatorTraining.cpp:278] Down OK[8]. th:0x14666666 <= cur:0x147468BA
+[2026-09-12 09:29:08.5922] [600.103][ActuatorTraining.cpp:249] Up   OK[9]. th:0x004147AE >= cur:0x003D3160
+[2026-09-12 09:29:14.1973] [605.703][ActuatorTraining.cpp:278] Down OK[9]. th:0x14666666 <= cur:0x1511011D
+[2026-09-12 09:29:14.1973] [605.703][ActuatorTraining.cpp:286] Actuator Training(Piezo) end!
+[2026-09-12 09:29:22.7876] [614.247][Targeting.cpp:302] Start.
+[2026-09-12 09:29:23.1885] [614.654][Targeting.cpp:371] Targeting finished.
+[2026-09-12 09:29:26.1866] [617.684][AutoCut.cpp:240] Start.
+[2026-09-12 09:29:32.4868] [623.984][AutoCut.cpp:204] End.
+[2026-09-12 09:29:41.3866] [632.836][sv_info_sender.cpp:566] ADC stop
+[2026-09-12 09:29:43.1969] [634.704][dd_ep.cpp:364] set bias : 0.0 [V] (DEC:0)
+[2026-09-12 09:29:43.1969] [634.713][dd_ep.cpp:364] set ep+ : 0.0 [V] (DEC:32767)
+[2026-09-12 09:29:43.1969] [634.713][dd_ep.cpp:364] set ep- : -0.0 [V] (DEC:32767)
+[2026-09-12 09:29:46.7863] [638.288][sv_info_sender.cpp:514] ADC start:10
+[2026-09-12 09:29:48.4868] [639.957][dd_ep.cpp:364] set bias : 0.1 [V] (DEC:1980)
+[2026-09-12 09:29:51.0982] [642.533][Calibration.cpp:244] Calibration start!
+[2026-09-12 09:29:51.0982] [642.584][Calibration.cpp:266] Down OK[0]. th:0x45710CB2 <= cur:0x73DE5CA4
+[2026-09-12 09:29:51.0982] [642.584][Calibration.cpp:275] Cal Result[0], Down pos=-2110
+[2026-09-12 09:29:57.0931] [648.534][Calibration.cpp:303] Up   OK[0]. th:0x115C432C >= cur:0x0D251AB7
+[2026-09-12 09:29:57.0931] [648.534][Calibration.cpp:313] Cal Result[0], Up pos=270
+[2026-09-12 09:29:59.2936] [650.734][Calibration.cpp:266] Down OK[1]. th:0x45710CB2 <= cur:0x4DBD0BCF
+[2026-09-12 09:29:59.2936] [650.734][Calibration.cpp:275] Cal Result[1], Down pos=-610
+[2026-09-12 09:30:00.7935] [652.234][Calibration.cpp:303] Up   OK[1]. th:0x115C432C >= cur:0x10A64D98
+[2026-09-12 09:30:00.7935] [652.234][Calibration.cpp:313] Cal Result[1], Up pos=-10
+[2026-09-12 09:30:01.1935] [652.634][Calibration.cpp:266] Down OK[2]. th:0x45710CB2 <= cur:0x4C4E3B5E
+[2026-09-12 09:30:01.1935] [652.634][Calibration.cpp:275] Cal Result[2], Down pos=-170
+[2026-09-12 09:30:01.6924] [653.134][Calibration.cpp:303] Up   OK[2]. th:0x115C432C >= cur:0x0FD15AEC
+[2026-09-12 09:30:01.6933] [653.134][Calibration.cpp:313] Cal Result[2], Up pos=30
+[2026-09-12 09:30:02.8929] [654.334][Calibration.cpp:266] Down OK[3]. th:0x45710CB2 <= cur:0x5681D834
+[2026-09-12 09:30:02.8929] [654.334][Calibration.cpp:275] Cal Result[3], Down pos=-450
+[2026-09-12 09:30:04.0927] [655.534][Calibration.cpp:303] Up   OK[3]. th:0x115C432C >= cur:0x0F12D092
+[2026-09-12 09:30:04.0947] [655.534][Calibration.cpp:313] Cal Result[3], Up pos=30
+[2026-09-12 09:30:06.4932] [657.934][Calibration.cpp:266] Down OK[4]. th:0x45710CB2 <= cur:0x4FF10846
+[2026-09-12 09:30:06.4932] [657.934][Calibration.cpp:275] Cal Result[4], Down pos=-930
+[2026-09-12 09:30:07.5930] [659.084][Calibration.cpp:303] Up   OK[4]. th:0x115C432C >= cur:0x0F59975E
+[2026-09-12 09:30:07.5930] [659.084][Calibration.cpp:313] Cal Result[4], Up pos=-470
+[2026-09-12 09:30:08.5925] [660.084][Calibration.cpp:266] Down OK[5]. th:0x45710CB2 <= cur:0x714DED88
+[2026-09-12 09:30:08.5925] [660.084][Calibration.cpp:275] Cal Result[5], Down pos=-870
+[2026-09-12 09:30:09.1929] [660.684][Calibration.cpp:303] Up   OK[5]. th:0x115C432C >= cur:0x0F0498A2
+[2026-09-12 09:30:09.1929] [660.684][Calibration.cpp:313] Cal Result[5], Up pos=-630
+[2026-09-12 09:30:10.0921] [661.534][Calibration.cpp:266] Down OK[6]. th:0x45710CB2 <= cur:0x626994CC
+[2026-09-12 09:30:10.0931] [661.534][Calibration.cpp:275] Cal Result[6], Down pos=-970
+[2026-09-12 09:30:12.5921] [664.034][Calibration.cpp:303] Up   OK[6]. th:0x115C432C >= cur:0x0F3CAF8B
+[2026-09-12 09:30:12.5921] [664.034][Calibration.cpp:313] Cal Result[6], Up pos=30
+[2026-09-12 09:30:14.9922] [666.434][Calibration.cpp:266] Down OK[7]. th:0x45710CB2 <= cur:0x460A6853
+[2026-09-12 09:30:14.9922] [666.434][Calibration.cpp:275] Cal Result[7], Down pos=-930
+[2026-09-12 09:30:17.5919] [669.034][Calibration.cpp:303] Up   OK[7]. th:0x115C432C >= cur:0x0E74A46A
+[2026-09-12 09:30:17.5919] [669.034][Calibration.cpp:313] Cal Result[7], Up pos=110
+[2026-09-12 09:30:18.9918] [670.484][Calibration.cpp:266] Down OK[8]. th:0x45710CB2 <= cur:0x59D0EF91
+[2026-09-12 09:30:18.9918] [670.484][Calibration.cpp:275] Cal Result[8], Down pos=-470
+[2026-09-12 09:30:19.3914] [670.834][Calibration.cpp:303] Up   OK[8]. th:0x115C432C >= cur:0x0CA8BBE7
+[2026-09-12 09:30:19.3914] [670.834][Calibration.cpp:313] Cal Result[8], Up pos=-330
+[2026-09-12 09:30:21.4922] [672.934][Calibration.cpp:266] Down OK[9]. th:0x45710CB2 <= cur:0x5E8CCC52
+[2026-09-12 09:30:21.4922] [672.934][Calibration.cpp:275] Cal Result[9], Down pos=-1170
+[2026-09-12 09:30:25.6023] [677.034][Calibration.cpp:303] Up   OK[9]. th:0x115C432C >= cur:0x0DF7F315
+[2026-09-12 09:30:25.6023] [677.034][Calibration.cpp:313] Cal Result[9], Up pos=470
+[2026-09-12 09:30:25.6023] [677.034][Calibration.cpp:320] Cal amplitude=-476.786543, Last Slope(pm/nm)=0.175849036987518
+[2026-09-12 09:30:25.6033] [677.034][Calibration.cpp:326] Calibration end!
+[2026-09-12 09:31:23.1902] [734.640][ExpandGap.cpp:149] ExpandGap change cal(pm/nm):0.000000 -> 0.175849
+[2026-09-12 09:31:23.1902] [734.640][ExpandGap.cpp:311] ExpandGap start. Smooth lift UP dis(nm): 4549 spd(nm/sec):25444
+[2026-09-12 09:31:52.3832] [763.869][ExpandGap.cpp:368] ExpandGap finished.
+[2026-09-12 09:31:52.3832] [763.869][ExpandGap.cpp:110] ExpandGap end. Latest Current=0x0176EE75
+[2026-09-12 09:32:35.5823] [807.061][HoldGap.cpp:163] HoldGap set latest current:0x00000000 -> 0x0176EE75
+[2026-09-12 09:32:35.5833] [807.061][HoldGap.cpp:304] HoldGap start:10 Target Current:0x023A4DAB
+[2026-09-12 10:13:11.6887] [2934.916][jin_data_util.cpp:99] ADC data is overflow.
+[2026-09-12 10:14:56.3777] [3348.066][dd_ep.cpp:364] set bias : 0.0 [V] (DEC:0)
+[2026-09-12 10:14:56.3777] [3348.089][dd_ep.cpp:364] set ep+ : 0.0 [V] (DEC:32767)
+[2026-09-12 10:14:56.3777] [3348.090][dd_ep.cpp:364] set ep- : -0.0 [V] (DEC:32767)
+[2026-09-12 10:15:09.5737] [3361.241][sv_info_sender.cpp:566] ADC stop
+[2026-09-12 10:15:09.5737] [3361.263][HoldGap.cpp:416] HoldGap canceled.
+[2026-09-12 10:15:09.5737] [3361.263][HoldGap.cpp:109] HoldGap end.
+[2026-09-12 10:15:15.0764] [3366.762][dd_ep.cpp:364] set bias : 0.0 [V] (DEC:0)
+[2026-09-12 10:15:15.0764] [3366.768][dd_ep.cpp:364] set ep+ : 0.0 [V] (DEC:32767)
+[2026-09-12 10:15:15.0764] [3366.769][dd_ep.cpp:364] set ep- : -0.0 [V] (DEC:32767)

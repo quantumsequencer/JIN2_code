@@ -1,0 +1,47 @@
+[2026-09-12 10:16:08.4062] dd_ep bias 0
+[2026-09-12 10:16:08.4419] dd_ep ep 0
+[2026-09-12 10:16:12.8151] sv_info_sender start 0
+[2026-09-12 10:16:40.4087] mcbj set fc up_limit 14000
+[2026-09-12 10:16:40.4156] mcbj set fc last_down_distance 380
+[2026-09-12 10:16:40.4228] mcbj set fc threshold 0x0037C53A
+[2026-09-12 10:16:40.4288] mcbj set fc speed_table 0 100 3800
+[2026-09-12 10:16:40.4360] mcbj set fc speed_table 1 400 3800
+[2026-09-12 10:16:40.4432] mcbj set fc speed_table 2 1000 3800
+[2026-09-12 10:16:40.4502] mcbj set mt ROUGH 0x004147AE 0x14666666 20
+[2026-09-12 10:16:40.4580] mcbj set pt SMOOTH 0x004147AE 0x14666666 1500
+[2026-09-12 10:16:40.4803] mcbj set targeting threshold 0x14664CD2
+[2026-09-12 10:16:40.4823] mcbj set targeting up_table 0 0x15641390 13 250
+[2026-09-12 10:16:40.4903] mcbj set targeting up_table 1 0x15B7F511 25 500
+[2026-09-12 10:16:40.4987] mcbj set targeting up_table 2 0x15BE51FA 35 700
+[2026-09-12 10:16:40.5063] mcbj set targeting up_table 3 0x7FFFFFFF 50 1000
+[2026-09-12 10:16:40.5153] mcbj set targeting down_table 0 0x0982B581 9 180
+[2026-09-12 10:16:40.5234] mcbj set targeting down_table 1 0x7FFFFFFF 1 20
+[2026-09-12 10:16:40.5315] mcbj set targeting up_limit 10000
+[2026-09-12 10:16:40.5390] mcbj set targeting timeout 30000
+[2026-09-12 10:16:40.5476] mcbj set ac threshold 0x001C7163
+[2026-09-12 10:16:40.5545] mcbj set ac up_table 0 0x0856196D 50 1000
+[2026-09-12 10:16:40.5636] mcbj set ac up_table 1 0x0F3B72A5 50 1000
+[2026-09-12 10:16:40.5712] mcbj set ac up_table 2 0x11EDC168 45 900
+[2026-09-12 10:16:40.5780] mcbj set ac up_table 3 0x12C24A0B 35 700
+[2026-09-12 10:16:40.5858] mcbj set ac up_table 4 0x134B8705 10 200
+[2026-09-12 10:16:40.5943] mcbj set ac up_table 5 0x1476F645 75 1500
+[2026-09-12 10:16:40.6009] mcbj set ac up_table 6 0x153CB4C5 125 2500
+[2026-09-12 10:16:40.6091] mcbj set ac up_table 7 0x7FFFFFFF 250 5000
+[2026-09-12 10:16:40.6171] mcbj set ac timeout 30000
+[2026-09-12 10:16:40.6242] mcbj set cal limit 0x115C432C 0x45710CB2
+[2026-09-12 10:16:40.6315] mcbj set cal speed 400
+[2026-09-12 10:16:40.6382] asz set eg delta 800
+[2026-09-12 10:16:40.6609] asz set eg stable_current_range 0x00A9F955
+[2026-09-12 10:16:40.6624] asz set eg stable_current_count 50
+[2026-09-12 10:16:40.6695] asz set hg tunnel_current 0x00C35F36
+[2026-09-12 10:16:40.6769] asz set hg fb_table 0 0x0010FF55 0 0
+[2026-09-12 10:16:40.6845] asz set hg fb_table 1 0x0038A871 2 1500
+[2026-09-12 10:16:40.6920] asz set hg fb_table 2 0x00A9F955 100 750
+[2026-09-12 10:16:40.7000] asz set hg fb_table 3 0x046D28E4 200 450
+[2026-09-12 10:16:40.7071] asz set hg fb_table 4 0xFFFFFFFF 500 450
+[2026-09-12 10:16:44.1965] dd_ep bias 0
+[2026-09-12 10:16:44.2034] dd_ep ep 0
+[2026-09-12 10:16:49.6831] sv_info_sender start 0
+[2026-09-12 10:17:00.8922] dd_ep bias 1
+[2026-09-12 10:17:02.8409] dd_ep bias 0
+[2026-09-12 10:17:02.8518] dd_ep ep 0

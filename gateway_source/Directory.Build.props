@@ -1,9 +1,0 @@
-﻿<Project>
-
- <PropertyGroup>
-   <Deterministic>true</Deterministic>
-   <BaseIntermediateOutputPath>$(SolutionDir).build\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
-   <JinGatewayStandalone>true</JinGatewayStandalone>
- </PropertyGroup>
-
-</Project>
