@@ -7,7 +7,7 @@ import unittest
 from dataclasses import asdict
 from PySide6.QtWidgets import QApplication
 from step_report import StepReport
-from report_view import save_report, load_reports, numeric_rows, ReportDialog, HistoryDialog
+from report_view import save_report, load_reports, numeric_rows, histogram_peaks, ReportDialog, HistoryDialog
 
 
 class ReportTests(unittest.TestCase):
@@ -36,16 +36,47 @@ class ReportTests(unittest.TestCase):
         dialog.show(); self.app.processEvents(); dialog.close()
 
     def test_statistics_excludes_failure_and_missing(self):
-        r = StepReport(fc_moves={1: 10, 2: 20})
+        r = StepReport(fc_moves={1: 10, 2: 10, 3: 20})
         r.finish('完了')
         failed = StepReport(fc_moves={1: 999})
         failed.finish('失敗')
         data = [{'version': 1, 'step': 4, 'report': asdict(x)} for x in (r, failed)]
         with patch('report_view.load_reports', return_value=(data, [])):
             dialog = HistoryDialog()
-            self.assertIn('有効値 2点', dialog.summary.text())
-            self.assertIn('平均 15', dialog.summary.text())
+            self.assertIn('有効値 3点', dialog.summary.text())
+            self.assertIn('中央値 10', dialog.summary.text())
+            self.assertIn('ヒストグラムのピーク値 11.67 µm（階級 10–13.33、2点）', dialog.summary.text())
+            self.assertEqual(len(dialog.histogram.listDataItems()), 1)
             dialog.show(); self.app.processEvents(); dialog.close()
+
+    def test_histogram_peaks_returns_bin_center_range_and_count(self):
+        counts, edges, peaks = histogram_peaks([10, 10, 20])
+        self.assertEqual(counts.tolist(), [2, 0, 1])
+        self.assertEqual(len(edges), 4)
+        center, low, high, count = peaks[0]
+        self.assertAlmostEqual(center, 35 / 3)
+        self.assertAlmostEqual(low, 10)
+        self.assertAlmostEqual(high, 40 / 3)
+        self.assertEqual(count, 2)
+
+    def test_expand_gap_final_current_history_statistics(self):
+        reports = []
+        for median, rms, noise in ((1.0, 2.0, 0.2), (3.0, 4.0, 0.4)):
+            r = StepReport(expand_final_current={
+                'status': '正常', 'rate_hz': 10000, 'bias_v': 0.1,
+                'median_pa': median, 'rms_pa': rms, 'noise_rms_pa': noise, 'samples': 100,
+            })
+            r.finish('完了')
+            reports.append({'version': 1, 'step': 10, 'report': asdict(r)})
+        with patch('report_view.load_reports', return_value=(reports, [])):
+            dialog = HistoryDialog()
+            dialog.step.setCurrentIndex(dialog.step.findData(10))
+            self.assertEqual(dialog.metric_choice.currentText(), 'Expand Gap 最終 Median')
+            self.assertIn('中央値 2', dialog.summary.text())
+            self.assertIn('pA', dialog.summary.text())
+            dialog.metric_choice.setCurrentIndex(4)
+            self.assertIn('平均 0.3', dialog.summary.text())
+            dialog.close()
 
     def test_gateway_saves_completed_report_once(self):
         from gateway_window import GatewayWindow
@@ -73,6 +104,28 @@ class ReportTests(unittest.TestCase):
         with patch('report_view.save_report', return_value=Path('saved.json')) as save:
             w.refresh(); w.refresh()
             save.assert_called_once_with(10, w.state.reports[10])
+        w.allow_close = True; w.close()
+
+    def test_expand_gap_completion_captures_final_10khz_current(self):
+        from gateway_window import GatewayWindow
+        import numpy as np
+        w = GatewayWindow()
+        w.io_timer.stop(); w.plot_timer.stop()
+        w.state.configured = True
+        w.state.completed = 10
+        w.state.begin(10)
+        values = np.array([1.0, 2.0, 3.0])
+        w.telemetry.latest = {
+            'serial': 7, 'rate': 10000, 'bias': 0.1, 'unit': 'pA', 'values': values,
+        }
+        with patch('recipe_timing.record'):
+            w.finish_live_step()
+        final = w.state.reports[10].expand_final_current
+        self.assertEqual(final['median_pa'], 2.0)
+        self.assertAlmostEqual(final['rms_pa'], np.sqrt(14 / 3))
+        self.assertAlmostEqual(final['noise_rms_pa'], np.sqrt(2 / 3))
+        self.assertEqual(final['samples'], 3)
+        self.assertEqual(w.operation, 'baseline')
         w.allow_close = True; w.close()
 
     def test_hold_gap_panel_is_outside_hardware_panel(self):

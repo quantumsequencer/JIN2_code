@@ -22,7 +22,6 @@ class RecipeTests(ConnectionTests):
             while callbacks: callbacks.pop(0)()
         with patch('gateway_window.QTimer.singleShot', side_effect=lambda delay, fn: callbacks.append(fn)), patch('gateway_window.QMessageBox.information') as notify:
             w.start_recipe()
-            self.ack('Stop complete. result:0')
             for i in range(3):
                 self.ack('Start complete. result:0')
                 if i > 0:
@@ -160,30 +159,18 @@ class RecipeTests(ConnectionTests):
         self.w.transport.send.assert_not_called()
         dialog.close()
 
-    def test_running_sampling_is_stopped_before_restart(self):
+    def test_completed_measurement_restarts_sampling_without_duplicate_stop(self):
         w = self.w
         w.state.configured = True
         w.state.completed = 11
         w.resume_measurement()
-        w.transport.send.assert_called_once_with('sv_info_sender stop')
-        self.ack('Stop complete. result:0')
-        self.assertTrue(w.host_paused)
-        w.transport.send.assert_called_with('sv_info_sender start 10')
+        w.transport.send.assert_called_once_with('sv_info_sender start 10')
+        self.assertNotIn('sv_info_sender stop', [c.args[0] for c in w.transport.send.call_args_list])
         with patch('gateway_window.QTimer.singleShot') as callback:
             self.ack('Start complete. result:0')
         callback.call_args.args[1]()
         w.transport.send.assert_called_with('asz eg start')
 
-    def test_restart_stop_failure_aborts_recipe(self):
-        w = self.w
-        w.state.configured = True
-        w.state.completed = 11
-        w.recipe_pending = [(0.6, 1)]
-        w.resume_measurement()
-        self.ack('Stop error : -1')
-        w.transport.send.assert_called_once_with('sv_info_sender stop')
-        self.assertFalse(w.auto_measure)
-        self.assertFalse(w.recipe_pending)
     def test_validation(self):
         self.assertEqual(validate([['0.6', '1'], ['0.61', '2']]), [(0.6, 1), (0.61, 2)])
         for rows in ([], [('nan', 1)], [(0.6, 0)], [(0.6001, 1)], [(0.001, 1)]):

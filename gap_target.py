@@ -10,6 +10,7 @@ from protocol import Command
 
 OLD_PA_PER_RAW = Decimal('0.000000269314')
 NEW_RAW_PER_PA = Decimal('5825183.6129280003')
+DISTANCE_DECAY = Decimal('23.589')
 OLD_PRESETS = {'0.54': 0x05098121, '0.56': 0x03248321,
                '0.58': 0x01F5EDE0, '0.60': 0x01392660}
 
@@ -29,7 +30,7 @@ def model_target(distance):
     d = Decimal(str(distance))
     if not d.is_finite() or d <= 0:
         raise ValueError('距離は正の数で入力してください。')
-    tunnel = Decimal('7750000') * (-Decimal('22.91') * d).exp()
+    tunnel = Decimal('7750000') * (-DISTANCE_DECAY * d).exp()
     raw = int(tunnel * NEW_RAW_PER_PA)
     if not 0 < raw <= 0x7FFFFFFF:
         raise ValueError(f'設定電流 {tunnel:.6f} pAは現在のUIで送信可能な電流値の範囲外です。')

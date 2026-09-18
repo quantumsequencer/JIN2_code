@@ -76,6 +76,7 @@ class GatewayWindow(MainWindow):
         self.hold_points = deque(maxlen=1200)
         self.hold_check_at = 0
         self.hold_target = None
+        self._calibration_was_active = False
         gap_layout = self.measurement_box.layout()
         piezo_row = QHBoxLayout()
         piezo_row.addWidget(QLabel('Piezo正常範囲（nm）'))
@@ -206,7 +207,7 @@ class GatewayWindow(MainWindow):
         self.io_timer.timeout.connect(self.poll_gateway)
         self.io_timer.start(20)
         self.clear_graphs()
-        self.autoload_latest_settings()
+        self.autoload_default_settings()
         self.refresh()
         self.log('Gateway接続モード。接続操作だけでは装置コマンドを送信しません。')
 
@@ -454,6 +455,12 @@ class GatewayWindow(MainWindow):
                 if restarted is None:
                     continue
                 if self.telemetry.latest is not None:
+                    calibration_active = self.state.active == 9
+                    if calibration_active and not self._calibration_was_active:
+                        self.calibration_plot_dialog.clear()
+                    if calibration_active:
+                        self.calibration_plot_dialog.feed(self.telemetry.latest)
+                    self._calibration_was_active = calibration_active
                     if self.state.measurement:
                         f = self.telemetry.latest
                         if f['unit'] == 'pA' and len(f['values']):
@@ -624,7 +631,7 @@ class GatewayWindow(MainWindow):
         self.alarm_status.setStyleSheet('background: #681F2D; color: #FFFFFF; border: 2px solid #FF6378; font-size: 18px; font-weight: bold; padding: 10px;')
 
     def settings_base_dir(self):
-        return ROOT.parent / 'SGMO2_original/JinSettings-0.2.0.09030'
+        return ROOT / 'setting parameter'
 
     def read_settings_file(self, path):
         path = Path(path)
@@ -642,24 +649,20 @@ class GatewayWindow(MainWindow):
         self.state.configured = False
         self.file_label.setText(f'{path.name} / {len(commands)}コマンド（{note}）')
 
-    def autoload_latest_settings(self):
-        base = self.settings_base_dir()
+    def autoload_default_settings(self):
+        path = self.settings_base_dir() / 'setting_parameter.txt'
         try:
-            candidates = sorted(base.glob('*.txt'), key=lambda path: path.stat().st_mtime, reverse=True)
-        except OSError:
+            text, commands = self.read_settings_file(path)
+        except (ValueError, UnicodeError, OSError) as error:
+            self.setting_path, self.setting_text = None, ''
+            self.log(f'既定の設定ファイルを読み込めません：{error}')
             return
-        for path in candidates:
-            try:
-                text, commands = self.read_settings_file(path)
-            except (ValueError, UnicodeError, OSError):
-                continue
-            self.use_settings_file(path, text, commands, '自動選択・未適用')
-            self.log(f'直近の設定ファイルを自動選択：{path.name}')
-            return
+        self.use_settings_file(path, text, commands)
+        self.log(f'既定の設定ファイルを自動選択：{path.name}')
 
     def select_settings(self):
         path, _ = QFileDialog.getOpenFileName(self, '設定ファイル',
-                  str(self.settings_base_dir()), 'Settings (*.txt)')
+                  str(self.settings_base_dir() / 'setting_parameter.txt'), 'Settings (*.txt)')
         if not path:
             return
         try:
@@ -756,6 +759,22 @@ class GatewayWindow(MainWindow):
             except (OSError, ValueError) as error:
                 self.log(f'Expand Gap時間履歴の保存失敗：{error}')
             latest = self.telemetry.latest
+            report = self.state.reports[10]
+            if (latest is not None and latest.get('rate') == 10000 and
+                    latest.get('bias') == 0.1 and latest.get('unit') == 'pA' and
+                    len(latest.get('values', [])) and np.all(np.isfinite(latest['values']))):
+                values = np.asarray(latest['values'], dtype=float)
+                report.expand_final_current = {
+                    'status': '正常', 'rate_hz': latest['rate'], 'bias_v': latest['bias'],
+                    'median_pa': float(np.median(values)),
+                    'rms_pa': float(np.sqrt(np.mean(values ** 2))),
+                    'noise_rms_pa': float(np.sqrt(np.mean((values - np.mean(values)) ** 2))),
+                    'samples': len(values),
+                }
+            else:
+                report.expand_final_current = {
+                    'status': '10 kHz / Bias 0.1 V / pA の有効な最終フレームを取得できませんでした'
+                }
             self.baseline_current = BaselineCurrent(latest['serial'] if latest else None)
             self.state.reports[10].baseline_current = self.baseline_current.result
             self.operation = 'baseline'
@@ -908,9 +927,10 @@ class GatewayWindow(MainWindow):
         self.baseline_current = None
         self.measure_progress.setValue(0)
         self.measure_progress.setFormat('再計測準備：Expand Gap待ち')
-        commands = [] if self.host_paused else [SAMPLE_STOP]
-        commands.append(high((10, 50, 100)[self.rate.currentIndex()]))
-        self.start_job('resume_sampling', commands)
+        # Measurement cleanup has already stopped data acquisition.  Sending a
+        # second stop here can leave the restart path at API_RUNNING (-3), so
+        # resume acquisition directly and continue with Expand Gap.
+        self.start_job('resume_sampling', [high((10, 50, 100)[self.rate.currentIndex()])])
 
     def selected_target(self):
         if not self.state.ready:
@@ -1264,6 +1284,7 @@ class GatewayWindow(MainWindow):
         if not self.host_dirty or not self.telemetry.latest:
             return
         self.host_dirty = False
+        self.calibration_plot_dialog.refresh(active=self.state.active == 9)
         frame = self.telemetry.latest
         x, values = self.telemetry.current_plot()
         self.current_plot.setLabel('left', 'Current', units=frame['unit'])

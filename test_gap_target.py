@@ -21,6 +21,11 @@ class GapConversionTests(unittest.TestCase):
         for old, pa in [(0x00C35F36, '3.448268'), (0x004C0C02, '1.342210')]:
             self.assertLess(abs(Decimal(old) * OLD_PA_PER_RAW - Decimal(pa)), Decimal('0.000001'))
 
+    def test_model_matches_hold_gap_workbook_reference_currents(self):
+        for distance, expected_pa in [('0.62', '3.448268'), ('0.66', '1.342210')]:
+            actual_pa, _ = model_target(distance)
+            self.assertLess(abs(actual_pa - Decimal(expected_pa)), Decimal('0.001'))
+
     def test_parse_only_target_commands(self):
         self.assertEqual(raw_from_command('asz set hg tunnel_current 0x07E6FAA1'), 0x07E6FAA1)
         self.assertIsNone(raw_from_command('asz hg start'))
@@ -77,7 +82,7 @@ class GapUiTests(ConnectionTests):
 
     def test_model_and_missing_baseline(self):
         tunnel, raw = model_target('0.60')
-        self.assertAlmostEqual(float(tunnel), 8.307871188, places=7)
+        self.assertAlmostEqual(float(tunnel), 5.527874598, places=7)
         self.assertLess(abs(Decimal(raw) / NEW_RAW_PER_PA - tunnel), 1 / NEW_RAW_PER_PA)
         for d in ('0', '0.001', '10'):
             with self.assertRaises(ValueError):
@@ -99,7 +104,7 @@ class GapUiTests(ConnectionTests):
         self.assertTrue(w.gap_apply_button.isEnabled())
         w.apply_gap_target()
         current, raw = model_target('0.610')
-        self.assertAlmostEqual(float(current), 6.606826293, places=7)
+        self.assertAlmostEqual(float(current), 4.366288791, places=7)
         w.transport.send.assert_called_once_with(f'asz set hg tunnel_current 0x{raw:08X}')
         self.ack('Setting change : 0')
         self.assertTrue(w.measure_button.isEnabled())

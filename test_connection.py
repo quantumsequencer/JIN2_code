@@ -79,13 +79,13 @@ class ConnectionTests(unittest.TestCase):
         self.assertFalse(w.available)
         w.transport.send.assert_not_called()
 
-    def test_autoload_latest_settings_file(self):
+    def test_autoload_default_settings_file(self):
         w = self.w
         with TemporaryDirectory() as tmp:
             root = Path(tmp)
-            base = root / 'SGMO2_original' / 'JinSettings-0.2.0.09030'
+            base = root / 'test2' / 'setting parameter'
             base.mkdir(parents=True)
-            old = base / 'old.txt'
+            old = base / 'setting_parameter.txt'
             latest = base / 'latest.txt'
             old.write_text('mcbj set fc up_limit 10000', encoding='utf-8')
             latest.write_text('mcbj set fc up_limit 20000', encoding='utf-8')
@@ -93,11 +93,19 @@ class ConnectionTests(unittest.TestCase):
             os.utime(latest, (20, 20))
             w.state.configured = True
             with patch('gateway_window.ROOT', root / 'test2'):
-                w.autoload_latest_settings()
-        self.assertEqual(w.setting_path.name, 'latest.txt')
-        self.assertIn('20000', w.setting_text)
+                w.autoload_default_settings()
+        self.assertEqual(w.setting_path.name, 'setting_parameter.txt')
+        self.assertIn('10000', w.setting_text)
         self.assertFalse(w.state.configured)
-        self.assertIn('自動選択', w.file_label.text())
+        self.assertIn('未適用', w.file_label.text())
+        w.transport.send.assert_not_called()
+
+    def test_settings_dialog_preselects_default_file(self):
+        with patch('gateway_window.QFileDialog.getOpenFileName', return_value=('', '')) as dialog:
+            self.w.select_settings()
+        from gateway_window import ROOT
+        self.assertEqual(Path(dialog.call_args.args[2]),
+                         ROOT / 'setting parameter' / 'setting_parameter.txt')
 
 
 if __name__ == '__main__':

@@ -25,6 +25,7 @@ class StepReport:
     logs: list = field(default_factory=list)
     progress: str = ''
     baseline_current: dict | None = None
+    expand_final_current: dict | None = None
     training_axis: str | None = None
     training_positions: dict = field(default_factory=dict)
 
@@ -102,6 +103,18 @@ class StepReport:
                       '平均区間：完了通知処理後に受信した1秒間（100フレーム）',
                       f'使用サンプル数：{baseline["samples"]}',
                       '取得状態：' + baseline['status']]
+        if self.expand_final_current is not None:
+            final = self.expand_final_current
+            if final.get('status') == '正常':
+                lines += ['', 'Expand Gap 最終電流値',
+                          f'測定条件：{final["rate_hz"] / 1000:g} kHz / Bias {final["bias_v"]:.1f} V',
+                          f'Median：{final["median_pa"]:.6f} pA',
+                          f'RMS：{final["rms_pa"]:.6f} pA',
+                          f'Noise RMS：{final["noise_rms_pa"]:.6f} pA',
+                          f'使用サンプル数：{final["samples"]}']
+            else:
+                lines += ['', 'Expand Gap 最終電流値：取得不可',
+                          '取得状態：' + final.get('status', '不明')]
         if self.fc_moves:
             lines += ['', 'First Cut：装置ログのMotor移動量（move）']
             lines += [f'{index}回目：{value:g} µm' for index, value in sorted(self.fc_moves.items())]

@@ -20,8 +20,24 @@ from PySide6.QtWidgets import (
 )
 from workflow import Workflow, STEPS
 from step_report import duration
+from calibration_plot import CalibrationPlotDialog
 
 ROOT = Path(__file__).resolve().parent
+SETTINGS_DIR = ROOT / "setting parameter"
+DEFAULT_SETTINGS_PATH = SETTINGS_DIR / "setting_parameter.txt"
+
+
+def read_settings(path):
+    data = Path(path).read_bytes()
+    try:
+        content = data.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        content = data.decode("cp932")
+    commands = [line.strip() for line in content.splitlines()
+                if line.strip() and not line.lstrip().startswith("#")]
+    if not commands:
+        raise ValueError("設定コマンドがありません。")
+    return content, commands
 
 
 def button(text, callback, kind=""):
@@ -253,6 +269,7 @@ class MainWindow(QMainWindow):
         plot_actions = QHBoxLayout()
         plot_actions.addWidget(button('スケールを戻す', self.reset_plot_scales))
         plot_actions.addWidget(button('表示履歴をクリア', self.clear_display_history))
+        plot_actions.addWidget(button('Calibration グラフ', self.show_calibration_plot))
         plot_actions.addStretch()
         layout.addLayout(plot_actions)
         self.stats = QLabel("デモ波形")
@@ -312,6 +329,16 @@ class MainWindow(QMainWindow):
         self.plot_timer = QTimer(self)
         self.plot_timer.timeout.connect(self.update_plots)
         self.plot_timer.start(100)
+        self.calibration_plot_dialog = CalibrationPlotDialog(self)
+        self._calibration_was_active = False
+        if DEFAULT_SETTINGS_PATH.is_file():
+            try:
+                self.setting_text, commands = read_settings(DEFAULT_SETTINGS_PATH)
+                self.setting_path = DEFAULT_SETTINGS_PATH
+                self.file_label.setText(
+                    f"{DEFAULT_SETTINGS_PATH.name}  /  {len(commands)}行（未適用）")
+            except (OSError, UnicodeError, ValueError) as error:
+                self.log(f"既定の設定ファイルを読み込めません：{error}")
         self.refresh()
         self.update_plots()
         self.log("デモを開始しました。設定を適用すると準備を実行できます。")
@@ -326,6 +353,11 @@ class MainWindow(QMainWindow):
             plot.getAxis(axis).setTextPen("#8291A5")
             plot.getAxis(axis).setPen("#30445A")
         return plot
+
+    def show_calibration_plot(self):
+        self.calibration_plot_dialog.show()
+        self.calibration_plot_dialog.raise_()
+        self.calibration_plot_dialog.activateWindow()
 
     def log(self, text):
         self.console.appendPlainText(f"{time.strftime('%H:%M:%S')}  [DEMO] {text}")
@@ -388,20 +420,12 @@ class MainWindow(QMainWindow):
         self.phase.setText(text)
 
     def select_settings(self):
-        base = ROOT.parent / "SGMO2_original/JinSettings-0.2.0.09030"
-        path, _ = QFileDialog.getOpenFileName(self, "設定ファイル", str(base), "Settings (*.txt)")
+        path, _ = QFileDialog.getOpenFileName(
+            self, "設定ファイル", str(DEFAULT_SETTINGS_PATH), "Settings (*.txt)")
         if not path:
             return
         try:
-            data = Path(path).read_bytes()
-            try:
-                content = data.decode("utf-8-sig")
-            except UnicodeDecodeError:
-                content = data.decode("cp932")
-            commands = [line.strip() for line in content.splitlines()
-                        if line.strip() and not line.lstrip().startswith("#")]
-            if not commands:
-                raise ValueError("設定コマンドがありません。")
+            content, commands = read_settings(path)
         except (OSError, UnicodeError, ValueError) as error:
             QMessageBox.warning(self, "ファイルを読み込めません", str(error))
             return
@@ -501,7 +525,7 @@ class MainWindow(QMainWindow):
         from settings_preview import SettingsPreview
         text, path = self.setting_text, self.setting_path
         if not text:
-            path = ROOT.parent / 'SGMO2_original/JinSettings-0.2.0.09030/jin_setting_change_初期値.txt'
+            path = ROOT / 'jin_setting_change_初期値.txt'
             try:
                 data = path.read_bytes()
                 try:
@@ -623,6 +647,13 @@ class MainWindow(QMainWindow):
                            f"    Median {median:.3f}  /  RMS {rms:.3f}  /  Noise RMS {noise:.3f} {unit}")
         motor = 671.4 + 0.03 * math.sin(now / 2)
         piezo = 20000 + 80 * math.sin(now / 3)
+        calibration_active = self.state.active == 9
+        if calibration_active and not self._calibration_was_active:
+            self.calibration_plot_dialog.clear()
+        if calibration_active:
+            self.calibration_plot_dialog.feed({'piezo': piezo, 'values': y, 'unit': unit})
+        self._calibration_was_active = calibration_active
+        self.calibration_plot_dialog.refresh(active=calibration_active)
         self.history.append((now, motor, piezo))
         data = np.array(self.history)
         self.motor_curve.setData(data[:, 0], data[:, 1])

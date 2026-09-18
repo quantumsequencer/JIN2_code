@@ -179,7 +179,7 @@ class SettingsPreview(QDialog):
         except ValueError as error:
             QMessageBox.warning(self, '設定値を確認してください', str(error))
             return
-        base = Path(__file__).resolve().parent / 'settings'
+        base = Path(__file__).resolve().parent
         stamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         suggested = base / (stamp + ('_' + suffix if suffix else '') + '.txt')
         path, _ = QFileDialog.getSaveFileName(self, '新しい設定を保存', str(suggested), 'Settings (*.txt)')

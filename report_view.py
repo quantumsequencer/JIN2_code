@@ -64,6 +64,15 @@ def load_reports(root=ROOT):
     return records, errors
 
 
+def histogram_peaks(values):
+    """Return histogram data and every bin tied for the highest frequency."""
+    counts, edges = np.histogram(np.asarray(values, dtype=float), bins='auto')
+    centers = (edges[:-1] + edges[1:]) / 2
+    peak_indexes = np.flatnonzero(counts == counts.max())
+    peaks = [(centers[i], edges[i], edges[i + 1], int(counts[i])) for i in peak_indexes]
+    return counts, edges, peaks
+
+
 class ReportDialog(QDialog):
     def __init__(self, step, report, parent=None):
         super().__init__(parent)
@@ -119,7 +128,7 @@ class HistoryDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle('工程レポート履歴・統計')
-        self.resize(1000, 720)
+        self.resize(1000, 820)
         layout = QVBoxLayout(self)
         self.records, errors = load_reports()
         self.step = QComboBox()
@@ -128,54 +137,92 @@ class HistoryDialog(QDialog):
         self.setting.addItem('すべての設定（混在）', None)
         for name in sorted({r['report']['setting'] for r in self.records}): self.setting.addItem(name, name)
         self.metric_choice = QComboBox()
-        self.metric_choice.addItems(['各回のmove / 振幅', '所要時間（秒）'])
+        self.metric_choice.addItems([
+            '各回のmove / 振幅', '所要時間（秒）',
+            'Expand Gap 最終 Median', 'Expand Gap 最終 RMS', 'Expand Gap 最終 Noise RMS'
+        ])
         for widget in (self.step, self.setting, self.metric_choice): layout.addWidget(widget)
         self.summary = QLabel()
         self.summary.setWordWrap(True)
         layout.addWidget(self.summary)
         self.plot = pg.PlotWidget()
         layout.addWidget(self.plot)
+        self.histogram = pg.PlotWidget()
+        self.histogram.setMinimumHeight(180)
+        layout.addWidget(self.histogram)
         self.table = QTableWidget()
         self.table.setEditTriggers(QTableWidget.NoEditTriggers)
         layout.addWidget(self.table)
         layout.addWidget(QLabel(f'正常完了した実行のみを統計対象にします。欠損を0として扱いません。読込失敗 {len(errors)}件'))
         if errors:
             detail = QPlainTextEdit('\n'.join(errors)); detail.setReadOnly(True); layout.addWidget(detail)
-        for widget in (self.step, self.setting, self.metric_choice): widget.currentIndexChanged.connect(self.refresh)
+        self.step.currentIndexChanged.connect(self.step_changed)
+        for widget in (self.setting, self.metric_choice): widget.currentIndexChanged.connect(self.refresh)
         self.table.cellDoubleClicked.connect(self.open_record)
         close = QPushButton('閉じる'); close.clicked.connect(self.accept); layout.addWidget(close)
+        self.refresh()
+
+    def step_changed(self):
+        self.metric_choice.setCurrentIndex(2 if self.step.currentData() == 10 else 0)
         self.refresh()
 
     def refresh(self):
         self.selected = [r for r in self.records if r['step'] == self.step.currentData()
                          and (self.setting.currentData() is None or r['report']['setting'] == self.setting.currentData())]
         self.plot.clear()
+        self.histogram.clear()
         values = []
-        self.table.setColumnCount(4)
-        self.table.setHorizontalHeaderLabels(['開始日時（ダブルクリックで詳細）', '結果', '設定', '所要秒'])
+        metric = self.metric_choice.currentIndex()
+        current_keys = {2: 'median_pa', 3: 'rms_pa', 4: 'noise_rms_pa'}
+        self.table.setColumnCount(5)
+        self.table.setHorizontalHeaderLabels(['開始日時（ダブルクリックで詳細）', '結果', '設定', '所要秒', '選択指標'])
         self.table.setRowCount(len(self.selected))
         for i, record in enumerate(self.selected):
             r = record['report']
             for j, value in enumerate((r['started_at'], r['status'], r['setting'], r['elapsed'])):
                 self.table.setItem(i, j, QTableWidgetItem(str(value)))
             if r['status'] != '完了': continue
-            if self.metric_choice.currentIndex() == 1:
+            if metric == 1:
                 self.plot.plot([i + 1], [r['elapsed']], symbol='o', pen=None)
                 values.append(r['elapsed'])
+                self.table.setItem(i, 4, QTableWidgetItem(f'{r["elapsed"]:g}'))
+            elif metric in current_keys:
+                final = r.get('expand_final_current') or {}
+                value = final.get(current_keys[metric]) if final.get('status') == '正常' else None
+                if value is not None and np.isfinite(value):
+                    self.plot.plot([i + 1], [value], symbol='o', pen=None)
+                    values.append(value)
+                    self.table.setItem(i, 4, QTableWidgetItem(f'{value:g}'))
             else:
                 rows = numeric_rows(record['step'], r)
                 ys = [row[4] if row[4] is not None else np.nan for row in rows]
                 self.plot.plot([row[0] for row in rows], ys, pen=pg.intColor(i), symbol='o', connect='finite')
                 values.extend(v for v in ys if np.isfinite(v))
-        unit = 's' if self.metric_choice.currentIndex() else 'nm' if self.step.currentData() == 6 else 'µm'
-        self.plot.setLabel('left', '所要時間' if self.metric_choice.currentIndex() else 'move / 振幅', units=unit)
-        self.plot.setLabel('bottom', '履歴順' if self.metric_choice.currentIndex() else '回')
+        unit = 's' if metric == 1 else 'pA' if metric in current_keys else 'nm' if self.step.currentData() == 6 else 'µm'
+        label = self.metric_choice.currentText() if metric else 'move / 振幅'
+        self.plot.setLabel('left', label, units=unit)
+        self.plot.setLabel('bottom', '履歴順' if metric else '回')
         if values:
             a = np.array(values)
             sd = f'{a.std(ddof=1):.4g}' if len(a) > 1 else '—'
-            self.summary.setText(f'履歴 {len(self.selected)}件 / 有効値 {len(a)}点 / 平均 {a.mean():.4g} / 中央値 {np.median(a):.4g} / 標本SD {sd} / 最小 {a.min():.4g} / 最大 {a.max():.4g} {unit}\n各回の統計は全実行の有効な回をまとめた記述統計です。')
+            counts, edges, peaks = histogram_peaks(a)
+            peak_text = ', '.join(
+                f'{center:.4g} {unit}（階級 {low:.4g}–{high:.4g}、{count}点）'
+                for center, low, high, count in peaks
+            )
+            self.summary.setText(f'履歴 {len(self.selected)}件 / 有効値 {len(a)}点 / 平均 {a.mean():.4g} / 中央値 {np.median(a):.4g} / ヒストグラムのピーク値 {peak_text} / 標本SD {sd} / 最小 {a.min():.4g} / 最大 {a.max():.4g} {unit}\nピーク値は最大度数の階級中央値です。各回の統計は全実行の有効な回をまとめています。')
+            self.histogram.addItem(pg.BarGraphItem(
+                x=(edges[:-1] + edges[1:]) / 2,
+                height=counts,
+                width=np.diff(edges) * 0.9,
+                brush='#24C8DB',
+            ))
+            self.histogram.setLabel('left', '度数')
+            self.histogram.setLabel('bottom', label, units=unit)
         else:
             self.summary.setText('統計対象の有効データがありません。')
+            self.histogram.setLabel('left', '度数')
+            self.histogram.setLabel('bottom', label, units=unit)
         self.table.resizeColumnsToContents()
 
     def open_record(self, row, column):

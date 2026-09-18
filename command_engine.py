@@ -82,11 +82,19 @@ class CommandEngine:
                 return
             self.ack = True
             # Manufacturer FWResultCode: -3 = API_RUNNING, not "already stopped".
-            # Retry only after the Debug prompt, without advancing the queue.
-            if c.text == 'sv_info_sender stop' and [line for line in self.response if line] == ['Stop error : -3']:
+            # A prompt without a response has also occurred on real hardware.
+            # Retry both cases only after the prompt, without advancing the queue.
+            response = [line for line in self.response if line]
+            if c.text == 'sv_info_sender stop' and (not response or response == ['Stop error : -3']):
                 if self.sample_stop_retries < self.SAMPLE_STOP_RETRY_LIMIT:
                     self.sample_stop_retries += 1
                     self.retry_at = self.clock() + self.SAMPLE_STOP_RETRY_DELAY
+                    return
+                if not response:
+                    self.fail(
+                        'sv_info_sender stop の応答が空のまま再試行上限に達しました。'
+                        'データ取得の停止状態は未確認です。Gatewayで状態を確認し、再接続してください。'
+                    )
                     return
             failed = any(re.search(r'error|failed|invalid|unknown', line, re.I) for line in self.response)
             # mcbj stop reports an error when already idle; the official Wizard ignores it.

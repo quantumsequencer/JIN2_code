@@ -150,6 +150,30 @@ class EngineTests(unittest.TestCase):
         self.assertEqual(self.results[-1][0], 'failure')
         self.assertFalse(self.accepted)
 
+    def test_sampling_empty_response_retries_then_succeeds(self):
+        from protocol import SAMPLE_STOP
+        self.e.start([SAMPLE_STOP, BIAS0])
+        self.ack()
+        self.assertEqual(len(self.sent), 1)
+        self.now = self.e.SAMPLE_STOP_RETRY_DELAY
+        self.e.tick()
+        self.assertEqual(self.sent, [SAMPLE_STOP.text] * 2)
+        self.ack('Stop complete. result:0')
+        self.assertEqual(self.sent[-1], BIAS0.text)
+
+    def test_sampling_empty_response_exhaustion_is_uncertain(self):
+        from protocol import SAMPLE_STOP
+        self.e.start([SAMPLE_STOP])
+        for _ in range(self.e.SAMPLE_STOP_RETRY_LIMIT + 1):
+            self.ack()
+            if self.e.retry_at is not None:
+                self.now = self.e.retry_at
+                self.e.tick()
+        self.assertEqual(self.results[-1][0], 'uncertain')
+        self.assertIn('停止状態は未確認', self.results[-1][1])
+        self.assertTrue(self.e.faulted)
+        self.assertFalse(self.accepted)
+
 
 if __name__ == '__main__':
     unittest.main()
