@@ -35,6 +35,61 @@ class ReportTests(unittest.TestCase):
         dialog = ReportDialog(6, r)
         dialog.show(); self.app.processEvents(); dialog.close()
 
+    def test_calibration_report_is_persisted(self):
+        r = StepReport(
+            calibration_slope_log10_a_per_nm=-0.000290338,
+            calibration_gap_sensitivity_pm_per_um=56.7,
+            calibration_last_slope_pm_per_um=92.1153419,
+        )
+        r.finish('完了')
+        with TemporaryDirectory() as folder:
+            path = save_report(9, r, Path(folder))
+            records, errors = load_reports(Path(folder))
+            self.assertTrue(path.exists())
+            self.assertFalse(errors)
+            self.assertEqual(records[0]['step'], 9)
+            self.assertEqual(numeric_rows(9, records[0]['report']), [])
+
+    def test_calibration_metrics_are_available_in_history(self):
+        reports = []
+        for gap, last_slope in ((82.9, 92.1153419), (80.0, 90.0)):
+            r = StepReport(
+                calibration_gap_sensitivity_pm_per_um=gap,
+                calibration_last_slope_pm_per_um=last_slope,
+            )
+            r.finish('完了')
+            reports.append({'version': 1, 'step': 9, 'report': asdict(r)})
+        with patch('report_view.load_reports', return_value=(reports, [])):
+            dialog = HistoryDialog()
+            dialog.step.setCurrentIndex(dialog.step.findData(9))
+            self.assertEqual(dialog.metric_choice.currentText(), 'Gap Sensitivity')
+            self.assertEqual([dialog.metric_choice.itemText(i) for i in range(dialog.metric_choice.count())],
+                             ['Gap Sensitivity', 'Last Slope', '所要時間（秒）'])
+            self.assertIn('平均 81.45', dialog.summary.text())
+            dialog.metric_choice.setCurrentIndex(1)
+            self.assertEqual(dialog.metric_choice.currentText(), 'Last Slope')
+            self.assertIn('pm/µm', dialog.summary.text())
+            dialog.close()
+
+    def test_history_metrics_are_limited_to_values_recorded_by_each_step(self):
+        expected = {
+            4: ['各回のmove / 振幅', '所要時間（秒）'],
+            5: ['各回のmove / 振幅', '所要時間（秒）'],
+            6: ['各回のmove / 振幅', '所要時間（秒）'],
+            9: ['Gap Sensitivity', 'Last Slope', '所要時間（秒）'],
+            10: ['Expand Gap 最終 Median', 'Expand Gap 最終 RMS',
+                 'Expand Gap 最終 Noise RMS', '所要時間（秒）'],
+        }
+        with patch('report_view.load_reports', return_value=([], [])):
+            dialog = HistoryDialog()
+            for step, labels in expected.items():
+                dialog.step.setCurrentIndex(dialog.step.findData(step))
+                self.assertEqual(
+                    [dialog.metric_choice.itemText(i) for i in range(dialog.metric_choice.count())],
+                    labels,
+                )
+            dialog.close()
+
     def test_statistics_excludes_failure_and_missing(self):
         r = StepReport(fc_moves={1: 10, 2: 10, 3: 20})
         r.finish('完了')
@@ -72,9 +127,12 @@ class ReportTests(unittest.TestCase):
             dialog = HistoryDialog()
             dialog.step.setCurrentIndex(dialog.step.findData(10))
             self.assertEqual(dialog.metric_choice.currentText(), 'Expand Gap 最終 Median')
+            self.assertEqual([dialog.metric_choice.itemText(i) for i in range(dialog.metric_choice.count())],
+                             ['Expand Gap 最終 Median', 'Expand Gap 最終 RMS',
+                              'Expand Gap 最終 Noise RMS', '所要時間（秒）'])
             self.assertIn('中央値 2', dialog.summary.text())
             self.assertIn('pA', dialog.summary.text())
-            dialog.metric_choice.setCurrentIndex(4)
+            dialog.metric_choice.setCurrentIndex(2)
             self.assertIn('平均 0.3', dialog.summary.text())
             dialog.close()
 

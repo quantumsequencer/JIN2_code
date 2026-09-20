@@ -21,6 +21,17 @@ GO0 = Command('mw_ac go0', 'Actuator Control for set 0point complete.')
 LOW = Command('sv_info_sender start 0', 'Start complete. result:0')
 SAMPLE_STOP = Command('sv_info_sender stop', 'Stop complete. result:0')
 STOP = Command('mcbj stop')
+# Used only after a setting command proves that a worker survived a UI restart.
+# Unlike a normal idle stop, recovery must wait for the worker's terminal Log
+# before settings are sent again; the Debug prompt alone can arrive too early.
+RECOVER_RUNNING_WORKER = Command(
+    'mcbj stop',
+    done=(r'(?:First Cut (?:finish|canceld)!|Targeting (?:finished|canceled)\.|'
+          r'Actuator Training\((?:Motor|Piezo)\) (?:end|canceld)!|'
+          r'End\.(?: Canceled\.)?|Calibration (?:end|canceld)!|'
+          r'(?:ExpandGap|HoldGap) (?:finished|canceled)\.)$'),
+    timeout=30,
+)
 WORKERS = {
     'fc': Command('mcbj fc start', done=r'First Cut finish!$', canceled=r'First Cut canceld!$'),
     'target': Command('mcbj targeting start', done=r'Targeting finished\.$', canceled=r'Targeting canceled\.$'),
@@ -46,8 +57,11 @@ def setup_commands(index, rate):
     ][index]
 
 
-def finalize_commands():
-    return [STOP, BIAS0, EP0, SAMPLE_STOP]
+def finalize_commands(sampling_stopped=False):
+    commands = [STOP, BIAS0, EP0]
+    if not sampling_stopped:
+        commands.append(SAMPLE_STOP)
+    return commands
 
 
 def settings_commands(text):

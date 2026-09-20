@@ -99,18 +99,37 @@ class RecoveryTests(ConnectionTests):
         self.assertFalse(w.isVisible())
         self.assertNotIn('sv_info_sender start 0', [c.args[0] for c in transport.send.call_args_list])
 
+    def test_shutdown_skips_sampling_stop_after_it_was_confirmed(self):
+        w = self.w
+        w.touched = True
+        w.sampling_stop_confirmed = True
+
+        with patch('gateway_window.QTimer.singleShot', side_effect=lambda delay, fn: fn()):
+            w.toggle_connection()
+            self.ack('')
+            self.ack('BIAS set complete.')
+            self.ack('EP set complete.')
+
+        sent = [c.args[0] for c in w.transport.send.call_args_list]
+        self.assertEqual(sent, ['mcbj stop', 'dd_ep bias 0', 'dd_ep ep 0'])
+        self.assertNotIn('sv_info_sender stop', sent)
+        w.transport.close.assert_called_once()
+
     def test_shutdown_persistent_busy_keeps_connection_and_reports_partial_completion(self):
         w = self.w
         w.touched = True
-        w.toggle_connection()
-        self.ack('')
-        self.ack('BIAS set complete.')
-        self.ack('EP set complete.')
-        for _ in range(w.engine.SAMPLE_STOP_RETRY_LIMIT + 1):
-            self.ack('Stop error : -3')
-            if w.engine.retry_at is not None:
-                with patch.object(w.engine, 'clock', return_value=w.engine.retry_at):
-                    w.engine.tick()
+        with patch.object(w, 'close') as close, \
+             patch('gateway_window.QTimer.singleShot', side_effect=lambda delay, fn: fn()):
+            w.toggle_connection()
+            self.ack('')
+            self.ack('BIAS set complete.')
+            self.ack('EP set complete.')
+            for _ in range(w.engine.SAMPLE_STOP_RETRY_LIMIT + 1):
+                self.ack('Stop error : -3')
+                if w.engine.retry_at is not None:
+                    with patch.object(w.engine, 'clock', return_value=w.engine.retry_at):
+                        w.engine.tick()
+            close.assert_called_once_with()
         w.transport.close.assert_not_called()
         self.assertIsNone(w.operation)
         self.assertIn('Bias解除', w.alarm_status.text())
@@ -129,14 +148,47 @@ class RecoveryTests(ConnectionTests):
         self.assertEqual(w.operation, 'finalize')
         w.transport.send.assert_called_with('mcbj stop')
 
-    def test_faulted_disconnect_retries_cleanup_without_closing_transport(self):
+    def test_second_close_during_cleanup_can_close_ui_only(self):
+        from PySide6.QtWidgets import QMessageBox
+        from unittest.mock import Mock
+        from protocol import SAMPLE_STOP
+        w = self.w
+        w.start_job('quality_cleanup', [SAMPLE_STOP])
+        w.closing = True
+        event = Mock()
+        with patch('gateway_window.QMessageBox.warning', return_value=QMessageBox.StandardButton.Yes):
+            w.closeEvent(event)
+        event.accept.assert_called_once()
+        w.transport.close.assert_called_once()
+        self.assertTrue(w.allow_close)
+
+    def test_second_close_during_cleanup_defaults_to_waiting(self):
+        from PySide6.QtWidgets import QMessageBox
+        from unittest.mock import Mock
+        from protocol import SAMPLE_STOP
+        w = self.w
+        w.start_job('quality_cleanup', [SAMPLE_STOP])
+        w.closing = True
+        event = Mock()
+        with patch('gateway_window.QMessageBox.warning', return_value=QMessageBox.StandardButton.No) as warning:
+            w.closeEvent(event)
+        warning.assert_called_once()
+        self.assertEqual(warning.call_args.args[-1], QMessageBox.StandardButton.No)
+        event.ignore.assert_called_once()
+        w.transport.close.assert_not_called()
+
+    def test_faulted_connection_safely_resets_without_closing_ui(self):
         w = self.w
         w.touched = True
         w.engine.fail('timeout')
+        w.refresh()
+        self.assertEqual(w.connect_button.text(), '安全停止して再開準備')
         w.toggle_connection()
         w.transport.send.assert_called_with('mcbj stop')
         w.transport.close.assert_not_called()
         self.assertEqual(w.operation, 'finalize')
+        self.assertTrue(w.reset_pending)
+        self.assertFalse(w.closing)
         w.engine.fail('retry timeout')
         self.assertFalse(w.closing)
         self.assertFalse(w.disconnecting)
@@ -166,3 +218,19 @@ class RecoveryTests(ConnectionTests):
         w.start_selected_setup()
         self.assertEqual(w.state.completed, 3)
         self.assertNotIn('mw_ac go0', [c.args[0] for c in w.transport.send.call_args_list])
+
+    def test_selected_entry_after_measurement_skips_confirmed_sampling_stop(self):
+        w = self.w
+        w.state.configured = True
+        w.state.completed = 10
+        w.host_paused = True
+        w.start_at.setCurrentIndex(2)
+
+        w.start_selected_setup()
+
+        sent = [c.args[0] for c in w.transport.send.call_args_list]
+        self.assertEqual(sent, ['sv_info_sender start 0'])
+        self.assertNotIn('sv_info_sender stop', sent)
+        self.ack('Start complete. result:0')
+        self.assertFalse(w.host_paused)
+        w.transport.send.assert_called_with('dd_ep bias 1')

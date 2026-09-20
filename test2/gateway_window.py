@@ -9,7 +9,7 @@ from piezo_guard import range_problem
 from conduction_guard import ConductionGuard
 import numpy as np
 from PySide6.QtCore import QTimer, Qt
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QSpinBox, QFileDialog, QMessageBox, QComboBox, QDoubleSpinBox, QProgressBar, QLineEdit, QWidget
+from PySide6.QtWidgets import QDialog, QHBoxLayout, QLabel, QSpinBox, QFileDialog, QMessageBox, QComboBox, QDoubleSpinBox, QProgressBar, QLineEdit, QVBoxLayout, QWidget
 from main import MainWindow, ROOT, button, group, QSizePolicy
 from workflow import STEPS
 from gateway import Gateway
@@ -20,7 +20,8 @@ from baseline_current import BaselineCurrent
 from gateway_launcher import launch_gateway
 from gap_target import model_target, raw_from_command, describe_raw, NEW_RAW_PER_PA
 from protocol import (Command, settings_commands, setup_commands, finalize_commands, WORKERS,
-                      BIAS0, BIAS1, EP0, GO0, LOW, SAMPLE_STOP, high)
+                      BIAS0, BIAS1, EP0, GO0, LOW, SAMPLE_STOP,
+                      RECOVER_RUNNING_WORKER, high)
 
 
 class GatewayWindow(MainWindow):
@@ -60,9 +61,17 @@ class GatewayWindow(MainWindow):
         self.measure_deadline = None
         self.timed_finish = False
         self.host_paused = False
+        # Unlike host_paused, this is set only after the firmware has accepted
+        # sv_info_sender stop.  It lets final cleanup avoid a duplicate stop,
+        # which can remain at API_RUNNING (-3) on the real device.
+        self.sampling_stop_confirmed = False
         self.host_start_deadline = None
+        from measurement_recipe import load_last_used
+        self.remembered_recipe = load_last_used()
+        # Restored rows are an editing draft, not authorization to run them.
         self.recipe = []
         self.recipe_pending = []
+        self.recipe_run_rows = []
         self.auto_measure = False
         self.recipe_number = 0
         self.recipe_total = 0
@@ -71,6 +80,7 @@ class GatewayWindow(MainWindow):
         self.reset_pending = False
         self.quality_stop_reason = ''
         self.piezo_stop_reason = ''
+        self.settings_recovery_attempted = False
         self.hold_monitor = HoldMonitor()
         self.hold_frames = deque(maxlen=500)
         self.hold_points = deque(maxlen=1200)
@@ -78,15 +88,11 @@ class GatewayWindow(MainWindow):
         self.hold_target = None
         self._calibration_was_active = False
         gap_layout = self.measurement_box.layout()
-        piezo_row = QHBoxLayout()
-        piezo_row.addWidget(QLabel('Piezo正常範囲（nm）'))
         self.piezo_lower = QLineEdit('-89300')
         self.piezo_upper = QLineEdit('89300')
         for edit, label in ((self.piezo_lower, '下限：未設定'), (self.piezo_upper, '上限：未設定')):
             edit.setPlaceholderText(label)
             edit.setToolTip('初期値は正常範囲 −89300 ～ +89300 nm。端点は範囲内として扱います。')
-            piezo_row.addWidget(edit)
-        gap_layout.addLayout(piezo_row)
         gap_row = QHBoxLayout()
         gap_row.addWidget(QLabel('目標Gap Distance'))
         self.gap_choice = QDoubleSpinBox()
@@ -165,6 +171,8 @@ class GatewayWindow(MainWindow):
         self.hold_tight_lamp.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
         self.hold_tight_lamp.setStyleSheet('font-size: 22px; color: #8291A5;')
         hold_layout.addWidget(self.hold_tight_lamp)
+        self.hold_plot_button = button('判定グラフを表示', self.toggle_hold_plot)
+        hold_layout.addWidget(self.hold_plot_button)
         self.hold_plot = pg.PlotWidget()
         self.hold_plot.setMinimumHeight(190)
         self.hold_plot.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Ignored)
@@ -178,7 +186,13 @@ class GatewayWindow(MainWindow):
         self.hold_plot.setYRange(-30, 30, padding=0)
         self.hold_plot.setXRange(0, 60, padding=0)
         self.hold_curve = self.hold_plot.plot(pen='#FF9F43')
-        hold_layout.addWidget(self.hold_plot, 1)
+        self.hold_plot_window = QDialog(self)
+        self.hold_plot_window.setWindowTitle('Hold Gap 判定グラフ')
+        self.hold_plot_window.setModal(False)
+        self.hold_plot_window.resize(900, 420)
+        hold_plot_layout = QVBoxLayout(self.hold_plot_window)
+        hold_plot_layout.addWidget(self.hold_plot)
+        self.hold_plot_window.finished.connect(self._hold_plot_window_closed)
         self.setWindowTitle('JIN SAMURAI Control v 0.2')
         self.console.clear()
         self.file_label.setText('設定ファイルを選択してください')
@@ -216,6 +230,21 @@ class GatewayWindow(MainWindow):
         self.autoload_default_settings()
         self.refresh()
         self.log('Gateway接続モード。接続操作だけでは装置コマンドを送信しません。')
+        self._hold_plot_visible = False
+
+    def toggle_hold_plot(self):
+        if self.hold_plot_window.isVisible():
+            self.hold_plot_window.close()
+            return
+        self._hold_plot_visible = True
+        self.hold_plot_window.show()
+        self.hold_plot_window.raise_()
+        self.hold_plot_window.activateWindow()
+        self.hold_plot_button.setText('判定グラフを閉じる')
+
+    def _hold_plot_window_closed(self):
+        self._hold_plot_visible = False
+        self.hold_plot_button.setText('判定グラフを表示')
 
     @property
     def available(self):
@@ -236,7 +265,7 @@ class GatewayWindow(MainWindow):
             return super().refresh()
         super().refresh()
         from report_view import save_report
-        for index in (4, 5, 6, 10):
+        for index in (4, 5, 6, 9, 10):
             report = self.state.reports.get(index)
             if report is None or report.elapsed is None or report.started in self.saved_report_ids or report.started in self.report_save_errors:
                 continue
@@ -254,13 +283,12 @@ class GatewayWindow(MainWindow):
         self.start_at_button.setEnabled(self.available and self.state.configured and not busy)
         self.piezo_lower.setEnabled(not busy)
         self.piezo_upper.setEnabled(not busy)
-        self.create_settings_button.setEnabled(not busy)
         available = self.available
         for item in [self.batch_button, self.reset_button, self.measure_button,
                      *self.manual_buttons, *(row[1] for row in self.rows)]:
             item.setEnabled(item.isEnabled() and available and not pending)
         self.select_button.setEnabled(not busy)
-        self.preview_button.setEnabled(bool(self.setting_text))
+        self.preview_button.setEnabled(not busy)
         self.rate.setEnabled(not busy)
         self.apply_button.setEnabled(available and not busy and bool(self.setting_text))
         self.measure_stop.setEnabled(available and self.state.measurement and self.operation != 'stop')
@@ -286,13 +314,29 @@ class GatewayWindow(MainWindow):
             f'{self.gap_choice.value():.3f} nm' if recipe_gap_active else '-- nm')
         can_restart = available and not busy and self.state.configured and self.state.completed >= 10
         self.resume_button.setEnabled(can_restart)
-        self.recipe_edit.setEnabled(not busy and not self.auto_measure)
+        running_recipe = self.recipe_started_at is not None
+        self.recipe_edit.setEnabled(running_recipe or (not busy and not self.auto_measure))
+        self.recipe_edit.setText('実行中レシピ確認・追加' if running_recipe else 'レシピ作成・読込')
         self.recipe_start.setEnabled(can_restart and bool(self.recipe))
-        choose_recipe = self.state.ready and not busy and not self.recipe
-        self.next_action.setVisible(self.state.ready and not self.state.measurement)
-        self.recipe_edit.setStyleSheet(
-            'font-size: 17px; font-weight: 700; min-height: 38px; border: 2px solid #F5D547; background: #3A300D;'
-            if choose_recipe else '')
+        recipe_stage = (
+            self.state.configured and self.state.completed >= 10 and
+            not busy and not self.state.measurement and not self.auto_measure
+        )
+        choose_recipe = recipe_stage and not self.recipe
+        start_recipe = recipe_stage and bool(self.recipe) and self.recipe_start.isEnabled()
+        action_style = (
+            'QPushButton { background: #F5D547; color: #0B1017; border: 3px solid #FFF3A6; '
+            'font-size: 18px; font-weight: 800; min-height: 42px; } '
+            'QPushButton:hover { background: #FFF3A6; color: #0B1017; border-color: #FFFFFF; } '
+            'QPushButton:pressed { background: #D9B91E; color: #0B1017; }'
+        )
+        self.recipe_edit.setStyleSheet(action_style if choose_recipe else '')
+        self.recipe_start.setStyleSheet(action_style if start_recipe else '')
+        if choose_recipe:
+            self.next_action.setText('次の操作：下の「レシピ作成・読込」を押してください')
+        elif start_recipe:
+            self.next_action.setText('次の操作：下の「レシピ実行」を押してください')
+        self.next_action.setVisible(choose_recipe or start_recipe)
         self.gap_apply_button.setEnabled(available and self.state.ready and not busy and self.selected_target() is not None)
         self.gap_target_label.setText(self.gap_target_description())
         self.gap_applied_label.setText(describe_raw(self.gap_applied_raw))
@@ -301,7 +345,14 @@ class GatewayWindow(MainWindow):
         self.launch_button.setEnabled(not busy and not launching and not self.touched and
                                       not (self.transport and self.transport.connected))
         self.connect_button.setEnabled(self.connect_button.isEnabled() and not launching)
-        self.connect_button.setText(('終了処理して終了' if self.touched else '切断') if self.transport else 'Gatewayに接続')
+        if self.transport:
+            if self.touched and self.engine and self.engine.faulted:
+                connection_action = '安全停止して再開準備'
+            else:
+                connection_action = '終了処理して終了' if self.touched else '切断'
+        else:
+            connection_action = 'Gatewayに接続'
+        self.connect_button.setText(connection_action)
         self.sub_port.setEnabled(self.transport is None)
         self.push_port.setEnabled(self.transport is None)
         connected = bool(self.transport and self.transport.connected)
@@ -358,8 +409,16 @@ class GatewayWindow(MainWindow):
     def toggle_connection(self):
         if self.transport:
             if self.touched:
-                self.closing = True
-                if self.operation in ('stop', 'finalize', 'piezo_cleanup', 'quality_cleanup', 'timed_cleanup'):
+                # A communication fault must not leave the only recovery action
+                # coupled to closing the UI.  Re-create the command engine, put
+                # the device into the known safe state, and keep this connection
+                # open so settings/setup can be run again after cleanup succeeds.
+                recovering = bool(self.engine and self.engine.faulted)
+                self.closing = not recovering
+                self.reset_pending = recovering
+                if recovering:
+                    self.retry_finalize()
+                elif self.operation in ('stop', 'finalize', 'piezo_cleanup', 'quality_cleanup', 'timed_cleanup'):
                     self.log('現在の停止処理の応答確認後に終了処理して画面を閉じます。')
                 elif self.operation and self.available:
                     self.stop()
@@ -376,6 +435,7 @@ class GatewayWindow(MainWindow):
         self.state.reset()
         self.state.configured = False
         self.touched = False
+        self.sampling_stop_confirmed = False
         self.transport = Gateway(f'tcp://127.0.0.1:{self.sub_port.value()}',
                                  f'tcp://127.0.0.1:{self.push_port.value()}')
         self.engine = CommandEngine(self.send_command, self.command_result, self.command_accepted)
@@ -428,6 +488,10 @@ class GatewayWindow(MainWindow):
             # response, not Host silence, determines whether stopping succeeded.
             self.host_paused = True
             self.host_start_deadline = None
+        elif text.startswith('sv_info_sender start '):
+            # Once a start may have reached the device, a previous stop
+            # confirmation is no longer safe to reuse even if its reply is lost.
+            self.sampling_stop_confirmed = False
         if self.operation == 'finalize':
             labels = {'mcbj stop': '工程停止', BIAS0.text: 'Bias解除', EP0.text: 'EP解除', SAMPLE_STOP.text: 'データ取得停止'}
             self.alarm_status.setText('終了処理中：' + labels.get(text, text) + '\n確認済み：' + ('、'.join(self.shutdown_confirmed) or 'なし') + '\n成功応答を確認するまで接続を保持します。')
@@ -466,6 +530,11 @@ class GatewayWindow(MainWindow):
                         self.calibration_plot_dialog.clear()
                     if calibration_active:
                         self.calibration_plot_dialog.feed(self.telemetry.latest)
+                        report = self.state.reports.get(9)
+                        metrics = self.calibration_plot_dialog.calibration_metrics()
+                        if report is not None and metrics is not None:
+                            report.calibration_slope_log10_a_per_nm = metrics[0]
+                            report.calibration_gap_sensitivity_pm_per_um = metrics[1]
                     self._calibration_was_active = calibration_active
                     if self.state.measurement:
                         f = self.telemetry.latest
@@ -636,6 +705,10 @@ class GatewayWindow(MainWindow):
         self.alarm_status.setText('異常停止・中断\n' + reason)
         self.alarm_status.setStyleSheet('background: #681F2D; color: #FFFFFF; border: 2px solid #FF6378; font-size: 18px; font-weight: bold; padding: 10px;')
 
+    def clear_stop_alarm(self):
+        self.alarm_status.setText('正常')
+        self.alarm_status.setStyleSheet('background: #123D32; color: #6EF0B1; font-size: 18px; font-weight: bold; padding: 10px;')
+
     def settings_base_dir(self):
         return ROOT / 'setting parameter'
 
@@ -658,13 +731,33 @@ class GatewayWindow(MainWindow):
     def autoload_default_settings(self):
         path = self.settings_base_dir() / 'setting_parameter.txt'
         try:
+            saved = (ROOT / '.last_settings_path').read_text(encoding='utf-8').strip()
+            if saved:
+                path = Path(saved)
+        except (OSError, UnicodeError):
+            pass
+        try:
             text, commands = self.read_settings_file(path)
         except (ValueError, UnicodeError, OSError) as error:
             self.setting_path, self.setting_text = None, ''
-            self.log(f'既定の設定ファイルを読み込めません：{error}')
+            self.file_label.setText('設定ファイルを選択してください')
+            self.log(f'前回または既定の設定ファイルを読み込めません：{error}')
             return
         self.use_settings_file(path, text, commands)
-        self.log(f'既定の設定ファイルを自動選択：{path.name}')
+        self.log(f'設定ファイルを自動選択（未適用）：{path.name}')
+
+    def remember_settings_file(self):
+        try:
+            (ROOT / '.last_settings_path').write_text(
+                str(self.setting_path.resolve()), encoding='utf-8')
+        except OSError as error:
+            self.log(f'設定ファイルの選択履歴を保存できません：{error}')
+
+    def create_settings(self):
+        previous = self.setting_path
+        super().create_settings()
+        if self.setting_path is not None and self.setting_path != previous:
+            self.remember_settings_file()
 
     def select_settings(self):
         path, _ = QFileDialog.getOpenFileName(self, '設定ファイル',
@@ -677,6 +770,7 @@ class GatewayWindow(MainWindow):
             QMessageBox.warning(self, '設定ファイル', str(error))
             return
         self.use_settings_file(path, text, commands)
+        self.remember_settings_file()
         self.refresh()
 
     def apply_settings(self):
@@ -691,6 +785,7 @@ class GatewayWindow(MainWindow):
         self.state.reset()
         self.state.configured = False
         self.gap_applied_raw = None
+        self.settings_recovery_attempted = False
         self.file_label.setText(self.setting_path.name + ' / 適用中…')
         self.start_job('settings', commands)
 
@@ -801,10 +896,15 @@ class GatewayWindow(MainWindow):
 
     def continue_batch(self):
         if self.state.batch and self.available and not self.operation:
-            if self.state.completed == 10 and self.recipe:
-                self.start_recipe()
-            else:
-                self.run_step(self.state.completed, batch=True)
+            if self.state.completed == 10:
+                # Expand Gap can move the device. Always stop after Calibration
+                # and require the operator to confirm/start the recipe.
+                self.state.batch = False
+                self.log('Calibration完了：Expand Gapの前で停止しました。レシピを確認して実行してください。')
+                self.refresh()
+                self.scroll_recipe_controls()
+                return
+            self.run_step(self.state.completed, batch=True)
 
     def measure(self):
         if self.available and not self.operation and self.state.ready and not self.state.measurement and self.gap_matches_selection():
@@ -870,10 +970,35 @@ class GatewayWindow(MainWindow):
             self.stop()
 
     def edit_recipe(self):
+        if self.recipe_started_at is not None:
+            from measurement_recipe import RunningRecipeDialog, save_last_used
+            dialog = RunningRecipeDialog(self.recipe_run_rows, self.recipe_number, self)
+            if dialog.exec():
+                additions = dialog.result_rows
+                self.recipe_pending.extend(additions)
+                self.recipe_run_rows.extend(additions)
+                self.recipe_total = len(self.recipe_run_rows)
+                from recipe_timing import median_duration
+                median, _ = median_duration()
+                self.recipe_estimated_seconds += sum(minutes * 60 + median + 1 for _, minutes in additions)
+                if dialog.persist.isChecked():
+                    self.recipe.extend(additions)
+                    try:
+                        save_last_used(self.recipe)
+                    except OSError as error:
+                        QMessageBox.warning(self, '保存失敗', str(error))
+                    else:
+                        self.recipe_start.setText(f'レシピ実行（{len(self.recipe)}条件）')
+                summary = '、'.join(f'{distance:g} nm・{minutes:g} min' for distance, minutes in additions)
+                self.log(f'レシピ実行中に末尾へ条件追加：{summary}（全{self.recipe_total}条件）')
+                self.update_running_recipe_eta()
+                self.refresh()
+            return
         from measurement_recipe import RecipeDialog
-        dialog = RecipeDialog(self.recipe, self)
+        dialog = RecipeDialog(self.recipe or self.remembered_recipe, self)
         if dialog.exec():
             self.recipe = dialog.result_rows
+            self.remembered_recipe = list(self.recipe)
             self.recipe_start.setText(f'レシピ実行（{len(self.recipe)}条件）')
             self.update_recipe_estimate()
             self.refresh()
@@ -897,6 +1022,12 @@ class GatewayWindow(MainWindow):
         end = datetime.now() + timedelta(seconds=self.recipe_estimated_seconds)
         self.recipe_eta.setText(f'終了見込み {end:%Y-%m-%d %H:%M:%S}')
 
+    def update_running_recipe_eta(self):
+        from datetime import datetime, timedelta
+        elapsed = time.monotonic() - self.recipe_started_at
+        remaining = max(0, self.recipe_estimated_seconds - elapsed)
+        self.recipe_eta.setText(f'終了見込み {datetime.now() + timedelta(seconds=remaining):%Y-%m-%d %H:%M:%S}')
+
     def start_recipe(self):
         if not self.available or self.operation or not self.state.configured or self.state.completed < 10:
             return
@@ -904,8 +1035,10 @@ class GatewayWindow(MainWindow):
         try: self.recipe_pending = validate(self.recipe)
         except ValueError as e:
             QMessageBox.warning(self, 'レシピ', str(e)); return
+        self.clear_stop_alarm()
         self.recipe_number = 0
         self.recipe_total = len(self.recipe_pending)
+        self.recipe_run_rows = list(self.recipe_pending)
         self.update_recipe_estimate()
         self.recipe_started_at = time.monotonic()
         self.log(f'レシピ開始：全{self.recipe_total}条件')
@@ -942,10 +1075,15 @@ class GatewayWindow(MainWindow):
         self.baseline_current = None
         self.measure_progress.setValue(0)
         self.measure_progress.setFormat('再計測準備：Expand Gap待ち')
-        # Measurement cleanup has already stopped data acquisition.  Sending a
-        # second stop here can leave the restart path at API_RUNNING (-3), so
-        # resume acquisition directly and continue with Expand Gap.
-        self.start_job('resume_sampling', [high((10, 50, 100)[self.rate.currentIndex()])])
+        if self.host_paused:
+            # Measurement cleanup stopped data acquisition, so restart it
+            # before continuing with Expand Gap.
+            self.start_job('resume_sampling', [high((10, 50, 100)[self.rate.currentIndex()])])
+        else:
+            # Calibration already runs with high-rate acquisition.  Starting
+            # it again returns API_RUNNING (-3) on the real device.
+            self.log('データ取得は継続中のため、再開コマンドを省略してExpand Gapへ移行します。')
+            self.run_step(10)
 
     def selected_target(self):
         if not self.state.ready:
@@ -1004,9 +1142,11 @@ class GatewayWindow(MainWindow):
             self.shutdown_confirmed.append(labels.get(command.text, command.text))
         if command.text == SAMPLE_STOP.text:
             self.host_paused = True
+            self.sampling_stop_confirmed = True
             self.host_start_deadline = None
         if command.text.startswith('sv_info_sender start '):
             self.host_paused = False
+            self.sampling_stop_confirmed = False
             if self.operation in ('resume_sampling', 'resume_target_sampling'):
                 self.last_host = 0
                 self.host_start_deadline = time.monotonic() + 3
@@ -1070,6 +1210,7 @@ class GatewayWindow(MainWindow):
 
     def reset_measurement_display(self):
         self.recipe_pending = []
+        self.recipe_run_rows = []
         self.recipe_number = self.recipe_total = 0
         self.recipe_started_at = self.measure_deadline = None
         self.recipe_estimated_seconds = 0
@@ -1103,7 +1244,11 @@ class GatewayWindow(MainWindow):
         self.log('開始工程を選択：' + STEPS[index][0] + '。それ以前の工程は省略（実行済みの確認は利用者）。')
         if index:
             self.selected_setup_index = index
-            self.start_job('setup_entry', [SAMPLE_STOP, LOW, BIAS1])
+            # A completed measurement has already confirmed SAMPLE_STOP. Sending
+            # it again can return API_RUNNING (-3) on the real device, so resume
+            # low-rate sampling directly from that known stopped state.
+            commands = [LOW, BIAS1] if self.host_paused else [SAMPLE_STOP, LOW, BIAS1]
+            self.start_job('setup_entry', commands)
         else:
             self.run_step(0, batch=True)
 
@@ -1127,7 +1272,7 @@ class GatewayWindow(MainWindow):
             self.shutdown_confirmed = []
             self.auto_measure = False
             self.recipe_pending = []
-            self.start_job('finalize', finalize_commands())
+            self.start_job('finalize', finalize_commands(self.sampling_stop_confirmed))
 
     def manual(self, name):
         rate = (10, 50, 100)[self.rate.currentIndex()]
@@ -1146,6 +1291,21 @@ class GatewayWindow(MainWindow):
         closing_requested = self.closing
         if operation == 'baseline' and self.baseline_current is not None:
             self.baseline_current.fail(message or '取得を中断しました')
+        if (operation == 'settings' and result == 'failure'
+                and 'Setting change : -3' in message
+                and not self.settings_recovery_attempted):
+            self.settings_recovery_attempted = True
+            self.problem = ('前回の工程が装置側で実行中です。工程停止の完了を確認してから、'
+                            '設定を一度だけ自動再試行します。')
+            self.log(self.problem)
+            try:
+                commands = [RECOVER_RUNNING_WORKER, *settings_commands(self.setting_text)]
+            except ValueError as error:
+                self.problem = str(error)
+            else:
+                if self.start_job('settings_recovery', commands):
+                    self.refresh()
+                    return
         if result not in ('success', 'stopped'):
             if operation == 'finalize' or closing_requested:
                 self.shutdown_error = message or '終了処理の成功を確認できませんでした。'
@@ -1185,14 +1345,22 @@ class GatewayWindow(MainWindow):
             self.problem = ('状態未確認：' if result == 'uncertain' else '操作失敗：') + message
             if operation == 'finalize':
                 self.problem += '\n終了処理の確認済み：' + ('、'.join(self.shutdown_confirmed) or 'なし')
-                self.problem += '\n終了処理は未完了です。接続を保持しています。「終了処理して切断」で再試行、「終了」で再試行またはUIのみ終了を選べます。'
+                self.problem += '\n終了処理は未完了です。接続を保持しています。「終了処理して終了」で再試行、「終了」で再試行またはUIのみ終了を選べます。'
             self.show_stop_alarm(self.problem)
             self.log(self.problem)
             self.closing = self.disconnecting = False
-        elif operation == 'settings':
+            if closing_requested:
+                # The user already asked to exit. Present the recovery choices
+                # immediately instead of requiring a second click on "終了".
+                QTimer.singleShot(0, self.close)
+        elif operation in ('settings', 'settings_recovery'):
             self.state.configured = True
             self.file_label.setText(self.setting_path.name + ' / 適用済み')
-            self.log('設定ファイルの全コマンド成功を確認しました。')
+            if operation == 'settings_recovery':
+                self.problem = ''
+                self.log('前回工程の停止と、設定ファイルの全コマンド成功を確認しました。')
+            else:
+                self.log('設定ファイルの全コマンド成功を確認しました。')
             self.scroll_batch_controls()
         elif operation == 'step':
             self.finish_live_step()
@@ -1214,8 +1382,7 @@ class GatewayWindow(MainWindow):
                 self.operation = 'await_recipe_target_host'
                 QTimer.singleShot(0, self.expand_after_host)
         elif operation == 'finalize':
-            self.alarm_status.setText('正常')
-            self.alarm_status.setStyleSheet('background: #123D32; color: #6EF0B1; font-size: 18px; font-weight: bold; padding: 10px;')
+            self.clear_stop_alarm()
             self.shutdown_error = ''
             self.state.reset()
             self.reset_measurement_display()
@@ -1343,6 +1510,19 @@ class GatewayWindow(MainWindow):
             if self.transport:
                 self.transport.close()
             event.accept()
+            return
+        if self.closing and self.operation in ('stop', 'finalize', 'piezo_cleanup', 'quality_cleanup', 'timed_cleanup'):
+            answer = QMessageBox.warning(
+                self, '終了処理中です',
+                '装置の終了応答を待っています。\n'
+                'UIだけを閉じますか？（装置・Gatewayの停止完了は確認しません）',
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No)
+            if answer == QMessageBox.StandardButton.Yes:
+                self.allow_close = True
+                self.closeEvent(event)
+            else:
+                event.ignore()
             return
         if self.shutdown_error and not self.operation:
             dialog = QMessageBox(self)

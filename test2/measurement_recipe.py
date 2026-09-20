@@ -1,13 +1,31 @@
 """Distance/time CSV recipes. Validation precedes execution."""
 import csv
+import json
 import math
 import re
 from datetime import datetime
 from pathlib import Path
-from PySide6.QtWidgets import (QDialog, QVBoxLayout, QTableWidget, QTableWidgetItem,
-    QPushButton, QFileDialog, QMessageBox, QLabel, QLineEdit)
+from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QTableWidget,
+    QTableWidgetItem, QPushButton, QFileDialog, QMessageBox, QLabel, QLineEdit,
+    QDoubleSpinBox, QCheckBox)
 from gap_target import model_target
 RECIPE_ROOT = Path(__file__).resolve().parent / 'recipe'
+RECIPE_STATE_PATH = RECIPE_ROOT / 'last_used_recipe.json'
+
+
+def load_last_used():
+    """Load the recipe selected with 'use' in the previous session."""
+    try:
+        return validate(json.loads(RECIPE_STATE_PATH.read_text(encoding='utf-8'))['rows'])
+    except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError):
+        return []
+
+
+def save_last_used(rows):
+    rows = validate(rows)
+    RECIPE_ROOT.mkdir(parents=True, exist_ok=True)
+    RECIPE_STATE_PATH.write_text(
+        json.dumps({'rows': rows}, ensure_ascii=False, indent=2), encoding='utf-8')
 
 
 def validate(rows):
@@ -86,6 +104,9 @@ class RecipeDialog(QDialog):
         try: self.result_rows = self.rows()
         except ValueError as e:
             QMessageBox.warning(self, '入力を確認', str(e)); return
+        try: save_last_used(self.result_rows)
+        except OSError as e:
+            QMessageBox.warning(self, '保存失敗', str(e)); return
         self.accept()
 
     def load(self):
@@ -114,3 +135,67 @@ class RecipeDialog(QDialog):
                 writer = csv.writer(f); writer.writerow(['distance_nm', 'duration_min']); writer.writerows(rows)
             QMessageBox.information(self, '保存完了', str(path))
         except (OSError, ValueError) as e: QMessageBox.warning(self, '保存失敗', str(e))
+
+
+class RunningRecipeDialog(QDialog):
+    """Read-only view of a running recipe with safe tail-only additions."""
+    def __init__(self, rows, current_number, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle('実行中レシピの確認・追加')
+        self.resize(620, 480)
+        self.result_rows = []
+        layout = QVBoxLayout(self)
+        note = QLabel('実行済み・計測中・実行待ちの条件は変更できません。新しい条件は末尾にだけ追加できます。')
+        note.setWordWrap(True)
+        layout.addWidget(note)
+        self.table = QTableWidget(0, 3)
+        self.table.setHorizontalHeaderLabels(['状態', '距離 (nm)', '時間 (min)'])
+        self.table.setEditTriggers(QTableWidget.NoEditTriggers)
+        layout.addWidget(self.table)
+        for index, row in enumerate(rows, 1):
+            status = '完了' if index < current_number else ('計測中' if index == current_number else '実行待ち')
+            self._add_table_row(status, row)
+
+        add_row = QHBoxLayout()
+        self.distance = QDoubleSpinBox()
+        self.distance.setDecimals(3)
+        self.distance.setRange(0.001, 10.0)
+        self.distance.setValue(0.6)
+        self.distance.setSuffix(' nm')
+        self.minutes = QDoubleSpinBox()
+        self.minutes.setDecimals(2)
+        self.minutes.setRange(0.01, 1440.0)
+        self.minutes.setValue(1.0)
+        self.minutes.setSuffix(' min')
+        add = QPushButton('追加候補へ')
+        add.clicked.connect(self.add_candidate)
+        for widget in (QLabel('末尾に追加'), self.distance, self.minutes, add):
+            add_row.addWidget(widget)
+        layout.addLayout(add_row)
+        self.persist = QCheckBox('保存レシピにも追加する')
+        layout.addWidget(self.persist)
+        apply_button = QPushButton('追加を反映')
+        apply_button.clicked.connect(self.apply_additions)
+        layout.addWidget(apply_button)
+        close = QPushButton('閉じる')
+        close.clicked.connect(self.reject)
+        layout.addWidget(close)
+
+    def _add_table_row(self, status, row):
+        index = self.table.rowCount()
+        self.table.insertRow(index)
+        values = (status, f'{row[0]:.3f}', f'{row[1]:g}')
+        for column, value in enumerate(values):
+            self.table.setItem(index, column, QTableWidgetItem(value))
+
+    def add_candidate(self):
+        row = validate([(self.distance.value(), self.minutes.value())])[0]
+        self.result_rows.append(row)
+        self._add_table_row('追加候補', row)
+        self.table.scrollToBottom()
+
+    def apply_additions(self):
+        if not self.result_rows:
+            QMessageBox.information(self, 'レシピ', '追加する条件がありません。')
+            return
+        self.accept()

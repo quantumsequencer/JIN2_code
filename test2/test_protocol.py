@@ -150,6 +150,14 @@ class EngineTests(unittest.TestCase):
         self.assertEqual(self.results[-1][0], 'failure')
         self.assertFalse(self.accepted)
 
+    def test_sampling_already_stopped_is_success(self):
+        from protocol import SAMPLE_STOP, BIAS0
+        self.e.start([SAMPLE_STOP, BIAS0])
+        self.ack('Stop error : -7')
+        self.assertEqual(self.sent[-1], BIAS0.text)
+        self.assertEqual(self.accepted[-1].text, SAMPLE_STOP.text)
+        self.assertFalse(self.results)
+
     def test_sampling_empty_response_retries_then_succeeds(self):
         from protocol import SAMPLE_STOP
         self.e.start([SAMPLE_STOP, BIAS0])

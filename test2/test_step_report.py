@@ -6,6 +6,16 @@ from worker_progress import WorkerProgress
 
 
 class StepReportTests(unittest.TestCase):
+    def test_calibration_metrics_and_last_slope_are_reported(self):
+        r = StepReport()
+        r.calibration_gap_sensitivity_pm_per_um = 56.7
+        r.calibration_slope_log10_a_per_nm = -0.000290338
+        r.feed('[Calibration.cpp:320] Cal amplitude=-1.5, Last Slope(pm/nm)=0.0921153419')
+        self.assertAlmostEqual(r.calibration_last_slope_pm_per_um, 92.1153419)
+        text = r.describe()
+        self.assertIn('Gap Sensitivity 56.7 pm/µm / 傾き -0.000290338 log10(A)/nm', text)
+        self.assertIn('Last Slope 92.1153419 pm/µm', text)
+
     def test_training_endpoints_axes_stale_and_duplicates(self):
         for axis in ('Motor', 'Piezo'):
             r = StepReport()

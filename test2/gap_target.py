@@ -7,10 +7,11 @@ SGMO2 HoldGap settings workbook (C23). This is not a distance measurement.
 from decimal import Decimal
 import re
 from protocol import Command
+from tunneling_model import current_decay_per_nm
 
 OLD_PA_PER_RAW = Decimal('0.000000269314')
 NEW_RAW_PER_PA = Decimal('5825183.6129280003')
-DISTANCE_DECAY = Decimal('23.589')
+DISTANCE_DECAY = Decimal(str(current_decay_per_nm()))
 OLD_PRESETS = {'0.54': 0x05098121, '0.56': 0x03248321,
                '0.58': 0x01F5EDE0, '0.60': 0x01392660}
 

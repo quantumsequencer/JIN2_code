@@ -9,12 +9,23 @@ import pyqtgraph as pg
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QTabWidget, QWidget, QPlainTextEdit,
     QPushButton, QLabel, QComboBox, QTableWidget, QTableWidgetItem, QFileDialog, QMessageBox)
 
-NAMES = {4: 'First Cut', 5: 'Motor Training', 6: 'Piezo Training', 10: 'Expand Gap'}
+NAMES = {4: 'First Cut', 5: 'Motor Training', 6: 'Piezo Training',
+         9: 'Calibration', 10: 'Expand Gap'}
 ROOT = Path(__file__).resolve().parent / 'reports'
+
+METRICS = {
+    4: [('movement', '各回のmove / 振幅'), ('elapsed', '所要時間（秒）')],
+    5: [('movement', '各回のmove / 振幅'), ('elapsed', '所要時間（秒）')],
+    6: [('movement', '各回のmove / 振幅'), ('elapsed', '所要時間（秒）')],
+    9: [('gap_sensitivity', 'Gap Sensitivity'), ('last_slope', 'Last Slope'),
+        ('elapsed', '所要時間（秒）')],
+    10: [('median', 'Expand Gap 最終 Median'), ('rms', 'Expand Gap 最終 RMS'),
+         ('noise_rms', 'Expand Gap 最終 Noise RMS'), ('elapsed', '所要時間（秒）')],
+}
 
 
 def numeric_rows(step, report):
-    if step == 10:
+    if step in (9, 10):
         return []
     rows = []
     for i in range(1, 4) if step == 4 else range(10):
@@ -137,10 +148,6 @@ class HistoryDialog(QDialog):
         self.setting.addItem('すべての設定（混在）', None)
         for name in sorted({r['report']['setting'] for r in self.records}): self.setting.addItem(name, name)
         self.metric_choice = QComboBox()
-        self.metric_choice.addItems([
-            '各回のmove / 振幅', '所要時間（秒）',
-            'Expand Gap 最終 Median', 'Expand Gap 最終 RMS', 'Expand Gap 最終 Noise RMS'
-        ])
         for widget in (self.step, self.setting, self.metric_choice): layout.addWidget(widget)
         self.summary = QLabel()
         self.summary.setWordWrap(True)
@@ -160,10 +167,14 @@ class HistoryDialog(QDialog):
         for widget in (self.setting, self.metric_choice): widget.currentIndexChanged.connect(self.refresh)
         self.table.cellDoubleClicked.connect(self.open_record)
         close = QPushButton('閉じる'); close.clicked.connect(self.accept); layout.addWidget(close)
-        self.refresh()
+        self.step_changed()
 
     def step_changed(self):
-        self.metric_choice.setCurrentIndex(2 if self.step.currentData() == 10 else 0)
+        self.metric_choice.blockSignals(True)
+        self.metric_choice.clear()
+        for metric, label in METRICS[self.step.currentData()]:
+            self.metric_choice.addItem(label, metric)
+        self.metric_choice.blockSignals(False)
         self.refresh()
 
     def refresh(self):
@@ -172,8 +183,12 @@ class HistoryDialog(QDialog):
         self.plot.clear()
         self.histogram.clear()
         values = []
-        metric = self.metric_choice.currentIndex()
-        current_keys = {2: 'median_pa', 3: 'rms_pa', 4: 'noise_rms_pa'}
+        metric = self.metric_choice.currentData()
+        current_keys = {'median': 'median_pa', 'rms': 'rms_pa', 'noise_rms': 'noise_rms_pa'}
+        calibration_keys = {
+            'gap_sensitivity': 'calibration_gap_sensitivity_pm_per_um',
+            'last_slope': 'calibration_last_slope_pm_per_um',
+        }
         self.table.setColumnCount(5)
         self.table.setHorizontalHeaderLabels(['開始日時（ダブルクリックで詳細）', '結果', '設定', '所要秒', '選択指標'])
         self.table.setRowCount(len(self.selected))
@@ -182,7 +197,7 @@ class HistoryDialog(QDialog):
             for j, value in enumerate((r['started_at'], r['status'], r['setting'], r['elapsed'])):
                 self.table.setItem(i, j, QTableWidgetItem(str(value)))
             if r['status'] != '完了': continue
-            if metric == 1:
+            if metric == 'elapsed':
                 self.plot.plot([i + 1], [r['elapsed']], symbol='o', pen=None)
                 values.append(r['elapsed'])
                 self.table.setItem(i, 4, QTableWidgetItem(f'{r["elapsed"]:g}'))
@@ -193,15 +208,25 @@ class HistoryDialog(QDialog):
                     self.plot.plot([i + 1], [value], symbol='o', pen=None)
                     values.append(value)
                     self.table.setItem(i, 4, QTableWidgetItem(f'{value:g}'))
+            elif metric in calibration_keys:
+                value = r.get(calibration_keys[metric])
+                if value is None and metric == 'last_slope' and r.get('calibration_last_slope_pm_per_nm') is not None:
+                    value = r['calibration_last_slope_pm_per_nm'] * 1000
+                if value is not None and np.isfinite(value):
+                    self.plot.plot([i + 1], [value], symbol='o', pen=None)
+                    values.append(value)
+                    self.table.setItem(i, 4, QTableWidgetItem(f'{value:g}'))
             else:
                 rows = numeric_rows(record['step'], r)
                 ys = [row[4] if row[4] is not None else np.nan for row in rows]
                 self.plot.plot([row[0] for row in rows], ys, pen=pg.intColor(i), symbol='o', connect='finite')
                 values.extend(v for v in ys if np.isfinite(v))
-        unit = 's' if metric == 1 else 'pA' if metric in current_keys else 'nm' if self.step.currentData() == 6 else 'µm'
-        label = self.metric_choice.currentText() if metric else 'move / 振幅'
+        unit = ('s' if metric == 'elapsed' else 'pA' if metric in current_keys else
+                'pm/µm' if metric in calibration_keys else
+                'nm' if self.step.currentData() == 6 else 'µm')
+        label = self.metric_choice.currentText()
         self.plot.setLabel('left', label, units=unit)
-        self.plot.setLabel('bottom', '履歴順' if metric else '回')
+        self.plot.setLabel('bottom', '回' if metric == 'movement' else '履歴順')
         if values:
             a = np.array(values)
             sd = f'{a.std(ddof=1):.4g}' if len(a) > 1 else '—'

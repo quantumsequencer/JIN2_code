@@ -124,15 +124,11 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.file_label)
         file_row = QHBoxLayout()
         self.select_button = button("設定ファイルを選択", self.select_settings)
-        self.preview_button = button("内容確認", self.preview_settings)
+        self.preview_button = button("設定内容を確認・編集", self.preview_settings)
         self.report_history_button = button('履歴・統計', self.show_report_history)
-        self.analysis_export_button = button('工程別データ出力', self.export_analysis_data)
-        self.create_settings_button = button("新しい設定を作成", self.create_settings)
         file_row.addWidget(self.select_button)
         file_row.addWidget(self.preview_button)
         file_row.addWidget(self.report_history_button)
-        file_row.addWidget(self.analysis_export_button)
-        file_row.addWidget(self.create_settings_button)
         layout.addLayout(file_row)
         mode_row = QHBoxLayout()
         mode_row.addWidget(QLabel("High サンプルレート"))
@@ -159,6 +155,10 @@ class MainWindow(QMainWindow):
         self.rows = []
         self.report_buttons = []
         self.elapsed_labels = []
+        self.first_cut_progress = None
+        self.motor_training_progress = None
+        self.piezo_training_progress = None
+        self.calibration_progress = None
         for index, (name, description) in enumerate(STEPS):
             row = QHBoxLayout()
             label = QLabel(f"{index+1:02d}  {name}")
@@ -167,6 +167,49 @@ class MainWindow(QMainWindow):
             action.setFixedWidth(72)
             action.setStyleSheet("padding: 2px 6px; min-height: 18px;")
             row.addWidget(label, 1)
+            if index == 4:
+                self.first_cut_progress = QProgressBar()
+                self.first_cut_progress.setRange(0, 3)
+                self.first_cut_progress.setValue(0)
+                self.first_cut_progress.setFormat("待機  %v / %m")
+                self.first_cut_progress.setFixedWidth(160)
+                self.first_cut_progress.setToolTip(
+                    "First Cutの3回分の進捗です。装置ログのFC find[1]～[3]に合わせて更新します。")
+                self.first_cut_progress.setStyleSheet(
+                    "QProgressBar { background-color: #13202C; color: #E8EEF5;"
+                    " border: 1px solid #2A3B4F; border-radius: 4px; text-align: center; }"
+                    "QProgressBar::chunk { background-color: #087F5B; border-radius: 3px; }")
+                row.addWidget(self.first_cut_progress)
+            elif index == 5:
+                self.motor_training_progress = QProgressBar()
+                self.motor_training_progress.setRange(0, 10)
+                self.motor_training_progress.setValue(0)
+                self.motor_training_progress.setFormat("待機  %v / %m")
+                self.motor_training_progress.setFixedWidth(160)
+                self.motor_training_progress.setToolTip(
+                    "Motor Trainingの10回分の進捗です。Up/Downの一往復完了ごとに更新します。")
+                self.motor_training_progress.setStyleSheet(
+                    "QProgressBar { background-color: #13202C; color: #E8EEF5;"
+                    " border: 1px solid #2A3B4F; border-radius: 4px; text-align: center; }"
+                    "QProgressBar::chunk { background-color: #126777; border-radius: 3px; }")
+                row.addWidget(self.motor_training_progress)
+            elif index in (6, 9):
+                training_progress = QProgressBar()
+                training_progress.setRange(0, 10)
+                training_progress.setValue(0)
+                training_progress.setFormat("待機  %v / %m")
+                training_progress.setFixedWidth(160)
+                training_progress.setToolTip(
+                    f"{name}の10回分の進捗です。Up/Downの一往復完了ごとに更新します。")
+                training_progress.setStyleSheet(
+                    "QProgressBar { background-color: #13202C; color: #E8EEF5;"
+                    " border: 1px solid #2A3B4F; border-radius: 4px; text-align: center; }"
+                    "QProgressBar::chunk { background-color: #126777; border-radius: 3px; }")
+                row.addWidget(training_progress)
+                if index == 6:
+                    self.piezo_training_progress = training_progress
+                else:
+                    self.calibration_progress = training_progress
             row.addWidget(action)
             elapsed = QLabel('')
             elapsed.setMinimumWidth(58)
@@ -372,7 +415,6 @@ class MainWindow(QMainWindow):
         busy = s.active is not None or s.measurement
         self.progress.setValue(s.completed)
         self.select_button.setEnabled(not busy)
-        self.create_settings_button.setEnabled(not busy)
         self.apply_button.setEnabled(not busy)
         self.rate.setEnabled(not busy)
         self.batch_button.setEnabled(s.configured and not busy and not s.ready)
@@ -403,6 +445,45 @@ class MainWindow(QMainWindow):
             )
             action.setText("進行中" if active else "完了" if done else "実行")
             action.setEnabled(s.configured and not busy and index == s.completed)
+        if self.first_cut_progress is not None:
+            if s.completed > 4:
+                first_cut_count = 3
+                first_cut_text = "完了  %v / %m"
+            elif s.active == 4:
+                progress = getattr(self, "worker_progress", None)
+                first_cut_count = len(progress.fc_seen) if progress is not None else 0
+                first_cut_text = "実行中  %v / %m"
+            else:
+                first_cut_count = 0
+                first_cut_text = "待機  %v / %m"
+            self.first_cut_progress.setValue(first_cut_count)
+            self.first_cut_progress.setFormat(first_cut_text)
+        repeated_steps = (
+            (5, self.motor_training_progress),
+            (6, self.piezo_training_progress),
+            (9, self.calibration_progress),
+        )
+        for step_index, step_progress in repeated_steps:
+            if step_progress is None:
+                continue
+            step_progress.setRange(0, 10)
+            if s.completed > step_index:
+                completed_pairs = 10
+                progress_text = "完了  %v / %m"
+            elif s.active == step_index:
+                progress = getattr(self, "worker_progress", None)
+                completed_pairs = 0
+                if progress is not None:
+                    completed_pairs = sum(
+                        (pair_index, "Down") in progress.seen
+                        for pair_index, direction in progress.seen if direction == "Up")
+                completed_pairs = min(completed_pairs, 10)
+                progress_text = "実行中  %v / %m"
+            else:
+                completed_pairs = 0
+                progress_text = "待機  %v / %m"
+            step_progress.setValue(completed_pairs)
+            step_progress.setFormat(progress_text)
         self.chip_note.setVisible(s.active == 2)
         self.chip_button.setVisible(s.active == 2)
         for item in self.manual_buttons:
@@ -437,9 +518,23 @@ class MainWindow(QMainWindow):
 
     def preview_settings(self):
         from settings_preview import SettingsPreview
-        dialog = SettingsPreview(self.setting_text,
-                                 self.setting_path.name if self.setting_path else '', self)
+        text, path = self.setting_text, self.setting_path
+        if not text:
+            path = DEFAULT_SETTINGS_PATH
+            try:
+                text, _ = read_settings(path)
+            except (OSError, UnicodeError, ValueError) as error:
+                QMessageBox.warning(self, '設定ファイル', f'元になる設定ファイルを選択してください。\n{error}')
+                return
+        dialog = SettingsPreview(text, path.name if path else 'settings.txt', self, editable=True)
         dialog.exec()
+        if dialog.saved_path is not None:
+            self.setting_path, self.setting_text = dialog.saved_path, dialog.saved_text
+            self.state.reset()
+            self.state.configured = False
+            self.file_label.setText(f'{self.setting_path.name} / 未適用')
+            self.log(f'新しい設定を保存・選択：{self.setting_path.name}')
+            self.refresh()
 
     def show_samurai_guide(self):
         dialog = QDialog(self)
@@ -494,56 +589,8 @@ class MainWindow(QMainWindow):
             self.refresh()
         HistoryDialog(self).exec()
 
-    def export_analysis_data(self):
-        from PySide6.QtCore import QProcess
-        from datetime import datetime
-        source = QFileDialog.getExistingDirectory(self, '記録終了済みのGateway log_日時フォルダを選択', str(ROOT.parent))
-        if not source:
-            return
-        if not (Path(source) / 'log_port_rx.log').is_file():
-            QMessageBox.warning(self, '保存フォルダ', 'log_port_rx.logがあるフォルダを選択してください。')
-            return
-        output = ROOT / 'analysis' / datetime.now().strftime('%Y%m%d_%H%M%S_%f')
-        self.analysis_process = QProcess(self)
-        self.analysis_process.setProgram(sys.executable)
-        self.analysis_process.setArguments([str(ROOT / 'export_analysis.py'), source, str(output)])
-        self.analysis_export_button.setEnabled(False)
-        self.analysis_export_button.setText('工程別データ出力中…')
-        def finished(code, status):
-            self.analysis_export_button.setEnabled(True)
-            self.analysis_export_button.setText('工程別データ出力')
-            if code == 0:
-                QMessageBox.information(self, '工程別データ出力完了', str(output))
-            else:
-                error = bytes(self.analysis_process.readAllStandardError()).decode('utf-8', errors='replace')
-                QMessageBox.warning(self, '出力失敗', error + '\n途中の出力は解析に使用しないでください。')
-        self.analysis_process.finished.connect(finished)
-        self.analysis_process.errorOccurred.connect(lambda error: finished(-1, None) if error == QProcess.FailedToStart else None)
-        self.analysis_process.start()
-
     def create_settings(self):
-        from settings_preview import SettingsPreview
-        text, path = self.setting_text, self.setting_path
-        if not text:
-            path = ROOT / 'jin_setting_change_初期値.txt'
-            try:
-                data = path.read_bytes()
-                try:
-                    text = data.decode('utf-8-sig')
-                except UnicodeDecodeError:
-                    text = data.decode('cp932')
-            except (OSError, UnicodeError) as error:
-                QMessageBox.warning(self, '設定ファイル', f'元になる設定ファイルを選択してください。\n{error}')
-                return
-        dialog = SettingsPreview(text, path.name if path else 'settings.txt', self, editable=True)
-        dialog.exec()
-        if dialog.saved_path is not None:
-            self.setting_path, self.setting_text = dialog.saved_path, dialog.saved_text
-            self.state.reset()
-            self.state.configured = False
-            self.file_label.setText(f'{self.setting_path.name} / 未適用')
-            self.log(f'新しい設定を保存・選択：{self.setting_path.name}')
-            self.refresh()
+        self.preview_settings()
 
     def apply_settings(self):
         self.reset()
@@ -652,6 +699,11 @@ class MainWindow(QMainWindow):
             self.calibration_plot_dialog.clear()
         if calibration_active:
             self.calibration_plot_dialog.feed({'piezo': piezo, 'values': y, 'unit': unit})
+            report = self.state.reports.get(9)
+            metrics = self.calibration_plot_dialog.calibration_metrics()
+            if report is not None and metrics is not None:
+                report.calibration_slope_log10_a_per_nm = metrics[0]
+                report.calibration_gap_sensitivity_pm_per_um = metrics[1]
         self._calibration_was_active = calibration_active
         self.calibration_plot_dialog.refresh(active=calibration_active)
         self.history.append((now, motor, piezo))

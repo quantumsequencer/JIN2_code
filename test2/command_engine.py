@@ -6,7 +6,10 @@ from protocol import Command, STOP
 
 
 class CommandEngine:
-    SAMPLE_STOP_RETRY_LIMIT = 20
+    # On real hardware the asynchronous sampling stop can keep returning
+    # API_RUNNING for longer than ten seconds.  Keep checking long enough for
+    # the firmware to settle instead of forcing the user into UI-only exit.
+    SAMPLE_STOP_RETRY_LIMIT = 120
     SAMPLE_STOP_RETRY_DELAY = .5
 
     def __init__(self, send, result, accepted=lambda command: None, clock=time.monotonic):
@@ -85,6 +88,11 @@ class CommandEngine:
             # A prompt without a response has also occurred on real hardware.
             # Retry both cases only after the prompt, without advancing the queue.
             response = [line for line in self.response if line]
+            if c.text == 'sv_info_sender stop' and response == ['Stop error : -7']:
+                # FWResultCode.NOT_OPEN: sampling is already stopped.  This is
+                # the state the cleanup command is intended to establish.
+                response = ['Stop complete. result:0']
+                self.response = response
             if c.text == 'sv_info_sender stop' and (not response or response == ['Stop error : -3']):
                 if self.sample_stop_retries < self.SAMPLE_STOP_RETRY_LIMIT:
                     self.sample_stop_retries += 1

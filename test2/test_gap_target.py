@@ -1,13 +1,19 @@
 from decimal import Decimal
 import unittest
-from gap_target import target_for_distance, target_command, raw_from_command, OLD_PA_PER_RAW, NEW_RAW_PER_PA
+from gap_target import target_for_distance, target_command, raw_from_command, OLD_PA_PER_RAW, NEW_RAW_PER_PA, DISTANCE_DECAY
 from test_connection import ConnectionTests
 from gap_target import model_target
 from step_report import StepReport
 from unittest.mock import patch
+from tunneling_model import WORK_FUNCTION_EV, barrier_decay_per_nm, current_decay_per_nm
 
 
 class GapConversionTests(unittest.TestCase):
+    def test_recipe_and_calibration_share_53_ev_barrier(self):
+        self.assertEqual(WORK_FUNCTION_EV, 5.3)
+        self.assertAlmostEqual(float(DISTANCE_DECAY), current_decay_per_nm(), places=12)
+        self.assertAlmostEqual(current_decay_per_nm(), 2 * barrier_decay_per_nm(), places=12)
+
     def test_054_preserves_physical_current(self):
         pa, raw = target_for_distance('0.54')
         self.assertEqual(pa, Decimal('22.759446322754'))
@@ -82,7 +88,7 @@ class GapUiTests(ConnectionTests):
 
     def test_model_and_missing_baseline(self):
         tunnel, raw = model_target('0.60')
-        self.assertAlmostEqual(float(tunnel), 5.527874598, places=7)
+        self.assertAlmostEqual(float(tunnel), 5.528427370, places=7)
         self.assertLess(abs(Decimal(raw) / NEW_RAW_PER_PA - tunnel), 1 / NEW_RAW_PER_PA)
         for d in ('0', '0.001', '10'):
             with self.assertRaises(ValueError):
@@ -104,7 +110,7 @@ class GapUiTests(ConnectionTests):
         self.assertTrue(w.gap_apply_button.isEnabled())
         w.apply_gap_target()
         current, raw = model_target('0.610')
-        self.assertAlmostEqual(float(current), 4.366288791, places=7)
+        self.assertAlmostEqual(float(current), 4.366732685, places=7)
         w.transport.send.assert_called_once_with(f'asz set hg tunnel_current 0x{raw:08X}')
         self.ack('Setting change : 0')
         self.assertTrue(w.measure_button.isEnabled())

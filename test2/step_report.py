@@ -28,6 +28,11 @@ class StepReport:
     expand_final_current: dict | None = None
     training_axis: str | None = None
     training_positions: dict = field(default_factory=dict)
+    calibration_slope_log10_a_per_nm: float | None = None
+    calibration_gap_sensitivity_pm_per_um: float | None = None
+    calibration_last_slope_pm_per_um: float | None = None
+    # Kept only so reports saved by the immediately preceding format remain readable.
+    calibration_last_slope_pm_per_nm: float | None = None
 
     def sample(self, frame):
         if self.elapsed is not None:
@@ -43,6 +48,13 @@ class StepReport:
         self.logs.extend(text.splitlines())
         self.logs = self.logs[-2000:]
         for line in text.splitlines():
+            last_slope = re.search(
+                r'Last\s+Slope\s*\(pm/nm\)\s*=\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)',
+                line,
+                re.IGNORECASE,
+            )
+            if last_slope:
+                self.calibration_last_slope_pm_per_um = float(last_slope[1]) * 1000
             start = re.search(r'Actuator Training\((Motor|Piezo)\) start!', line)
             if start:
                 self.training_axis = start[1].lower()
@@ -80,6 +92,22 @@ class StepReport:
             else:
                 lines.append(f'{label}：位置データなし')
         lines += ['※開始・終了は工程中に受信した最初・最後の位置。差分は往復の総移動距離ではありません。']
+        if (self.calibration_slope_log10_a_per_nm is not None or
+                self.calibration_gap_sensitivity_pm_per_um is not None or
+                self.calibration_last_slope_pm_per_um is not None or
+                self.calibration_last_slope_pm_per_nm is not None):
+            lines += ['', 'Calibration 指標']
+            if (self.calibration_gap_sensitivity_pm_per_um is not None and
+                    self.calibration_slope_log10_a_per_nm is not None):
+                lines.append(
+                    f'Gap Sensitivity {self.calibration_gap_sensitivity_pm_per_um:.1f} pm/µm / '
+                    f'傾き {self.calibration_slope_log10_a_per_nm:.9g} log10(A)/nm')
+            last_slope_pm_per_um = self.calibration_last_slope_pm_per_um
+            if last_slope_pm_per_um is None and self.calibration_last_slope_pm_per_nm is not None:
+                last_slope_pm_per_um = self.calibration_last_slope_pm_per_nm * 1000
+            if last_slope_pm_per_um is not None:
+                lines.append(
+                    f'Last Slope {last_slope_pm_per_um:.9g} pm/µm')
         if self.training_axis:
             unit = 'µm' if self.training_axis == 'motor' else 'nm'
             lines += ['', f'{self.training_axis.title()} Training：各回の到達位置（近似値・{unit}）',

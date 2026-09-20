@@ -17,6 +17,25 @@ class HoldTests(unittest.TestCase):
 
 
 class ResetTests(ConnectionTests):
+    def test_hold_plot_window_is_opened_and_closed_by_button(self):
+        w = self.w
+        self.assertFalse(w.hold_plot_window.isVisible())
+        self.assertEqual(w.hold_plot_button.text(), '判定グラフを表示')
+        w.hold_plot_button.click()
+        self.assertTrue(w.hold_plot_window.isVisible())
+        self.assertIs(w.hold_plot.window(), w.hold_plot_window)
+        self.assertEqual(w.hold_plot_button.text(), '判定グラフを閉じる')
+        w.hold_plot_button.click()
+        self.assertFalse(w.hold_plot_window.isVisible())
+        self.assertEqual(w.hold_plot_button.text(), '判定グラフを表示')
+
+    def test_hold_plot_window_close_button_updates_main_button(self):
+        w = self.w
+        w.hold_plot_button.click()
+        w.hold_plot_window.close()
+        self.assertFalse(w.hold_plot_window.isVisible())
+        self.assertEqual(w.hold_plot_button.text(), '判定グラフを表示')
+
     def test_hold_plot_has_wider_range_and_all_judgment_lines(self):
         w = self.w
         y_range = w.hold_plot.viewRange()[1]

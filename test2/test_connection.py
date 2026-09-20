@@ -19,6 +19,9 @@ class ConnectionTests(unittest.TestCase):
         cls.app = QApplication.instance() or QApplication([])
 
     def setUp(self):
+        recipe_patch = patch('measurement_recipe.load_last_used', return_value=[])
+        recipe_patch.start()
+        self.addCleanup(recipe_patch.stop)
         self.w = GatewayWindow()
         self.w.io_timer.stop()
         self.w.plot_timer.stop()
@@ -66,6 +69,29 @@ class ConnectionTests(unittest.TestCase):
         self.assertEqual(w.state.completed, 1)
         self.assertFalse(w.host_recent)
 
+    def test_settings_busy_stops_surviving_hold_gap_then_retries_once(self):
+        w = self.w
+        w.setting_path = Path('settings.txt')
+        w.setting_text = 'mcbj set fc up_limit 10000'
+        w.apply_settings()
+
+        self.ack('Setting change : -3')
+        self.assertEqual(w.operation, 'settings_recovery')
+        self.assertEqual(w.transport.send.call_args.args[0], 'mcbj stop')
+
+        self.ack('')
+        self.assertEqual(w.transport.send.call_args.args[0], 'mcbj stop')
+        w.engine.feed('Log', 'HoldGap canceled.')
+        self.assertEqual(w.transport.send.call_args.args[0], 'mcbj set fc up_limit 10000')
+
+        self.ack('Setting change : 0')
+        self.assertTrue(w.state.configured)
+        self.assertIsNone(w.operation)
+        self.assertEqual(
+            [call.args[0] for call in w.transport.send.call_args_list],
+            ['mcbj set fc up_limit 10000', 'mcbj stop',
+             'mcbj set fc up_limit 10000'])
+
     def test_disconnected_or_faulted_still_blocks_commands(self):
         w = self.w
         w.setting_text = 'mcbj set fc up_limit 10000'
@@ -106,6 +132,32 @@ class ConnectionTests(unittest.TestCase):
         from gateway_window import ROOT
         self.assertEqual(Path(dialog.call_args.args[2]),
                          ROOT / 'setting parameter' / 'setting_parameter.txt')
+
+    def test_selected_settings_are_restored_without_applying(self):
+        with TemporaryDirectory() as tmp, patch('gateway_window.ROOT', Path(tmp)):
+            path = Path(tmp) / '前回の設定.txt'
+            path.write_text('mcbj set fc up_limit 20000', encoding='utf-8')
+            with patch('gateway_window.QFileDialog.getOpenFileName', return_value=(str(path), '')):
+                self.w.select_settings()
+            self.w.setting_path = None
+            self.w.setting_text = ''
+            self.w.state.configured = True
+            self.w.autoload_default_settings()
+            self.assertEqual(self.w.setting_path, path)
+            self.assertIn('20000', self.w.setting_text)
+            self.assertFalse(self.w.state.configured)
+            self.assertIn('未適用', self.w.file_label.text())
+            self.w.transport.send.assert_not_called()
+
+    def test_missing_previous_file_requires_selection(self):
+        with TemporaryDirectory() as tmp, patch('gateway_window.ROOT', Path(tmp)):
+            (Path(tmp) / '.last_settings_path').write_text(
+                str(Path(tmp) / 'missing.txt'), encoding='utf-8')
+            self.w.autoload_default_settings()
+            self.assertIsNone(self.w.setting_path)
+            self.assertEqual(self.w.setting_text, '')
+            self.assertIn('選択してください', self.w.file_label.text())
+            self.w.transport.send.assert_not_called()
 
 
 if __name__ == '__main__':

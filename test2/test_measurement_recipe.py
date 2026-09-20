@@ -1,6 +1,9 @@
 import unittest
+import json
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest.mock import patch
-from measurement_recipe import validate
+from measurement_recipe import validate, load_last_used, save_last_used
 from test_connection import ConnectionTests
 
 
@@ -65,6 +68,18 @@ class RecipeTests(ConnectionTests):
         self.assertNotIn('asz eg start', [call.args[0] for call in w.transport.send.call_args_list])
         self.assertIn('Expand Mean：1.235 pA', w.hold_values.text())
 
+    def test_start_recipe_clears_previous_stop_alarm(self):
+        w = self.w
+        w.state.configured = True
+        w.state.completed = 10
+        w.recipe = [(0.61, 2)]
+        w.show_stop_alarm('Hold Gap判定で停止')
+
+        w.start_recipe()
+
+        self.assertEqual(w.alarm_status.text(), '正常')
+        self.assertIn('background: #123D32', w.alarm_status.styleSheet())
+
     def test_next_condition_reuses_expand_gap_after_sampling_restart(self):
         from step_report import StepReport
         w = self.w
@@ -107,18 +122,19 @@ class RecipeTests(ConnectionTests):
         w.refresh()
         self.assertEqual(w.distance_meter.text(), '-- nm')
 
-    def test_batch_enters_registered_recipe_after_calibration(self):
+    def test_batch_stops_for_confirmation_before_expand_gap(self):
         w = self.w
         w.state.configured = True
         w.state.completed = 10
         w.state.batch = True
         w.recipe = [(0.61, 2), (0.62, 3)]
-        w.continue_batch()
-        self.assertEqual(w.operation, 'resume_sampling')
-        self.assertEqual(w.recipe_number, 1)
-        self.assertEqual(w.recipe_pending, [(0.62, 3)])
-        self.assertEqual(w.gap_choice.value(), 0.61)
-        self.assertEqual(w.measure_minutes.value(), 2)
+        with patch.object(w, 'run_step') as run:
+            w.continue_batch()
+        run.assert_not_called()
+        self.assertFalse(w.state.batch)
+        self.assertIsNone(w.operation)
+        self.assertFalse(w.recipe_pending)
+        w.transport.send.assert_not_called()
 
     def test_stopped_batch_does_not_start_registered_recipe(self):
         w = self.w
@@ -129,13 +145,29 @@ class RecipeTests(ConnectionTests):
         w.continue_batch()
         w.transport.send.assert_not_called()
 
-    def test_batch_without_recipe_continues_preparation(self):
+    def test_batch_without_recipe_also_stops_before_expand_gap(self):
         w = self.w
         w.state.batch = True
         w.state.completed = 10
         with patch.object(w, 'run_step') as run:
             w.continue_batch()
-        run.assert_called_once_with(10, batch=True)
+        run.assert_not_called()
+        self.assertFalse(w.state.batch)
+
+    def test_restored_recipe_is_draft_until_explicitly_used(self):
+        from gateway_window import GatewayWindow
+        remembered = [(0.61, 2), (0.62, 3)]
+        with patch('measurement_recipe.load_last_used', return_value=remembered):
+            window = GatewayWindow()
+        window.io_timer.stop()
+        window.plot_timer.stop()
+        try:
+            self.assertEqual(window.remembered_recipe, remembered)
+            self.assertEqual(window.recipe, [])
+            self.assertFalse(window.recipe_start.isEnabled())
+        finally:
+            window.allow_close = True
+            window.close()
 
     def test_recipe_scroll_targets_start_button(self):
         w = self.w
@@ -143,6 +175,25 @@ class RecipeTests(ConnectionTests):
             with patch.object(w.measurement_scroll, 'ensureWidgetVisible') as ensure:
                 w.scroll_recipe_controls()
         ensure.assert_called_once_with(w.recipe_start, 0, 60)
+
+    def test_next_recipe_action_is_highlighted_after_calibration(self):
+        w = self.w
+        w.state.configured = True
+        w.state.completed = 10
+
+        w.recipe = []
+        w.refresh()
+        self.assertIn('background: #F5D547', w.recipe_edit.styleSheet())
+        self.assertEqual(w.recipe_start.styleSheet(), '')
+        self.assertIn('レシピ作成・読込', w.next_action.text())
+        self.assertFalse(w.next_action.isHidden())
+
+        w.recipe = [(0.61, 2)]
+        w.refresh()
+        self.assertEqual(w.recipe_edit.styleSheet(), '')
+        self.assertIn('background: #F5D547', w.recipe_start.styleSheet())
+        self.assertIn('レシピ実行', w.next_action.text())
+        self.assertFalse(w.next_action.isHidden())
 
     def test_recipe_target_preview_and_button_order(self):
         from measurement_recipe import RecipeDialog
@@ -159,10 +210,40 @@ class RecipeTests(ConnectionTests):
         self.w.transport.send.assert_not_called()
         dialog.close()
 
+    def test_running_recipe_can_append_only_to_pending_tail(self):
+        from measurement_recipe import RunningRecipeDialog
+        w = self.w
+        w.recipe = [(0.60, 1), (0.61, 2)]
+        w.recipe_pending = [(0.61, 2)]
+        w.recipe_run_rows = list(w.recipe)
+        w.recipe_number = 1
+        w.recipe_total = 2
+        w.recipe_started_at = __import__('time').monotonic()
+        w.recipe_estimated_seconds = 180
+        dialog = RunningRecipeDialog(w.recipe_run_rows, w.recipe_number, w)
+        dialog.distance.setValue(0.62)
+        dialog.minutes.setValue(3)
+        dialog.add_candidate()
+        with patch('measurement_recipe.RunningRecipeDialog', return_value=dialog), \
+                patch.object(dialog, 'exec', return_value=True):
+            w.edit_recipe()
+        self.assertEqual(w.recipe_pending, [(0.61, 2), (0.62, 3)])
+        self.assertEqual(w.recipe_run_rows[-1], (0.62, 3))
+        self.assertEqual(w.recipe_total, 3)
+        self.assertEqual(w.recipe, [(0.60, 1), (0.61, 2)])
+
+    def test_running_recipe_dialog_marks_current_and_waiting_rows(self):
+        from measurement_recipe import RunningRecipeDialog
+        dialog = RunningRecipeDialog([(0.60, 1), (0.61, 2), (0.62, 3)], 2, self.w)
+        self.assertEqual([dialog.table.item(i, 0).text() for i in range(3)],
+                         ['完了', '計測中', '実行待ち'])
+        dialog.close()
+
     def test_completed_measurement_restarts_sampling_without_duplicate_stop(self):
         w = self.w
         w.state.configured = True
         w.state.completed = 11
+        w.host_paused = True
         w.resume_measurement()
         w.transport.send.assert_called_once_with('sv_info_sender start 10')
         self.assertNotIn('sv_info_sender stop', [c.args[0] for c in w.transport.send.call_args_list])
@@ -175,6 +256,16 @@ class RecipeTests(ConnectionTests):
         self.assertEqual(validate([['0.6', '1'], ['0.61', '2']]), [(0.6, 1), (0.61, 2)])
         for rows in ([], [('nan', 1)], [(0.6, 0)], [(0.6001, 1)], [(0.001, 1)]):
             with self.assertRaises(ValueError): validate(rows)
+
+    def test_last_used_recipe_is_persisted_and_loaded(self):
+        with TemporaryDirectory() as folder:
+            state = Path(folder) / 'last_used_recipe.json'
+            with patch('measurement_recipe.RECIPE_ROOT', Path(folder)), \
+                    patch('measurement_recipe.RECIPE_STATE_PATH', state):
+                save_last_used([(0.6, 1), (0.61, 2)])
+                self.assertEqual(load_last_used(), [(0.6, 1), (0.61, 2)])
+                self.assertEqual(json.loads(state.read_text(encoding='utf-8'))['rows'],
+                                 [[0.6, 1], [0.61, 2]])
 
     def test_restart_sampling_then_expand(self):
         w = self.w
