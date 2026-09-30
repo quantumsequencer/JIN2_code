@@ -9,3 +9,7 @@ gateway_source/Output/
 /logs/
 *.log
 /*.png
+
+# Per-machine settings and last-used recipe state
+/.last_settings_path
+/recipe/last_used_recipe.json

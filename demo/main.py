@@ -78,6 +78,7 @@ class MainWindow(QMainWindow):
 
         header = QHBoxLayout()
         logo = QLabel()
+        logo.setStyleSheet('background: #28556E; border-radius: 24px; padding: 4px;')
         logo.setPixmap(QPixmap(str(ROOT / "assets/jin_mark_white.png")).scaled(
             42, 42, Qt.AspectRatioMode.KeepAspectRatio,
             Qt.TransformationMode.SmoothTransformation))
@@ -103,7 +104,7 @@ class MainWindow(QMainWindow):
         header.addWidget(button("終了", self.close))
         root.addLayout(header)
         self.alarm_status = QLabel('正常')
-        self.alarm_status.setStyleSheet('background: #123D32; color: #6EF0B1; font-size: 18px; font-weight: bold; padding: 10px;')
+        self.alarm_status.setStyleSheet('background: #DCF3EA; color: #07694E; font-size: 18px; font-weight: bold; padding: 10px;')
         self.alarm_status.setWordWrap(True)
         root.addWidget(self.alarm_status)
 
@@ -337,7 +338,7 @@ class MainWindow(QMainWindow):
         self.current_plot.setMaximumHeight(450)
         self.current_plot.addLegend(offset=(8, 8))
         self.raw_current_curve = self.current_plot.plot(pen=pg.mkPen("#8291A5", width=1), name="電流（元波形）")
-        self.current_curve = self.current_plot.plot(pen=pg.mkPen("#24C8DB", width=1.5), name="電流（ローパス）")
+        self.current_curve = self.current_plot.plot(pen=pg.mkPen("#0088AB", width=1.5), name="電流（ローパス）")
         self.current_curve.setZValue(1)
         self.median_curve = self.current_plot.plot(pen=pg.mkPen("#F5D547", width=1.5), name="Median")
         self.median_curve.hide()
@@ -356,15 +357,17 @@ class MainWindow(QMainWindow):
         self.motor_plot.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Ignored)
         graphs.addWidget(self.motor_plot)
         item = self.motor_plot.getPlotItem()
-        item.setLabel("left", "Motor", units="µm", color="#39D98A")
+        item.setLabel("left", "Motor", units="µm", color="#13865B")
         item.showAxis("right")
-        item.setLabel("right", "Piezo", units="nm", color="#B294FF")
+        item.setLabel("right", "Piezo", units="nm", color="#8450CB")
         self.piezo_plot = pg.ViewBox()
         item.scene().addItem(self.piezo_plot)
         item.getAxis("right").linkToView(self.piezo_plot)
+        item.getAxis("right").setTextPen("#6D489F")
+        item.getAxis("right").setPen("#6D489F")
         self.piezo_plot.setXLink(item.vb)
-        self.motor_curve = self.motor_plot.plot(pen=pg.mkPen("#39D98A", width=1.5))
-        self.piezo_curve = pg.PlotCurveItem(pen=pg.mkPen("#B294FF", width=1.5))
+        self.motor_curve = self.motor_plot.plot(pen=pg.mkPen("#13865B", width=1.5))
+        self.piezo_curve = pg.PlotCurveItem(pen=pg.mkPen("#8450CB", width=1.5))
         self.piezo_plot.addItem(self.piezo_curve)
         item.vb.sigResized.connect(self.sync_position_views)
         self.sync_position_views()
@@ -425,14 +428,14 @@ class MainWindow(QMainWindow):
             simplify_screen(self)
 
     def make_plot(self, name, unit):
-        plot = pg.PlotWidget(background="#0E1620")
+        plot = pg.PlotWidget(background="#DCE8F1")
         plot.showGrid(x=True, y=True, alpha=0.15)
         plot.setLabel("left", name, units=unit)
         plot.setLabel("bottom", "Time", units="s")
         plot.setMenuEnabled(False)
         for axis in ("left", "bottom"):
-            plot.getAxis(axis).setTextPen("#8291A5")
-            plot.getAxis(axis).setPen("#30445A")
+            plot.getAxis(axis).setTextPen("#526C80")
+            plot.getAxis(axis).setPen("#526C80")
         return plot
 
     def show_calibration_plot(self):
@@ -472,7 +475,7 @@ class MainWindow(QMainWindow):
                 "background-color: #FFFFFF; color: #0B1017; font-weight: 700;"
                 " padding: 2px 6px; border-radius: 4px;"
                 if active else
-                f"background-color: #0B1017; color: {'#39D98A' if done else '#AFC0D2'};"
+                f"background-color: #0B1017; color: {'#13865B' if done else '#AFC0D2'};"
                 " font-weight: 400; padding: 2px 6px; border-radius: 4px;"
             )
             action.setStyleSheet(

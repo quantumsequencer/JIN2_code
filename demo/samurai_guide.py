@@ -77,7 +77,15 @@ class SamuraiPortrait(QWidget):
         p = QPainter(self)
         p.setRenderHint(QPainter.Antialiasing)
         p.setRenderHint(QPainter.SmoothPixmapTransform)
-        color = QColor('#E69C58' if self.mood == 'attention' else '#24C8DB')
+        p.setPen(Qt.NoPen)
+        p.setBrush(QColor('#C6E3F0'))
+        p.drawEllipse(QRectF(self.width()*.08, 8, self.width()*.84, self.height()-16))
+        p.setBrush(QColor('#FFF0D9'))
+        p.drawEllipse(QRectF(self.width()*.79, 20, 26, 26))
+        p.setBrush(QColor('#E4DAF8'))
+        p.drawEllipse(QRectF(15, self.height()*.68, 18, 18))
+        p.setBrush(Qt.NoBrush)
+        color = QColor('#AE650D' if self.mood == 'attention' else '#0088AB')
         p.setPen(QPen(color, 1))
         p.drawEllipse(QRectF(self.width()*.18, self.height()-18, self.width()*.64, 10))
         if self.atlas.isNull():
@@ -107,14 +115,14 @@ class SamuraiGuide(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(5)
         heading = QLabel('SAMURAI  /  進行ガイド')
-        heading.setStyleSheet('font-size: 16px; font-weight: bold; color: #E8EEF5;')
+        heading.setStyleSheet('font-size: 16px; font-weight: bold; color: #28556E;')
         layout.addWidget(heading)
         self.portrait = SamuraiPortrait()
         layout.addWidget(self.portrait)
         self.speech = QLabel()
         self.speech.setWordWrap(True)
         self.speech.setMinimumHeight(60)
-        self.speech.setStyleSheet('background: #142633; border: 1px solid #285468; border-radius: 10px; padding: 8px; font-size: 14px;')
+        self.speech.setStyleSheet('background: #D9EAF4; color: #234D67; border: 2px solid #8CD1E7; border-radius: 18px; padding: 10px; font-size: 14px;')
         layout.addWidget(self.speech)
         grid = QGridLayout()
         grid.setSpacing(3)
@@ -161,7 +169,8 @@ class SamuraiGuide(QWidget):
             for index, label in enumerate(self.steps):
                 active = index == window.state.active
                 done = index < window.state.completed and not active
-                color = '#FFE08A' if active and mood == 'attention' else '#24C8DB' if active else '#39D98A' if done else '#60748B'
+                color = '#99570A' if active and mood == 'attention' else '#006D89' if active else '#08764F' if done else '#63758A'
+                background = '#FFE6BD' if active and mood == 'attention' else '#BDECF8' if active else '#DDF5E9' if done else ('#E7F2FB', '#F2EAFB', '#FFF0DC')[index % 3]
                 label.setText(f'{"✓" if done else f"{index+1:02d}"}\n{SHORT_NAMES[index]}')
-                label.setStyleSheet(f'color: {color}; border: 1px solid {color}; border-radius: 4px; padding: 2px; font-size: 10px; background: #101923;')
+                label.setStyleSheet(f'color: {color}; border: 1px solid {color}; border-radius: 12px; padding: 3px; font-size: 10px; background: {background};')
                 label.setAccessibleDescription('進行中' if active else '完了' if done else '待機')

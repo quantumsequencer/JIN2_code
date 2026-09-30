@@ -45,7 +45,9 @@ def simplify_screen(window):
     if hasattr(window, 'recipe_progress'):
         layout.addWidget(window.measure_progress)
         layout.addWidget(window.recipe_progress)
-        window.recipe_eta.setStyleSheet('font-size: 14px; color: #FFE08A; padding: 4px;')
+        window.measure_progress.setStyleSheet('QProgressBar { background: #FFF0DC; color: #6D430C; border-radius: 9px; min-height: 22px; } QProgressBar::chunk { background: #F4B55F; border-radius: 9px; }')
+        window.recipe_progress.setStyleSheet('QProgressBar { background: #F0E7FB; color: #503780; border-radius: 9px; min-height: 22px; } QProgressBar::chunk { background: #BCA0E6; border-radius: 9px; }')
+        window.recipe_eta.setStyleSheet('font-size: 14px; color: #80531A; padding: 4px;')
         layout.addWidget(window.recipe_eta)
     layout.addWidget(window.chip_note)
     layout.addWidget(window.chip_button)
@@ -78,6 +80,9 @@ def simplify_screen(window):
     window.screen_split.setStretchFactor(1, 1)
     window.current_plot.setMaximumHeight(16777215)
     window.hardware_box.setMaximumHeight(16777215)
+    for key, color in (('CURRENT', '#007C9B'), ('MOTOR', '#13865B'), ('PIEZO', '#8450CB')):
+        window.meters[key].setStyleSheet(f'color: {color}; font-size: 27px; font-weight: 700; background: transparent;')
+    window.distance_meter.setStyleSheet('color: #A36316; font-size: 27px; font-weight: 700; background: transparent;')
 
     def update_progress():
         window.samurai_guide.sync(window)
