@@ -1,0 +1,14 @@
+# SAMURAI 追加バリエーション
+
+生成方法：組み込み image_gen（imagegen スキル）。参照：`samurai_host_atlas.png`。
+
+各画像は3列×2行。歓迎・集中・応援・案内・達成・注意の順です。既存6枚と追加12枚を合わせて18枚を使用します。
+
+## samurai_host_atlas_b.png
+
+Use case: identity-preserve. Create ONE new transparent sprite atlas for the same SAMURAI UI host shown in the reference atlas. Preserve the SAME adult male face, black high ponytail with red tie, black samurai armor with red accents, detailed anime painted style. Do not copy the existing poses exactly. Exactly 3 columns by 2 rows equal cells, square PNG canvas, each portrait entirely confined to its cell with 5% padding, consistent waist-up framing and scale. Row-major cells: 1 greeting with friendly closed-mouth smile and hand raised beside shoulder; 2 thoughtful attentive face with one finger lightly touching temple; 3 determined encouraging smile with a thumbs-up near chest; 4 explaining with open palm extended toward viewer's right, eyebrows gently raised; 5 delighted confident smile with eyes open and celebratory fist beside shoulder; 6 calm serious caution with upright open palm beside chest, no smile. Each corresponds to the same semantic gesture category in the original cell, but use visibly different expression, head orientation and arm pose. Keep mature elegant character identity, no chibi, no extra people, no weapons, no text or borders. True transparent background and ample isolation between all six cells. No overlap or clipping. This is variant sheet B.
+
+## samurai_host_atlas_c.png
+
+Use case: identity-preserve. Create ONE additional transparent SAMURAI host sprite atlas, variant sheet C. Match the reference SAME adult male black ponytail, red hair tie, black red samurai armor, face identity, elegant detailed anime painted style. A square PNG with EXACTLY 3 equal columns and 2 equal rows, six waist-up portraits at consistent scale, safe margins, no overlap, fully transparent background, no words or panel lines. Distinct new expressions and gestures while maintaining the semantic roles. Row-major: 1 welcoming gentle eyes-closed smile with a hand over heart and small courteous bow of head; 2 concentrating serious face looking slightly toward viewer's right, one arm folded and the other hand resting under chin; 3 encouraging determined grin with a compact raised fist at shoulder and brows lifted; 4 presenting toward viewer's right with extended index finger angled slightly upward and confident friendly half smile; 5 pleased warm eyes-closed smile with a thumbs-up at shoulder, celebration; 6 caution/please wait with both gloved hands gently raised palms facing viewer, serious concerned eyebrows, absolutely no smile. Make each noticeably different from the reference poses through arm position and facial expression, without changing character identity or costume. No swords, no props, no scenery, no extra people, no chibi. All hands inside their own cells. Deliver only the atlas.
+

@@ -193,7 +193,7 @@ class GatewayWindow(MainWindow):
         hold_plot_layout = QVBoxLayout(self.hold_plot_window)
         hold_plot_layout.addWidget(self.hold_plot)
         self.hold_plot_window.finished.connect(self._hold_plot_window_closed)
-        self.setWindowTitle('JIN SAMURAI Control v 0.2')
+        self.setWindowTitle('JIN SAMURAI version 0.9')
         self.console.clear()
         self.file_label.setText('設定ファイルを選択してください')
         self.apply_button.setText('設定を装置へ適用')
@@ -201,6 +201,7 @@ class GatewayWindow(MainWindow):
         self.footer.setText('SGMO2 / 0.2.0  •  データ保存はGateway側のOptionsで設定  •  単独の操作Clientとして使用')
         self.banner.setText('「Gatewayを起動して接続」で保存済みのCOM設定を復元します。初回・COM番号変更時はGatewayで設定し、正常終了すると保存されます。')
         launch_row = QHBoxLayout()
+        self.launch_row = launch_row
         self.launch_button = button('Gatewayを起動して接続', self.launch_and_connect, 'primary')
         launch_row.addWidget(self.launch_button)
         self.saved_ports_label = QLabel('保存済みのポート設定を使用')
@@ -208,6 +209,7 @@ class GatewayWindow(MainWindow):
         launch_row.addWidget(self.saved_ports_label, 1)
         self.centralWidget().layout().insertLayout(2, launch_row)
         connection = QHBoxLayout()
+        self.connection_row = connection
         connection.addWidget(QLabel('Gateway  127.0.0.1   受信'))
         self.sub_port = QSpinBox()
         self.push_port = QSpinBox()
@@ -231,6 +233,9 @@ class GatewayWindow(MainWindow):
         self.refresh()
         self.log('Gateway接続モード。接続操作だけでは装置コマンドを送信しません。')
         self._hold_plot_visible = False
+
+        from exhibition_layout import simplify_screen
+        simplify_screen(self)
 
     def toggle_hold_plot(self):
         if self.hold_plot_window.isVisible():
@@ -465,7 +470,8 @@ class GatewayWindow(MainWindow):
         self.refresh()
 
     def clear_graphs(self):
-        for curve in (self.current_curve, self.median_curve, self.motor_curve, self.piezo_curve):
+        self._display_raw = ([], [])
+        for curve in (self.raw_current_curve, self.current_curve, self.median_curve, self.motor_curve, self.piezo_curve):
             curve.setData([], [])
         for meter in self.meters.values():
             meter.setText('--')
@@ -477,7 +483,8 @@ class GatewayWindow(MainWindow):
         self.telemetry.frames.clear()
         self.telemetry.hardware.clear()
         self.host_dirty = False
-        for curve in (self.current_curve, self.median_curve, self.motor_curve, self.piezo_curve):
+        self._display_raw = ([], [])
+        for curve in (self.raw_current_curve, self.current_curve, self.median_curve, self.motor_curve, self.piezo_curve):
             curve.setData([], [])
         self.stats.setText('表示履歴をクリアしました。次の受信データから表示します。')
         self.reset_plot_scales()
@@ -1487,7 +1494,7 @@ class GatewayWindow(MainWindow):
         self.current_plot.setLabel('left', 'Current', units=frame['unit'])
         self.current_plot.getPlotItem().setDownsampling(auto=True, mode='peak')
         self.current_plot.getPlotItem().setClipToView(True)
-        self.current_curve.setData(x, values)
+        self.display_current(x, values)
         if len(values):
             median = float(np.median(values))
             rms = float(np.sqrt(np.mean(values ** 2)))

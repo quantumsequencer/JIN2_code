@@ -11,12 +11,13 @@ if __name__ == '__main__':
 
 import numpy as np
 from qt_plot import pg
+from display_filter import lowpass
 from PySide6.QtCore import QSize, QTimer, Qt
 from PySide6.QtGui import QIcon, QImageReader, QPixmap
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QPushButton, QGroupBox, QScrollArea, QSplitter, QComboBox, QPlainTextEdit,
-    QProgressBar, QFileDialog, QMessageBox, QDialog, QGridLayout, QSizePolicy,
+    QDoubleSpinBox, QCheckBox, QProgressBar, QFileDialog, QMessageBox, QDialog, QGridLayout, QSizePolicy,
 )
 from workflow import Workflow, STEPS
 from step_report import duration
@@ -65,7 +66,7 @@ class MainWindow(QMainWindow):
         self.started = time.monotonic()
         self.history = deque(maxlen=120)
         self.rng = np.random.default_rng(7)
-        self.setWindowTitle("JIN SAMURAI Control v 0.2")
+        self.setWindowTitle("JIN SAMURAI version 0.9")
         self.resize(1360, 900)
         self.setMinimumSize(1000, 720)
 
@@ -81,7 +82,7 @@ class MainWindow(QMainWindow):
             42, 42, Qt.AspectRatioMode.KeepAspectRatio,
             Qt.TransformationMode.SmoothTransformation))
         header.addWidget(logo)
-        title = QLabel("JIN SAMURAI Control v 0.2")
+        title = QLabel("JIN SAMURAI version 0.9")
         title.setObjectName("title")
         header.addWidget(title)
         header.addStretch()
@@ -112,6 +113,7 @@ class MainWindow(QMainWindow):
         root.addWidget(banner)
 
         split = QSplitter(Qt.Orientation.Horizontal)
+        self.screen_split = split
         root.addWidget(split, 1)
         left = QWidget()
         panel = QVBoxLayout(left)
@@ -268,6 +270,7 @@ class MainWindow(QMainWindow):
         scroll.setWidget(left)
         scroll.setMinimumWidth(370)
         left_shell = QWidget()
+        self.operation_panel = left_shell
         left_layout = QVBoxLayout(left_shell)
         left_layout.setContentsMargins(0, 0, 0, 0)
         self.left_sections = QSplitter(Qt.Orientation.Vertical)
@@ -310,9 +313,19 @@ class MainWindow(QMainWindow):
 
         box, layout = group("CURRENT DATA  /  電流波形")
         plot_actions = QHBoxLayout()
+        self.plot_actions = plot_actions
         plot_actions.addWidget(button('スケールを戻す', self.reset_plot_scales))
         plot_actions.addWidget(button('表示履歴をクリア', self.clear_display_history))
         plot_actions.addWidget(button('Calibration グラフ', self.show_calibration_plot))
+        self.lowpass_cutoff = QDoubleSpinBox()
+        self.lowpass_cutoff.setRange(0.1, 5000)
+        self.lowpass_cutoff.setDecimals(1)
+        self.lowpass_cutoff.setValue(100)
+        self.lowpass_cutoff.setSuffix(" Hz")
+        self.lowpass_cutoff.setToolTip("カットオフ周波数。低いほど滑らかになります。表示だけに適用します。")
+        self.lowpass_cutoff.valueChanged.connect(self.refilter_current)
+        plot_actions.addWidget(QLabel("ローパス"))
+        plot_actions.addWidget(self.lowpass_cutoff)
         plot_actions.addStretch()
         layout.addLayout(plot_actions)
         self.stats = QLabel("デモ波形")
@@ -323,8 +336,13 @@ class MainWindow(QMainWindow):
         self.current_plot.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Ignored)
         self.current_plot.setMaximumHeight(450)
         self.current_plot.addLegend(offset=(8, 8))
-        self.current_curve = self.current_plot.plot(pen=pg.mkPen("#24C8DB", width=1), name="Data")
+        self.raw_current_curve = self.current_plot.plot(pen=pg.mkPen("#8291A5", width=1), name="電流（元波形）")
+        self.current_curve = self.current_plot.plot(pen=pg.mkPen("#24C8DB", width=1.5), name="電流（ローパス）")
+        self.current_curve.setZValue(1)
         self.median_curve = self.current_plot.plot(pen=pg.mkPen("#F5D547", width=1.5), name="Median")
+        self.median_curve.hide()
+        self.current_plot.plotItem.legend.removeItem(self.median_curve)
+        self.stats.hide()
         layout.addWidget(self.current_plot, 1)
         right_layout.addWidget(box, 2)
 
@@ -334,13 +352,25 @@ class MainWindow(QMainWindow):
         graphs = QHBoxLayout()
         self.hardware_graphs = graphs
         self.motor_plot = self.make_plot("Motor", "µm")
-        self.piezo_plot = self.make_plot("Piezo", "nm")
+        self.motor_plot.setMinimumHeight(180)
+        self.motor_plot.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Ignored)
+        graphs.addWidget(self.motor_plot)
+        item = self.motor_plot.getPlotItem()
+        item.setLabel("left", "Motor", units="µm", color="#39D98A")
+        item.showAxis("right")
+        item.setLabel("right", "Piezo", units="nm", color="#B294FF")
+        self.piezo_plot = pg.ViewBox()
+        item.scene().addItem(self.piezo_plot)
+        item.getAxis("right").linkToView(self.piezo_plot)
+        self.piezo_plot.setXLink(item.vb)
         self.motor_curve = self.motor_plot.plot(pen=pg.mkPen("#39D98A", width=1.5))
-        self.piezo_curve = self.piezo_plot.plot(pen=pg.mkPen("#B294FF", width=1.5))
-        for plot in (self.motor_plot, self.piezo_plot):
-            plot.setMinimumHeight(100)
-            plot.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Ignored)
-            graphs.addWidget(plot)
+        self.piezo_curve = pg.PlotCurveItem(pen=pg.mkPen("#B294FF", width=1.5))
+        self.piezo_plot.addItem(self.piezo_curve)
+        item.vb.sigResized.connect(self.sync_position_views)
+        self.sync_position_views()
+        item.vb.setMouseEnabled(x=True, y=False)
+        self.piezo_plot.setMouseEnabled(x=False, y=False)
+        self.piezo_plot.enableAutoRange(y=True)
         layout.addLayout(graphs)
         right_layout.addWidget(box, 1)
 
@@ -353,6 +383,11 @@ class MainWindow(QMainWindow):
         self.console.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Ignored)
         layout.addWidget(self.console)
         right_layout.addWidget(box, 1)
+        box.hide()
+        self.details_toggle = QCheckBox("詳細ログ・波形統計を表示")
+        self.details_toggle.toggled.connect(box.setVisible)
+        self.details_toggle.toggled.connect(self.stats.setVisible)
+        right_layout.addWidget(self.details_toggle)
         right.setMinimumHeight(0)
         right_scroll = QScrollArea()
         self.right_scroll = right_scroll
@@ -385,6 +420,9 @@ class MainWindow(QMainWindow):
         self.refresh()
         self.update_plots()
         self.log("デモを開始しました。設定を適用すると準備を実行できます。")
+        if type(self) is MainWindow:
+            from exhibition_layout import simplify_screen
+            simplify_screen(self)
 
     def make_plot(self, name, unit):
         plot = pg.PlotWidget(background="#0E1620")
@@ -673,15 +711,32 @@ class MainWindow(QMainWindow):
             self.high = True
         self.log(f"個別操作：{name}（送信なし）。準備状態をリセットしました。")
 
+    def sync_position_views(self):
+        view = self.motor_plot.getPlotItem().vb
+        self.piezo_plot.setGeometry(view.sceneBoundingRect())
+        self.piezo_plot.linkedViewChanged(view, self.piezo_plot.XAxis)
+
+    def display_current(self, x, values):
+        self._display_raw = (np.array(x, copy=True), np.array(values, copy=True))
+        self.raw_current_curve.setData(x, values)
+        self.current_curve.setData(x, lowpass(x, values, self.lowpass_cutoff.value()))
+        self.motor_plot.enableAutoRange(y=True)
+        self.piezo_plot.enableAutoRange(y=True)
+
+    def refilter_current(self):
+        if hasattr(self, '_display_raw'):
+            self.display_current(*self._display_raw)
+
     def reset_plot_scales(self):
         for plot in (self.current_plot, self.motor_plot, self.piezo_plot):
             plot.autoRange()
             plot.enableAutoRange(x=True, y=True)
 
     def clear_display_history(self):
+        self._display_raw = ([], [])
         self.history.clear()
         self.display_start = time.monotonic() - self.started
-        for curve in (self.current_curve, self.median_curve, self.motor_curve, self.piezo_curve):
+        for curve in (self.raw_current_curve, self.current_curve, self.median_curve, self.motor_curve, self.piezo_curve):
             curve.setData([], [])
         self.stats.setText('表示履歴をクリアしました。次のデータを待っています。')
         self.reset_plot_scales()
@@ -696,7 +751,7 @@ class MainWindow(QMainWindow):
         noise = float(np.sqrt(np.mean((y - np.mean(y)) ** 2)))
         unit = "pA" if self.high else "µA"
         self.current_plot.setLabel("left", "Current", units=unit)
-        self.current_curve.setData(x, y)
+        self.display_current(x, y)
         self.median_curve.setData([x[0], x[-1]], [median, median])
         self.stats.setText(f"DEMO  ·  {'High ' + self.rate.currentText() if self.high else 'Low 10 kHz'}"
                            f"    Median {median:.3f}  /  RMS {rms:.3f}  /  Noise RMS {noise:.3f} {unit}")
